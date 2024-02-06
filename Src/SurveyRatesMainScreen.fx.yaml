@@ -1,0 +1,601 @@
+SurveyRatesMainScreen As screen:
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =UpdateContext({visible: false, editable: false, editIcon:true, showSurveyAdminSpinner: false});
+        Refresh(SurveyRatesTable);
+        ClearCollect(SurveyList, SurveyRatesTable);
+        ResetForm(SurveyItemForm);
+    Orientation: =If(SurveyRatesMainScreen.Width < SurveyRatesMainScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= SurveyRatesMainScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    ScreenLabel_10 As label:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Color: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =ScreenLabel_10.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =82
+        HoverBorderColor: =ScreenLabel_10.BorderColor
+        HoverColor: =ScreenLabel_10.Color
+        HoverFill: =ScreenLabel_10.Fill
+        PressedBorderColor: =ScreenLabel_10.BorderColor
+        PressedColor: =ScreenLabel_10.Color
+        PressedFill: =ScreenLabel_10.Fill
+        Size: =26
+        Text: ="  SURVEY RATES MAIN SCREEN"
+        Width: =1364
+        ZIndex: =1
+
+    "SurveuyItemGallery As gallery.'BrowseLayout_Vertical_TwoTextVariant_ver4.0'":
+        BorderColor: =RGBA(36, 76, 90, 1)
+        DisabledBorderColor: =SurveuyItemGallery.BorderColor
+        DisabledFill: =SurveuyItemGallery.Fill
+        Height: =553
+        HoverBorderColor: =SurveuyItemGallery.BorderColor
+        HoverFill: =SurveuyItemGallery.Fill
+        Items: =SurveyList
+        Layout: =Layout.Vertical
+        LoadingSpinnerColor: =SurveuyItemGallery.BorderColor
+        PressedBorderColor: =SurveuyItemGallery.BorderColor
+        PressedFill: =SurveuyItemGallery.Fill
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =55
+        Width: =1366
+        Y: =82
+        ZIndex: =1
+
+        Title4_7 As label:
+            FocusedBorderColor: =Title4_7.BorderColor
+            Height: =37
+            HoverBorderColor: =Title4_7.BorderColor
+            HoverColor: =Title4_7.Color
+            HoverFill: =Title4_7.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Title4_7.BorderColor
+            PressedColor: =Title4_7.Color
+            PressedFill: =Title4_7.Fill
+            Text: |-
+                =Concatenate(ThisItem.survey_item,": ",ThisItem.survey_descrip)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =945
+            X: =32
+            Y: =8
+            ZIndex: =1
+
+        Separator4_7 As rectangle:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            DisabledFill: =Separator4_7.Fill
+            Fill: =RGBA(36, 76, 90, 1)
+            FocusedBorderColor: =Separator4_7.BorderColor
+            Height: =1
+            HoverFill: =Separator4_7.Fill
+            OnSelect: =Select(Parent)
+            PressedFill: =Separator4_7.Fill
+            Width: =Parent.TemplateWidth
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =4
+
+        surveyID_label As label:
+            FocusedBorderColor: =surveyID_label.BorderColor
+            HoverBorderColor: =surveyID_label.BorderColor
+            HoverColor: =surveyID_label.Color
+            HoverFill: =surveyID_label.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =surveyID_label.BorderColor
+            PressedColor: =surveyID_label.Color
+            PressedFill: =surveyID_label.Fill
+            Text: =ThisItem.survey_id
+            Visible: =false
+            X: =1001
+            Y: =15
+            ZIndex: =6
+
+        winterRateInput As text:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Default: =ThisItem.winter_rate
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            FocusedBorderColor: =winterRateInput.BorderColor
+            Height: =31
+            HoverBorderColor: =RGBA(36, 76, 90, 1)
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =winterRateInput.HoverBorderColor
+            PressedColor: =winterRateInput.Color
+            PressedFill: =winterRateInput.Fill
+            Width: =72
+            X: =1111
+            Y: =13
+            ZIndex: =7
+
+        summerRateInput As text:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Default: =ThisItem.summer_rate
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            FocusedBorderColor: =summerRateInput.BorderColor
+            Height: =29
+            HoverBorderColor: =RGBA(36, 76, 90, 1)
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =summerRateInput.HoverBorderColor
+            PressedColor: =summerRateInput.Color
+            PressedFill: =summerRateInput.Fill
+            Width: =78
+            X: =1214
+            Y: =15
+            ZIndex: =10
+
+    refreshIcon_7 As icon.Reload:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =refreshIcon_7.Fill
+        FocusedBorderColor: =refreshIcon_7.BorderColor
+        HoverBorderColor: =ColorFade(refreshIcon_7.BorderColor, 20%)
+        HoverColor: =ColorFade(refreshIcon_7.Color, 20%)
+        HoverFill: =refreshIcon_7.Fill
+        Icon: =Icon.Reload
+        OnSelect: |-
+            =Refresh(SurveyRatesTable);
+            ClearCollect(SurveyList, SurveyRatesTable);
+        PressedBorderColor: =ColorFade(refreshIcon_7.BorderColor, -20%)
+        PressedColor: =ColorFade(refreshIcon_7.Color, -20%)
+        PressedFill: =refreshIcon_7.Fill
+        Tooltip: ="Refresh list"
+        X: =1145
+        Y: =9
+        ZIndex: =3
+
+    SubmitSurveyItemForm As button:
+        BorderColor: =ColorFade(SubmitSurveyItemForm.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =SubmitSurveyItemForm.BorderColor
+        HoverBorderColor: =ColorFade(SubmitSurveyItemForm.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =SubmitForm(SurveyItemForm); 
+            ResetForm(SurveyItemForm);
+            UpdateContext({visible:false});
+            Refresh(SurveyRatesTable);
+            ClearCollect(SurveyList, SurveyRatesTable);
+        PressedBorderColor: =SubmitSurveyItemForm.Fill
+        PressedColor: =SubmitSurveyItemForm.Fill
+        PressedFill: =SubmitSurveyItemForm.Color
+        Text: ="Submit"
+        Visible: =visible
+        X: =1177
+        Y: =654
+        ZIndex: =4
+
+    backIcon_7 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =backIcon_7.Fill
+        FocusedBorderColor: =backIcon_7.BorderColor
+        HoverBorderColor: =ColorFade(backIcon_7.BorderColor, 20%)
+        HoverColor: =ColorFade(backIcon_7.Color, 20%)
+        HoverFill: =backIcon_7.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: =Navigate(MainScreen,ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(backIcon_7.BorderColor, -20%)
+        PressedColor: =ColorFade(backIcon_7.Color, -20%)
+        PressedFill: =backIcon_7.Fill
+        Tooltip: ="Go back to previous screen"
+        X: =1289
+        Y: =9
+        ZIndex: =5
+
+    CancelSurveyItemForm As button:
+        BorderColor: =ColorFade(CancelSurveyItemForm.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelSurveyItemForm.BorderColor
+        HoverBorderColor: =ColorFade(CancelSurveyItemForm.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |
+            =ResetForm(SurveyItemForm);
+            UpdateContext({visible:false})
+        PressedBorderColor: =CancelSurveyItemForm.Fill
+        PressedColor: =CancelSurveyItemForm.Fill
+        PressedFill: =CancelSurveyItemForm.Color
+        Text: ="Cancel"
+        Visible: =visible
+        X: =1177
+        Y: =712
+        ZIndex: =6
+
+    addIcon_7 As icon.Add:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =addIcon_7.Fill
+        FocusedBorderColor: =addIcon_7.BorderColor
+        HoverBorderColor: =ColorFade(addIcon_7.BorderColor, 20%)
+        HoverColor: =ColorFade(addIcon_7.Color, 20%)
+        HoverFill: =addIcon_7.Fill
+        Icon: =Icon.Add
+        OnSelect: |-
+            =UpdateContext({visible: true});
+            NewForm(SurveyItemForm);
+        PressedBorderColor: =ColorFade(addIcon_7.BorderColor, -20%)
+        PressedColor: =ColorFade(addIcon_7.Color, -20%)
+        PressedFill: =addIcon_7.Fill
+        Tooltip: ="Add a new item"
+        X: =1225
+        Y: =9
+        ZIndex: =7
+
+    SurveyItemForm As form:
+        AcceptsFocus: =false
+        DataSource: =SurveyRatesTable
+        Height: =101
+        NumberOfColumns: =4
+        Visible: =visible
+        Width: =1116
+        Y: =666
+        ZIndex: =8
+
+        survey_item_DataCard1 As typedDataCard.textualEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="survey_item"
+            Default: =ThisItem.survey_item
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Survey Item"
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =50
+            MaxLength: =DataSourceInfo([@SurveyRatesTable], DataSourceInfo.MaxLength, "survey_item")
+            Required: =true
+            Update: =DataCardValue133.Text
+            Width: =279
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey135 As label:
+                AutoHeight: =true
+                Height: =34
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue133 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                MaxLength: =Parent.MaxLength
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue133.HoverBorderColor
+                PressedColor: =DataCardValue133.Color
+                PressedFill: =DataCardValue133.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey135.Y + DataCardKey135.Height + 5
+                ZIndex: =2
+
+            ErrorMessage135 As label:
+                AutoHeight: =true
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue133.Y + DataCardValue133.Height
+                ZIndex: =3
+
+            StarVisible135 As label:
+                Align: =Align.Center
+                Height: =DataCardKey135.Height
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey135.Y
+                ZIndex: =4
+
+        survey_descrip_DataCard1 As typedDataCard.textualEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="survey_descrip"
+            Default: =ThisItem.survey_descrip
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Description"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            MaxLength: =DataSourceInfo([@SurveyRatesTable], DataSourceInfo.MaxLength, "survey_descrip")
+            Required: =false
+            Update: =DataCardValue134.Text
+            Width: =279
+            X: =1
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey136 As label:
+                AutoHeight: =true
+                Height: =34
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue134 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                MaxLength: =Parent.MaxLength
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue134.HoverBorderColor
+                PressedColor: =DataCardValue134.Color
+                PressedFill: =DataCardValue134.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey136.Y + DataCardKey136.Height + 5
+                ZIndex: =2
+
+            ErrorMessage136 As label:
+                AutoHeight: =true
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue134.Y + DataCardValue134.Height
+                ZIndex: =3
+
+            StarVisible136 As label:
+                Align: =Align.Center
+                Height: =DataCardKey136.Height
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey136.Y
+                ZIndex: =4
+
+        summer_rate_DataCard1 As typedDataCard.numberEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="summer_rate"
+            Default: =ThisItem.summer_rate
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Summer Rate"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            Required: =false
+            Update: =Value(DataCardValue135.Text)
+            Width: =279
+            X: =2
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey137 As label:
+                AutoHeight: =true
+                Height: =34
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue135 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                Format: =TextFormat.Number
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue135.HoverBorderColor
+                PressedColor: =DataCardValue135.Color
+                PressedFill: =DataCardValue135.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey137.Y + DataCardKey137.Height + 5
+                ZIndex: =2
+
+            ErrorMessage137 As label:
+                AutoHeight: =true
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue135.Y + DataCardValue135.Height
+                ZIndex: =3
+
+            StarVisible137 As label:
+                Align: =Align.Center
+                Height: =DataCardKey137.Height
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey137.Y
+                ZIndex: =4
+
+        winter_rate_DataCard1 As typedDataCard.numberEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="winter_rate"
+            Default: =ThisItem.winter_rate
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Winter Rate"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            Required: =false
+            Update: =Value(DataCardValue136.Text)
+            Width: =279
+            X: =3
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey138 As label:
+                AutoHeight: =true
+                Height: =34
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue136 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                Format: =TextFormat.Number
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue136.HoverBorderColor
+                PressedColor: =DataCardValue136.Color
+                PressedFill: =DataCardValue136.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey138.Y + DataCardKey138.Height + 5
+                ZIndex: =2
+
+            ErrorMessage138 As label:
+                AutoHeight: =true
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue136.Y + DataCardValue136.Height
+                ZIndex: =3
+
+            StarVisible138 As label:
+                Align: =Align.Center
+                Height: =DataCardKey138.Height
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey138.Y
+                ZIndex: =4
+
+    saveIcon_7 As icon.Check:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =saveIcon_7.Fill
+        FocusedBorderColor: =saveIcon_7.BorderColor
+        HoverBorderColor: =ColorFade(saveIcon_7.BorderColor, 20%)
+        HoverColor: =ColorFade(saveIcon_7.Color, 20%)
+        HoverFill: =saveIcon_7.Fill
+        Icon: =Icon.Check
+        OnSelect: |-
+            =UpdateContext({showSurveyAdminSpinner: true});
+            ForAll(SurveuyItemGallery.AllItems,
+                  Patch(SurveyRatesTable, 
+                        LookUp(SurveyList, survey_id = Value(surveyID_label.Text)),
+                        {winter_rate: Value(winterRateInput.Text)},
+                        {summer_rate: Value(summerRateInput.Text)}
+                  )
+            );
+            Refresh(SurveyRatesTable);
+            ClearCollect(SurveyList, SurveyRatesTable);
+            UpdateContext({editable:false, editIcon:true, showSurveyAdminSpinner: false});
+        PressedBorderColor: =ColorFade(saveIcon_7.BorderColor, -20%)
+        PressedColor: =ColorFade(saveIcon_7.Color, -20%)
+        PressedFill: =saveIcon_7.Fill
+        Tooltip: ="Save changes"
+        Visible: =editable
+        X: =986
+        Y: =9
+        ZIndex: =10
+
+    Icon4_6 As icon.Edit:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon4_6.Fill
+        FocusedBorderColor: =Icon4_6.BorderColor
+        HoverBorderColor: =ColorFade(Icon4_6.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon4_6.Color, 20%)
+        HoverFill: =Icon4_6.Fill
+        Icon: =Icon.Edit
+        OnSelect: |-
+            =UpdateContext({editable:true, editIcon:false});
+        PressedBorderColor: =ColorFade(Icon4_6.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon4_6.Color, -20%)
+        PressedFill: =Icon4_6.Fill
+        Visible: =editIcon
+        X: =1065
+        Y: =9
+        ZIndex: =11
+
+    SurveyAdminSpinner As group:
+        Height: =5
+        Width: =5
+        X: =40
+        Y: =-48
+        ZIndex: =14
+
+        Rectangle1_17 As rectangle:
+            DisabledFill: =Rectangle1_17.Fill
+            Fill: =RGBA(255,255, 255, 0.85)
+            Height: =768
+            HoverFill: =Rectangle1_17.Fill
+            PressedFill: =Rectangle1_17.Fill
+            Visible: =showSurveyAdminSpinner
+            Width: =1366
+            ZIndex: =12
+
+        Image1_17 As image:
+            Height: =156
+            HoverBorderColor: =ColorFade(Image1_17.BorderColor, 20%)
+            HoverFill: =ColorFade(Image1_17.Fill, 20%)
+            Image: ='Pulse-1s-200px'
+            PressedBorderColor: =ColorFade(Image1_17.BorderColor, -20%)
+            PressedFill: =ColorFade(Image1_17.Fill, -20%)
+            Visible: =showSurveyAdminSpinner
+            Width: =199
+            X: =623
+            Y: =285
+            ZIndex: =13
+

@@ -1,0 +1,1822 @@
+"AddStructureScreen As screen.'phoneLayout_FluidGridWithHeaderPageLayout_ver3.0'":
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |
+        =UpdateContext({showAddStruSpinner: false});
+        UpdateContext({showAddMatSpinner: false});
+        
+        UpdateContext({editableClicked3:false, editableClicked4:false, editClicked5:false, StructureExist: false});
+        Reset(addSrchLabStruc);Reset(addSrchMatStruc);
+        UpdateContext({now: Now(),FirstClicked:false, labButton:false, matButton: false, BasicPatch: Blank(), StrucLabPatch:Blank(), StrucMatPatch: Blank()});
+        /* Structures labour*/
+        ClearCollect(StrucLabList, Filter(StructuresLabourDetails, StrucID = DataCardValue89.Text And StrucType = Dropdown13.Selected.Value));
+        Refresh(LabourUnits);
+        ClearCollect(AllLabUnits, LabourUnits);
+        /* Structures material*/
+        Refresh(MasterMaterial_PreferredVendor_List);
+        Switch(NewEstimateType,
+            "City of Calgary", ClearCollect(MasterMaterialList, Filter(MasterMaterial_PreferredVendor_List, 
+                              Archived = false And CoCItemNumber <> "NA")),
+            "Enmax", ClearCollect(MasterMaterialList, Filter(MasterMaterial_PreferredVendor_List, 
+                             Archived = false And EnmaxItemNumber <> "NA")),
+            "Fortis Alberta", ClearCollect(MasterMaterialList, Filter(MasterMaterial_PreferredVendor_List, 
+                             Archived = false And FortisItemNumber <> "NA"))
+        );
+        
+        ClearCollect(StrucMatList, Filter(StructuresMaterialDetails, 
+                    StrucID = DataCardValue89.Text And StrucType = Dropdown13.Selected.Value));
+    Orientation: =If(AddStructureScreen.Width < AddStructureScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= AddStructureScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    RectQuickActionBar7 As rectangle:
+        DisabledFill: =RectQuickActionBar7.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =RectQuickActionBar7.BorderColor
+        Height: =88
+        HoverFill: =RectQuickActionBar7.Fill
+        PressedFill: =RectQuickActionBar7.Fill
+        Width: =Parent.Width
+        ZIndex: =1
+
+    LblAppName7 As label:
+        FocusedBorderColor: =LblAppName7.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =88
+        HoverBorderColor: =LblAppName7.BorderColor
+        HoverColor: =LblAppName7.Color
+        HoverFill: =LblAppName7.Fill
+        PressedBorderColor: =LblAppName7.BorderColor
+        PressedColor: =LblAppName7.Color
+        PressedFill: =LblAppName7.Fill
+        Size: =26
+        Text: =" ADD A NEW STRUCTURE"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    Canvas8 As fluidGrid.fluidGridWithBlankCard:
+        BorderThickness: =0
+        Height: =Parent.Height - Canvas8.Y
+        Width: =Parent.Width
+        Y: =RectQuickActionBar7.Y + RectQuickActionBar7.Height
+        ZIndex: =3
+
+        DataCard10 As dataCard:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.Dotted
+            BorderThickness: =2
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =320
+            Width: =1365
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            basicStrucSetup As form:
+                AcceptsFocus: =false
+                DataSource: =StructuresDetails
+                DefaultMode: =FormMode.New
+                Height: =284
+                SnapToColumns: =false
+                Width: =1348
+                Y: =51
+                ZIndex: =1
+
+                StrucID_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="StrucID"
+                    Default: =ThisItem.StrucID
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: ="Structure ID"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =72
+                    MaxLength: =DataSourceInfo(StructuresDetails, DataSourceInfo.MaxLength, "StrucID")
+                    Required: =true
+                    Update: =DataCardValue89.Text
+                    Width: =448
+                    X: =0
+                    Y: =0
+                    ZIndex: =1
+
+                    DataCardKey91 As label:
+                        FocusedBorderColor: =DataCardKey91.BorderColor
+                        Height: =50
+                        HoverBorderColor: =DataCardKey91.BorderColor
+                        HoverColor: =DataCardKey91.Color
+                        HoverFill: =DataCardKey91.Fill
+                        PressedBorderColor: =DataCardKey91.BorderColor
+                        PressedColor: =DataCardKey91.Color
+                        PressedFill: =DataCardKey91.Fill
+                        Text: =Parent.DisplayName
+                        Width: =110
+                        Wrap: =false
+                        X: =30
+                        Y: =24
+                        ZIndex: =1
+
+                    DataCardValue89 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =If(FirstClicked, DisplayMode.View, DisplayMode.Edit)
+                        FocusedBorderColor: =DataCardValue89.BorderColor
+                        HoverBorderColor: =RGBA(36, 76, 90, 1)
+                        MaxLength: =Parent.MaxLength
+                        OnChange: |-
+                            =If(Not(IsBlank(LookUp(StructuresDetails, StrucID = DataCardValue89.Text And StrucType = Dropdown13.Selected.Value))), UpdateContext({StructureExist:true}), UpdateContext({StructureExist:false}))
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue89.HoverBorderColor
+                        PressedColor: =DataCardValue89.Color
+                        PressedFill: =DataCardValue89.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =263
+                        X: =156
+                        Y: =29
+                        ZIndex: =2
+
+                    ErrorMessage91 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage91.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage91.BorderColor
+                        HoverColor: =ErrorMessage91.Color
+                        HoverFill: =ErrorMessage91.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage91.BorderColor
+                        PressedColor: =ErrorMessage91.Color
+                        PressedFill: =ErrorMessage91.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue89.Y + DataCardValue89.Height
+                        ZIndex: =3
+
+                    StarVisible91 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible91.BorderColor
+                        Height: =DataCardKey91.Height
+                        HoverBorderColor: =StarVisible91.BorderColor
+                        HoverColor: =StarVisible91.Color
+                        HoverFill: =StarVisible91.Fill
+                        PressedBorderColor: =StarVisible91.BorderColor
+                        PressedColor: =StarVisible91.Color
+                        PressedFill: =StarVisible91.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey91.Y
+                        ZIndex: =4
+
+                Description_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="Description"
+                    Default: =ThisItem.Description
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: ="Description"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =0
+                    MaxLength: =DataSourceInfo(StructuresDetails, DataSourceInfo.MaxLength, "Description")
+                    Required: =false
+                    Update: =DataCardValue90.Text
+                    Width: =449
+                    X: =1
+                    Y: =0
+                    ZIndex: =1
+
+                    DataCardKey92 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =DataCardKey92.BorderColor
+                        Height: =34
+                        HoverBorderColor: =DataCardKey92.BorderColor
+                        HoverColor: =DataCardKey92.Color
+                        HoverFill: =DataCardKey92.Fill
+                        PressedBorderColor: =DataCardKey92.BorderColor
+                        PressedColor: =DataCardKey92.Color
+                        PressedFill: =DataCardKey92.Fill
+                        Text: =Parent.DisplayName
+                        Width: =107
+                        Wrap: =false
+                        X: =30
+                        Y: =41
+                        ZIndex: =1
+
+                    DataCardValue90 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderColor: =DataCardValue90.BorderColor
+                        Height: =77
+                        HoverBorderColor: =RGBA(36, 76, 90, 1)
+                        MaxLength: =Parent.MaxLength
+                        Mode: =TextMode.MultiLine
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue90.HoverBorderColor
+                        PressedColor: =DataCardValue90.Color
+                        PressedFill: =DataCardValue90.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =274
+                        X: =168
+                        Y: =20
+                        ZIndex: =2
+
+                    ErrorMessage92 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage92.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage92.BorderColor
+                        HoverColor: =ErrorMessage92.Color
+                        HoverFill: =ErrorMessage92.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage92.BorderColor
+                        PressedColor: =ErrorMessage92.Color
+                        PressedFill: =ErrorMessage92.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =32
+                        Y: =88
+                        ZIndex: =3
+
+                    StarVisible92 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible92.BorderColor
+                        Height: =DataCardKey92.Height
+                        HoverBorderColor: =StarVisible92.BorderColor
+                        HoverColor: =StarVisible92.Color
+                        HoverFill: =StarVisible92.Fill
+                        PressedBorderColor: =StarVisible92.BorderColor
+                        PressedColor: =StarVisible92.Color
+                        PressedFill: =StarVisible92.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey92.Y
+                        ZIndex: =4
+
+                StrucType_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="StrucType"
+                    Default: =ThisItem.StrucType
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: ="Structure Type"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =81
+                    MaxLength: =DataSourceInfo(StructuresDetails, DataSourceInfo.MaxLength, "StrucType")
+                    Required: =true
+                    Update: =Dropdown13.Selected.Value
+                    Width: =448
+                    X: =2
+                    Y: =0
+                    ZIndex: =1
+
+                    DataCardKey93 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =DataCardKey93.BorderColor
+                        Height: =34
+                        HoverBorderColor: =DataCardKey93.BorderColor
+                        HoverColor: =DataCardKey93.Color
+                        HoverFill: =DataCardKey93.Fill
+                        PressedBorderColor: =DataCardKey93.BorderColor
+                        PressedColor: =DataCardKey93.Color
+                        PressedFill: =DataCardKey93.Fill
+                        Text: =Parent.DisplayName
+                        Width: =Parent.Width - 60
+                        Wrap: =false
+                        X: =30
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue91 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderColor: =DataCardValue91.BorderColor
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue91.HoverBorderColor
+                        PressedColor: =DataCardValue91.Color
+                        PressedFill: =DataCardValue91.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Visible: =false
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardKey93.Y + DataCardKey93.Height + 5
+                        ZIndex: =2
+
+                    ErrorMessage93 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage93.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage93.BorderColor
+                        HoverColor: =ErrorMessage93.Color
+                        HoverFill: =ErrorMessage93.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage93.BorderColor
+                        PressedColor: =ErrorMessage93.Color
+                        PressedFill: =ErrorMessage93.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue91.Y + DataCardValue91.Height
+                        ZIndex: =3
+
+                    StarVisible93 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible93.BorderColor
+                        Height: =DataCardKey93.Height
+                        HoverBorderColor: =StarVisible93.BorderColor
+                        HoverColor: =StarVisible93.Color
+                        HoverFill: =StarVisible93.Fill
+                        PressedBorderColor: =StarVisible93.BorderColor
+                        PressedColor: =StarVisible93.Color
+                        PressedFill: =StarVisible93.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey93.Y
+                        ZIndex: =4
+
+                    Dropdown13 As dropdown:
+                        BorderColor: =RGBA(36, 76, 90, 1)
+                        ChevronBackground: =RGBA(36, 76, 90, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                        Default: =NewEstimateType
+                        DisplayMode: =If(FirstClicked, DisplayMode.View, DisplayMode.Edit)
+                        FocusedBorderColor: =Dropdown13.BorderColor
+                        HoverBorderColor: =ColorFade(Dropdown13.BorderColor, 15%)
+                        Items: =["Enmax", "Fortis Alberta", "City of Calgary"]
+                        OnChange: |-
+                            =ClearCollect(AllVendorMatList, Filter(VendorSupplies, ItemType = Dropdown13.Selected.Value And Archive = false));
+                            If(Not(IsBlank(LookUp(StructuresDetails, StrucID = DataCardValue89.Text And StrucType = Dropdown13.Selected.Value))), UpdateContext({StructureExist:true}), UpdateContext({StructureExist:false})) 
+                        PressedBorderColor: =Dropdown13.HoverBorderColor
+                        PressedFill: =RGBA(36, 76, 90, 1)
+                        SelectionFill: =RGBA(36, 76, 90, 1)
+                        Width: =389
+                        X: =30
+                        Y: =49
+                        ZIndex: =5
+
+                Notes_DataCard5 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="Notes"
+                    Default: =ThisItem.Notes
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: ="Notes"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =0
+                    MaxLength: =DataSourceInfo(StructuresDetails, DataSourceInfo.MaxLength, "Notes")
+                    Required: =false
+                    Update: =DataCardValue92.Text
+                    Width: =449
+                    X: =0
+                    Y: =1
+                    ZIndex: =1
+
+                    DataCardKey94 As label:
+                        FocusedBorderColor: =DataCardKey94.BorderColor
+                        Height: =68
+                        HoverBorderColor: =DataCardKey94.BorderColor
+                        HoverColor: =DataCardKey94.Color
+                        HoverFill: =DataCardKey94.Fill
+                        PressedBorderColor: =DataCardKey94.BorderColor
+                        PressedColor: =DataCardKey94.Color
+                        PressedFill: =DataCardKey94.Fill
+                        Text: =Parent.DisplayName
+                        Width: =72
+                        Wrap: =false
+                        X: =30
+                        Y: =40
+                        ZIndex: =1
+
+                    DataCardValue92 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderColor: =DataCardValue92.BorderColor
+                        Height: =132
+                        HoverBorderColor: =RGBA(36, 76, 90, 1)
+                        MaxLength: =Parent.MaxLength
+                        Mode: =TextMode.MultiLine
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue92.HoverBorderColor
+                        PressedColor: =DataCardValue92.Color
+                        PressedFill: =DataCardValue92.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =300
+                        X: =132
+                        Y: =12
+                        ZIndex: =2
+
+                    ErrorMessage94 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage94.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage94.BorderColor
+                        HoverColor: =ErrorMessage94.Color
+                        HoverFill: =ErrorMessage94.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage94.BorderColor
+                        PressedColor: =ErrorMessage94.Color
+                        PressedFill: =ErrorMessage94.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue92.Y + DataCardValue92.Height
+                        ZIndex: =3
+
+                    StarVisible94 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible94.BorderColor
+                        Height: =DataCardKey94.Height
+                        HoverBorderColor: =StarVisible94.BorderColor
+                        HoverColor: =StarVisible94.Color
+                        HoverFill: =StarVisible94.Fill
+                        PressedBorderColor: =StarVisible94.BorderColor
+                        PressedColor: =StarVisible94.Color
+                        PressedFill: =StarVisible94.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey94.Y
+                        ZIndex: =4
+
+                CreatedBy_DataCard1 As typedDataCard.textualEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="CreatedBy"
+                    Default: =ThisItem.CreatedBy
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: ="Created By"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo(StructuresDetails, DataSourceInfo.MaxLength, "CreatedBy")
+                    Required: =false
+                    Update: =DataCardValue94.Text
+                    Width: =449
+                    X: =1
+                    Y: =1
+                    ZIndex: =1
+
+                    DataCardKey95 As label:
+                        FocusedBorderColor: =DataCardKey95.BorderColor
+                        Height: =39
+                        HoverBorderColor: =DataCardKey95.BorderColor
+                        HoverColor: =DataCardKey95.Color
+                        HoverFill: =DataCardKey95.Fill
+                        PressedBorderColor: =DataCardKey95.BorderColor
+                        PressedColor: =DataCardKey95.Color
+                        PressedFill: =DataCardKey95.Fill
+                        Text: =Parent.DisplayName
+                        Width: =117
+                        Wrap: =false
+                        X: =30
+                        Y: =49
+                        ZIndex: =1
+
+                    DataCardValue94 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =User().FullName
+                        DelayOutput: =true
+                        DisplayMode: =DisplayMode.View
+                        FocusedBorderColor: =DataCardValue94.BorderColor
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue94.HoverBorderColor
+                        PressedColor: =DataCardValue94.Color
+                        PressedFill: =DataCardValue94.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =239
+                        X: =180
+                        Y: =48
+                        ZIndex: =2
+
+                    ErrorMessage95 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage95.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage95.BorderColor
+                        HoverColor: =ErrorMessage95.Color
+                        HoverFill: =ErrorMessage95.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage95.BorderColor
+                        PressedColor: =ErrorMessage95.Color
+                        PressedFill: =ErrorMessage95.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue94.Y + DataCardValue94.Height
+                        ZIndex: =3
+
+                    StarVisible95 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible95.BorderColor
+                        Height: =DataCardKey95.Height
+                        HoverBorderColor: =StarVisible95.BorderColor
+                        HoverColor: =StarVisible95.Color
+                        HoverFill: =StarVisible95.Fill
+                        PressedBorderColor: =StarVisible95.BorderColor
+                        PressedColor: =StarVisible95.Color
+                        PressedFill: =StarVisible95.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey95.Y
+                        ZIndex: =4
+
+                CreatedDate_DataCard1 As typedDataCard.dateEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="CreatedDate"
+                    Default: =ThisItem.CreatedDate
+                    DisplayMode: =Parent.DisplayMode
+                    DisplayName: ="Created Date"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =0
+                    Required: =false
+                    Update: =DataCardValue95.SelectedDate
+                    Width: =449
+                    X: =2
+                    Y: =1
+                    ZIndex: =1
+
+                    DataCardKey96 As label:
+                        FocusedBorderColor: =DataCardKey96.BorderColor
+                        HoverBorderColor: =DataCardKey96.BorderColor
+                        HoverColor: =DataCardKey96.Color
+                        HoverFill: =DataCardKey96.Fill
+                        PressedBorderColor: =DataCardKey96.BorderColor
+                        PressedColor: =DataCardKey96.Color
+                        PressedFill: =DataCardKey96.Fill
+                        Text: =Parent.DisplayName
+                        Width: =140
+                        Wrap: =false
+                        X: =17
+                        Y: =51
+                        ZIndex: =1
+
+                    DataCardValue95 As datepicker:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        DisplayMode: =DisplayMode.View
+                        EndYear: =Year(Today())+100
+                        FocusedBorderColor: =DataCardValue95.BorderColor
+                        HoverBorderColor: =DataCardValue95.BorderColor
+                        HoverFill: =DataCardValue95.Fill
+                        InputTextPlaceholder: =Text(Date(2001,12,31), DataCardValue95.Format, DataCardValue95.Language)
+                        IsEditable: =true
+                        PaddingBottom: =0
+                        PaddingLeft: =If(DataCardValue95.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PressedBorderColor: =DataCardValue95.BorderColor
+                        PressedFill: =DataCardValue95.Fill
+                        StartYear: =1899
+                        Tooltip: =Parent.DisplayName
+                        Width: =249
+                        X: =170
+                        Y: =51
+                        ZIndex: =2
+
+                    ErrorMessage96 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage96.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage96.BorderColor
+                        HoverColor: =ErrorMessage96.Color
+                        HoverFill: =ErrorMessage96.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage96.BorderColor
+                        PressedColor: =ErrorMessage96.Color
+                        PressedFill: =ErrorMessage96.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue95.Y + DataCardValue95.Height
+                        ZIndex: =3
+
+                    StarVisible96 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible96.BorderColor
+                        Height: =DataCardKey96.Height
+                        HoverBorderColor: =StarVisible96.BorderColor
+                        HoverColor: =StarVisible96.Color
+                        HoverFill: =StarVisible96.Fill
+                        PressedBorderColor: =StarVisible96.BorderColor
+                        PressedColor: =StarVisible96.Color
+                        PressedFill: =StarVisible96.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey96.Y
+                        ZIndex: =4
+
+            Label59 As label:
+                Color: =RGBA(168, 0, 0, 1)
+                FocusedBorderColor: =Label59.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =Label59.BorderColor
+                HoverColor: =Label59.Color
+                HoverFill: =Label59.Fill
+                PressedBorderColor: =Label59.BorderColor
+                PressedColor: =Label59.Color
+                PressedFill: =Label59.Fill
+                Text: ="Basic Structure Information"
+                Underline: =true
+                Width: =320
+                ZIndex: =2
+
+            Button6 As button:
+                BorderColor: =ColorFade(Button6.Fill, -15%)
+                FocusedBorderColor: =Button6.BorderColor
+                Height: =56
+                HoverBorderColor: =ColorFade(Button6.BorderColor, 20%)
+                OnSelect: |-
+                    =// once it is clicked.. make structure ID uneditable
+                    /*If(Not(FirstClicked), 
+                      UpdateContext({BasicPatch: Patch(StructuresDetails, Defaults(StructuresDetails), 
+                                    {StrucID: DataCardValue89.Text, Description: DataCardValue90.Text, StrucType: Dropdown13.Selected.Value, 
+                                    Notes: DataCardValue92.Text, CreatedBy: DataCardValue94.Text, CreatedDate: DataCardValue95.SelectedDate, 
+                                    LastModifiedBy:User().FullName, LastModifiedDate: Today()})});
+                                    If(Not(IsBlank(BasicPatch)) And IsEmpty(Errors(Structures)),
+                                        UpdateContext({FirstClicked:true, labButton:true, matButton:true});,
+                                       "Basic First Patch failed"), 
+                      UpdateContext({BasicPatch:Patch(StructuresDetails, 
+                                    LookUp(StructuresDetails, StrucID = DataCardValue89.Text And StrucType = Dropdown13.Selected.Value), 
+                                    {Notes: DataCardValue92.Text, LastModifiedBy:User().FullName, LastModifiedDate: Today()})})
+                    )*/
+                PressedBorderColor: =Button6.Fill
+                PressedColor: =Button6.Fill
+                PressedFill: =Button6.Color
+                Text: ="Save Basic Information"
+                Visible: =false
+                Width: =218
+                X: =1026
+                ZIndex: =3
+
+            Label65 As label:
+                Color: =RGBA(255, 0, 0, 1)
+                Font: =Font.Arial
+                FontWeight: =FontWeight.Bold
+                Text: ="***Structure already exists"
+                Visible: =If(StructureExist, true, false)
+                Width: =304
+                X: =567
+                Y: =16
+                ZIndex: =5
+
+        DataCard11 As dataCard.blankCard:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.Dotted
+            BorderThickness: =2
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =717
+            Visible: =If(Not(FirstClicked), false , true)
+            Width: =1365
+            X: =0
+            Y: =1
+            ZIndex: =2
+
+            "Gallery2 As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dashed
+                BorderThickness: =1
+                DisabledBorderColor: =Gallery2.BorderColor
+                DisabledFill: =Gallery2.Fill
+                Height: =523
+                HoverBorderColor: =Gallery2.BorderColor
+                HoverFill: =Gallery2.Fill
+                Items: =SortByColumns(Search(AllLabUnits, addSrchLabStruc.Text, "LabourUnit", "Description"), "LabourUnit", SortOrder.Ascending)
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =Gallery2.BorderColor
+                PressedBorderColor: =Gallery2.BorderColor
+                PressedFill: =Gallery2.Fill
+                TemplatePadding: =0
+                TemplateSize: =68
+                Width: =622
+                Y: =116
+                ZIndex: =1
+
+                Title10 As label:
+                    FocusedBorderColor: =Title10.BorderColor
+                    HoverBorderColor: =Title10.BorderColor
+                    HoverColor: =Title10.Color
+                    HoverFill: =Title10.Fill
+                    OnSelect: =Select(Parent)
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title10.BorderColor
+                    PressedColor: =Title10.Color
+                    PressedFill: =Title10.Fill
+                    Size: =14
+                    Text: |
+                        =ThisItem.LabourUnit
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =468
+                    X: =12
+                    Y: =4
+                    ZIndex: =1
+
+                Subtitle9 As label:
+                    FocusedBorderColor: =Subtitle9.BorderColor
+                    Height: =24
+                    HoverBorderColor: =Subtitle9.BorderColor
+                    HoverColor: =Subtitle9.Color
+                    HoverFill: =Subtitle9.Fill
+                    OnSelect: =Select(Parent)
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Subtitle9.BorderColor
+                    PressedColor: =Subtitle9.Color
+                    PressedFill: =Subtitle9.Fill
+                    Size: =12
+                    Text: =ThisItem.Description
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =433
+                    X: =26
+                    Y: =30
+                    ZIndex: =2
+
+                Separator10 As rectangle:
+                    BorderThickness: =2
+                    DisabledFill: =Separator10.Fill
+                    FocusedBorderColor: =Separator10.BorderColor
+                    Height: =0
+                    HoverFill: =Separator10.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator10.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                Icon39 As icon.Add:
+                    DisabledFill: =Icon39.Fill
+                    DisplayMode: =If(editableClicked3, DisplayMode.Disabled, DisplayMode.Edit)
+                    FocusedBorderColor: =Icon39.BorderColor
+                    Height: =38
+                    HoverBorderColor: =ColorFade(Icon39.BorderColor, 20%)
+                    HoverColor: =ColorFade(Icon39.Color, 20%)
+                    HoverFill: =Icon39.Fill
+                    Icon: =Icon.Add
+                    OnSelect: |
+                        =/*Patch(StructuresLabourDetails, Defaults(StructuresLabourDetails), 
+                            {
+                             StrucID: DataCardValue89.Text, 
+                             StrucType:Dropdown13.Selected.Value, 
+                             LabourUnit: ThisItem.LabourUnit, 
+                             ItemCount: Value(TextInput14.Text), 
+                             LastModifiedBy: User().FullName, 
+                             LastModifiedDate: Today()
+                             }
+                        );*/
+                        Collect(StrucLabList, 
+                            {
+                             StrucID: DataCardValue89.Text, 
+                             StrucType:Dropdown13.Selected.Value, 
+                             LabourUnit: ThisItem.LabourUnit, 
+                             ItemCount: Value(TextInput14.Text), 
+                             LastModifiedBy: User().FullName, 
+                             LastModifiedDate: Today()
+                             }
+                        );
+                        Remove(AllLabUnits, ThisItem);
+                        //Refresh(StructuresLabourDetails);
+                    PressedBorderColor: =ColorFade(Icon39.BorderColor, -20%)
+                    PressedColor: =ColorFade(Icon39.Color, -20%)
+                    PressedFill: =Icon39.Fill
+                    Width: =42
+                    X: =558
+                    Y: =16
+                    ZIndex: =6
+
+                TextInput14 As text:
+                    Default: =0
+                    FocusedBorderColor: =TextInput14.BorderColor
+                    Format: =TextFormat.Number
+                    HoverFill: =RGBA(255, 255, 255, 1)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =TextInput14.HoverBorderColor
+                    PressedColor: =TextInput14.Color
+                    PressedFill: =TextInput14.Fill
+                    Width: =68
+                    X: =412
+                    Y: =22
+                    ZIndex: =8
+
+            "Gallery3 As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dashed
+                BorderThickness: =1
+                DisabledBorderColor: =Gallery3.BorderColor
+                DisabledFill: =Gallery3.Fill
+                Height: =523
+                HoverBorderColor: =Gallery3.BorderColor
+                HoverFill: =Gallery3.Fill
+                Items: |-
+                    =//Filter(StrucLabList, StrucID <> "")
+                    //Filter(StructuresLabourDetails, StrucID = DataCardValue89.Text And StrucType = Dropdown13.Selected.Value)
+                    StrucLabList
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =Gallery3.BorderColor
+                PressedBorderColor: =Gallery3.BorderColor
+                PressedFill: =Gallery3.Fill
+                TemplatePadding: =0
+                TemplateSize: =52
+                Width: =692
+                X: =652
+                Y: =116
+                ZIndex: =1
+
+                Title12 As label:
+                    FocusedBorderColor: =Title12.BorderColor
+                    Height: =33
+                    HoverBorderColor: =Title12.BorderColor
+                    HoverColor: =Title12.Color
+                    HoverFill: =Title12.Fill
+                    OnSelect: =Select(Parent)
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title12.BorderColor
+                    PressedColor: =Title12.Color
+                    PressedFill: =Title12.Fill
+                    Size: =13
+                    Text: |-
+                        =//Concatenate("Contractor ID: ", Text(ThisItem.ContractorID), " - ",ThisItem.LabourUnit)
+                        ThisItem.LabourUnit
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =279
+                    X: =32
+                    Y: =13
+                    ZIndex: =1
+
+                Separator12 As rectangle:
+                    DisabledFill: =Separator12.Fill
+                    FocusedBorderColor: =Separator12.BorderColor
+                    Height: =1
+                    HoverFill: =Separator12.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator12.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                Icon40 As icon.Trash:
+                    DisabledFill: =Icon40.Fill
+                    DisplayMode: =If(editableClicked3, DisplayMode.Edit, DisplayMode.Disabled)
+                    FocusedBorderColor: =Icon40.BorderColor
+                    Height: =43
+                    HoverBorderColor: =ColorFade(Icon40.BorderColor, 20%)
+                    HoverColor: =ColorFade(Icon40.Color, 20%)
+                    HoverFill: =Icon40.Fill
+                    Icon: =Icon.Trash
+                    OnSelect: |-
+                        =Collect(AllLabUnits, LookUp(LabourUnits, LabourUnit = ThisItem.LabourUnit));
+                        //Remove(StructuresLabourDetails, ThisItem);
+                        Remove(StrucLabList, ThisItem);
+                    PressedBorderColor: =ColorFade(Icon40.BorderColor, -20%)
+                    PressedColor: =ColorFade(Icon40.Color, -20%)
+                    PressedFill: =Icon40.Fill
+                    Width: =34
+                    X: =631
+                    Y: =3
+                    ZIndex: =6
+
+                Label103 As label:
+                    FocusedBorderColor: =Label103.BorderColor
+                    HoverBorderColor: =Label103.BorderColor
+                    HoverColor: =Label103.Color
+                    HoverFill: =Label103.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label103.BorderColor
+                    PressedColor: =Label103.Color
+                    PressedFill: =Label103.Fill
+                    Text: =ThisItem.LabourUnit
+                    Visible: =false
+                    X: =40
+                    Y: =12
+                    ZIndex: =7
+
+                Label104 As label:
+                    FocusedBorderColor: =Label104.BorderColor
+                    HoverBorderColor: =Label104.BorderColor
+                    HoverColor: =Label104.Color
+                    HoverFill: =Label104.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label104.BorderColor
+                    PressedColor: =Label104.Color
+                    PressedFill: =Label104.Fill
+                    Text: =ThisItem.StrucID
+                    Visible: =false
+                    X: =60
+                    Y: =12
+                    ZIndex: =8
+
+                Label105 As label:
+                    FocusedBorderColor: =Label105.BorderColor
+                    HoverBorderColor: =Label105.BorderColor
+                    HoverColor: =Label105.Color
+                    HoverFill: =Label105.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label105.BorderColor
+                    PressedColor: =Label105.Color
+                    PressedFill: =Label105.Fill
+                    Text: =ThisItem.StrucType
+                    Visible: =false
+                    X: =80
+                    Y: =12
+                    ZIndex: =9
+
+                TextInput18_1 As text:
+                    Default: =ThisItem.ItemCount
+                    DisplayMode: =If(editableClicked3,DisplayMode.Edit, DisplayMode.View)
+                    FocusedBorderColor: =TextInput18_1.BorderColor
+                    HoverFill: =RGBA(255, 255, 255, 1)
+                    OnChange: |-
+                        =Patch(strucLabList, ThisItem, {ItemCount:Value(TextInput18_1.Text)});
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =TextInput18_1.HoverBorderColor
+                    PressedColor: =TextInput18_1.Color
+                    PressedFill: =TextInput18_1.Fill
+                    Width: =68
+                    X: =455
+                    Y: =3
+                    ZIndex: =10
+
+            Label60 As label:
+                Color: =RGBA(168, 0, 0, 1)
+                FocusedBorderColor: =Label60.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =Label60.BorderColor
+                HoverColor: =Label60.Color
+                HoverFill: =Label60.Fill
+                PressedBorderColor: =Label60.BorderColor
+                PressedColor: =Label60.Color
+                PressedFill: =Label60.Fill
+                Text: ="Structure's Labour Details"
+                Underline: =true
+                Width: =333
+                X: =11
+                Y: =4
+                ZIndex: =2
+
+            addSrchLabStruc As text:
+                Default: =""
+                FocusedBorderColor: =addSrchLabStruc.BorderColor
+                HoverFill: =RGBA(255, 255, 255, 1)
+                PressedBorderColor: =addSrchLabStruc.HoverBorderColor
+                PressedColor: =addSrchLabStruc.Color
+                PressedFill: =addSrchLabStruc.Fill
+                Tooltip: ="Search labour units"
+                Width: =214
+                X: =186
+                Y: =68
+                ZIndex: =3
+
+            Label63 As label:
+                FocusedBorderColor: =Label63.BorderColor
+                HoverBorderColor: =Label63.BorderColor
+                HoverColor: =Label63.Color
+                HoverFill: =Label63.Fill
+                PressedBorderColor: =Label63.BorderColor
+                PressedColor: =Label63.Color
+                PressedFill: =Label63.Fill
+                Text: ="Qty"
+                Width: =81
+                X: =416
+                Y: =70
+                ZIndex: =6
+
+            Label68 As label:
+                FocusedBorderColor: =Label68.BorderColor
+                HoverBorderColor: =Label68.BorderColor
+                HoverColor: =Label68.Color
+                HoverFill: =Label68.Fill
+                PressedBorderColor: =Label68.BorderColor
+                PressedColor: =Label68.Color
+                PressedFill: =Label68.Fill
+                Text: ="Qty"
+                Width: =100
+                X: =1111
+                Y: =70
+                ZIndex: =11
+
+            Icon43_2 As icon.Edit:
+                DisabledFill: =Icon43_2.Fill
+                DisplayMode: =If(showAddStruSpinner  || showAddMatSpinner, DisplayMode.Disabled, DisplayMode.Edit)
+                FocusedBorderColor: =Icon43_2.BorderColor
+                Height: =45
+                HoverBorderColor: =ColorFade(Icon43_2.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon43_2.Color, 20%)
+                HoverFill: =Icon43_2.Fill
+                Icon: =Icon.Edit
+                OnSelect: |-
+                    =UpdateContext({editableClicked3:true})
+                PressedBorderColor: =ColorFade(Icon43_2.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon43_2.Color, -20%)
+                PressedFill: =Icon43_2.Fill
+                Tooltip: ="Edit current labour unit qtys"
+                Width: =41
+                X: =1285
+                Y: =61
+                ZIndex: =12
+
+            Icon44_2 As icon.Save:
+                DisabledFill: =Icon44_2.Fill
+                FocusedBorderColor: =Icon44_2.BorderColor
+                Height: =43
+                HoverBorderColor: =ColorFade(Icon44_2.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon44_2.Color, 20%)
+                HoverFill: =Icon44_2.Fill
+                Icon: =Icon.Save
+                OnSelect: |
+                    =/*UpdateContext({showEditStruSpinner: true});
+                    RemoveIf(StructuresLabourDetails, StrucID = StructGallery.Selected.StrucID And StrucType = StructGallery.Selected.StrucType);
+                    ForAll(Gallery3_1.AllItems,
+                          Patch(strucLabList, LookUp(strucLabList, LabourUnit = Label75.Text),
+                          {ItemCount:Value(TextInput18.Text), LastModifiedBy:User().FullName, LastModifiedDate:Today()});
+                         // RemoveIf('[dbo].[StructuresLabourDetails]', StrucID = Label76.Text And StrucType = Label84.Text And LabourUnit = Label75.Text);
+                    );
+                    Collect(StructuresLabourDetails, strucLabList);
+                    ClearCollect(strucLabList,Filter(StructuresLabourDetails, StrucID = StructGallery.Selected.StrucID And StrucType = StructGallery.Selected.StrucType));
+                    UpdateContext({editableClicked1:false});
+                    UpdateContext({showEditStruSpinner: false});
+                    Refresh(LabourUnits);
+                    ClearCollect(AllLabUnits,LabourUnits);
+                    RemoveIf(AllLabUnits, LabourUnit in strucLabList.LabourUnit);*/
+                    
+                    UpdateContext({showAddStruSpinner: true});
+                    RemoveIf(StructuresLabourDetails, StrucID =  DataCardValue89.Text And StrucType = Dropdown13.Selected.Value);
+                    ForAll(Gallery3.AllItems,
+                          Patch(StrucLabList, LookUp(StrucLabList, LabourUnit = Label103.Text),
+                          {ItemCount:Value(TextInput18_1.Text), LastModifiedBy:User().FullName, LastModifiedDate:Today()});
+                    );
+                    Collect(StructuresLabourDetails, StrucLabList);
+                    ClearCollect(StrucLabList,Filter(StructuresLabourDetails, StrucID = DataCardValue89.Text And StrucType = Dropdown13.Selected.Value));
+                    UpdateContext({editableClicked3:false});
+                    UpdateContext({showAddStruSpinner: false});
+                    Refresh(LabourUnits);
+                    ClearCollect(AllLabUnits,LabourUnits);
+                    RemoveIf(AllLabUnits, LabourUnit in StrucLabList.LabourUnit);
+                    
+                    
+                    
+                    /*
+                    RemoveIf('[dbo].[StructuresLabourDetails]', StrucID =  DataCardValue89.Text And StrucType = Dropdown13.Selected.Value);
+                    ForAll(Gallery3.AllItems,
+                          Patch(StrucLabList, LookUp(StrucLabList, LabourUnit = Label103.Text),
+                          {ItemCount:Value(Subtitle11.Text), LastModifiedBy:User().FullName, LastModifiedDate:Today()});
+                    );
+                    Collect('[dbo].[StructuresLabourDetails]', StrucLabList);
+                    ClearCollect(StrucLabList,Filter('[dbo].[StructuresLabourDetails]', StrucID = DataCardValue89.Text And StrucType = Dropdown13.Selected.Value));
+                    Refresh('[dbo].[LabourUnits]');
+                    ClearCollect(AllLabUnits,'[dbo].[LabourUnits]');
+                    RemoveIf(AllLabUnits, LabourUnit in StrucLabList.LabourUnit);
+                    
+                    
+                    
+                    */
+                PressedBorderColor: =ColorFade(Icon44_2.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon44_2.Color, -20%)
+                PressedFill: =Icon44_2.Fill
+                Tooltip: ="Save changes to labour section"
+                Visible: =false
+                Width: =58
+                X: =1211
+                Y: =61
+                ZIndex: =13
+
+            Label72_4 As label:
+                Color: =RGBA(0, 18, 107, 1)
+                FocusedBorderColor: =Label72_4.BorderColor
+                Height: =34
+                HoverBorderColor: =Label72_4.BorderColor
+                HoverColor: =Label72_4.Color
+                HoverFill: =Label72_4.Fill
+                PressedBorderColor: =Label72_4.BorderColor
+                PressedColor: =Label72_4.Color
+                PressedFill: =Label72_4.Fill
+                Text: ="Add New Labour Units if any"
+                Underline: =true
+                Width: =374
+                X: =11
+                Y: =32
+                ZIndex: =14
+
+            Label96_1 As label:
+                FocusedBorderColor: =Label96_1.BorderColor
+                HoverBorderColor: =Label96_1.BorderColor
+                HoverColor: =Label96_1.Color
+                HoverFill: =Label96_1.Fill
+                PressedBorderColor: =Label96_1.BorderColor
+                PressedColor: =Label96_1.Color
+                PressedFill: =Label96_1.Fill
+                Text: ="Search Labour Unit"
+                Width: =175
+                X: =11
+                Y: =68
+                ZIndex: =15
+
+            Label72_5 As label:
+                Color: =RGBA(0, 18, 107, 1)
+                FocusedBorderColor: =Label72_5.BorderColor
+                Height: =45
+                HoverBorderColor: =Label72_5.BorderColor
+                HoverColor: =Label72_5.Color
+                HoverFill: =Label72_5.Fill
+                PressedBorderColor: =Label72_5.BorderColor
+                PressedColor: =Label72_5.Color
+                PressedFill: =Label72_5.Fill
+                Text: ="Modify/Delete Current Labour Units if any"
+                Underline: =true
+                Width: =419
+                X: =657
+                Y: =68
+                ZIndex: =16
+
+            AddStruSpinnerGrp As group:
+                Height: =5
+                Width: =5
+                X: =-612
+                Y: =-100
+                ZIndex: =19
+
+                Rectangle1_5 As rectangle:
+                    DisabledFill: =Rectangle1_5.Fill
+                    Fill: =RGBA(255,255, 255, 0.85)
+                    Height: =523
+                    HoverFill: =Rectangle1_5.Fill
+                    PressedFill: =Rectangle1_5.Fill
+                    Visible: =showAddStruSpinner
+                    Width: =692
+                    X: =652
+                    Y: =116
+                    ZIndex: =17
+
+                Image1_5 As image:
+                    HoverBorderColor: =ColorFade(Image1_5.BorderColor, 20%)
+                    HoverFill: =ColorFade(Image1_5.Fill, 20%)
+                    Image: ='Pulse-1s-200px'
+                    PressedBorderColor: =ColorFade(Image1_5.BorderColor, -20%)
+                    PressedFill: =ColorFade(Image1_5.Fill, -20%)
+                    Visible: =showAddStruSpinner
+                    X: =971
+                    Y: =174
+                    ZIndex: =18
+
+        DataCard8 As dataCard.blankCard:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            BorderStyle: =BorderStyle.Dotted
+            BorderThickness: =2
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =804
+            Visible: =If(Not(FirstClicked), false , true)
+            Width: =1365
+            X: =0
+            Y: =2
+            ZIndex: =3
+
+            "Gallery1 As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dashed
+                BorderThickness: =1
+                DisabledBorderColor: =Gallery1.BorderColor
+                DisabledFill: =Gallery1.Fill
+                HoverBorderColor: =Gallery1.BorderColor
+                HoverFill: =Gallery1.Fill
+                Items: |-
+                    =Switch(CurrentEstimateType,
+                        "Enmax", 
+                        SortByColumns(Search(MasterMaterialList, addSrchMatStruc.Text, "EnmaxItemNumber","PreferredVendDescr"), "PrimaryItemNumber", SortOrder.Ascending),
+                       "Fortis Alberta", 
+                       SortByColumns(Search(MasterMaterialList, addSrchMatStruc.Text, "FortisItemNumber", "PreferredVendDescr"), "PrimaryItemNumber", SortOrder.Ascending),
+                       "City of Calgary", 
+                       SortByColumns(Search(MasterMaterialList, addSrchMatStruc.Text, "CoCItemNumber","PreferredVendDescr"), "PrimaryItemNumber", SortOrder.Ascending)
+                    )
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =Gallery1.BorderColor
+                PressedBorderColor: =Gallery1.BorderColor
+                PressedFill: =Gallery1.Fill
+                TemplatePadding: =0
+                TemplateSize: =82
+                Y: =164
+                ZIndex: =1
+
+                Title11 As label:
+                    FocusedBorderColor: =Title11.BorderColor
+                    Height: =27
+                    HoverBorderColor: =Title11.BorderColor
+                    HoverColor: =Title11.Color
+                    HoverFill: =Title11.Fill
+                    OnSelect: =Select(Parent)
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title11.BorderColor
+                    PressedColor: =Title11.Color
+                    PressedFill: =Title11.Fill
+                    Size: =14
+                    Text: |-
+                        =Switch(CurrentEstimateType,
+                            "Enmax", ThisItem.EnmaxItemNumber,
+                            "Fortis Alberta", ThisItem.FortisItemNumber,
+                            "City of Calgary", ThisItem.CoCItemNumber
+                        )
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =311
+                    X: =24
+                    Y: =16
+                    ZIndex: =1
+
+                Subtitle8 As label:
+                    FocusedBorderColor: =Subtitle8.BorderColor
+                    Height: =36
+                    HoverBorderColor: =Subtitle8.BorderColor
+                    HoverColor: =Subtitle8.Color
+                    HoverFill: =Subtitle8.Fill
+                    OnSelect: =Select(Parent)
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Subtitle8.BorderColor
+                    PressedColor: =Subtitle8.Color
+                    PressedFill: =Subtitle8.Fill
+                    Size: =10
+                    Text: =ThisItem.PreferredVendDescr
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =Parent.TemplateWidth - 104
+                    X: =32
+                    Y: =Title11.Y + Title11.Height + 2
+                    ZIndex: =2
+
+                Separator11 As rectangle:
+                    DisabledFill: =Separator11.Fill
+                    FocusedBorderColor: =Separator11.BorderColor
+                    Height: =1
+                    HoverFill: =Separator11.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator11.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                Icon31 As icon.Add:
+                    DisabledFill: =Icon31.Fill
+                    DisplayMode: =If(editableClicked4, DisplayMode.Disabled, DisplayMode.Edit)
+                    FocusedBorderColor: =Icon31.BorderColor
+                    Height: =49
+                    HoverBorderColor: =ColorFade(Icon31.BorderColor, 20%)
+                    HoverColor: =ColorFade(Icon31.Color, 20%)
+                    HoverFill: =Icon31.Fill
+                    Icon: =Icon.Add
+                    OnSelect: |-
+                        =/*Patch(StructuresMaterialDetails, 
+                                    Defaults(StructuresMaterialDetails),
+                                    {StrucID: DataCardValue89.Text, 
+                                    StrucType:Dropdown13.Selected.Value, 
+                                    PrimaryItemNumber: ThisItem.PrimaryItemNumber, 
+                                    ItemNumber: Title11.Text,
+                                    ItemCount:Value(TextInput17.Text), 
+                                    LastModifiedBy: User().FullName, LastModifiedDate:Today(),
+                                    descript: ThisItem.PreferredVendDescr}
+                        );*/
+                        Collect(StrucMatList, {
+                             StrucID: DataCardValue89.Text, 
+                             StrucType:Dropdown13.Selected.Value, 
+                             //PrimaryItemNumber: ThisItem.PrimaryItemNumber, 
+                             ItemNumber: Title11.Text,
+                             ItemCount: Value(TextInput17.Text), 
+                             LastModifiedBy: User().FullName, 
+                             LastModifiedDate: Today(),
+                             descript: ThisItem.PreferredVendDescr
+                             }
+                        );
+                        Remove(MasterMaterialList, ThisItem);
+                        //Refresh(StructuresMaterialDetails);
+                    PressedBorderColor: =ColorFade(Icon31.BorderColor, -20%)
+                    PressedColor: =ColorFade(Icon31.Color, -20%)
+                    PressedFill: =Icon31.Fill
+                    Width: =39
+                    X: =580
+                    Y: =5
+                    ZIndex: =7
+
+                TextInput17 As text:
+                    Default: =0
+                    FocusedBorderColor: =TextInput17.BorderColor
+                    Format: =TextFormat.Number
+                    HoverFill: =RGBA(255, 255, 255, 1)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =TextInput17.HoverBorderColor
+                    PressedColor: =TextInput17.Color
+                    PressedFill: =TextInput17.Fill
+                    Width: =68
+                    X: =485
+                    Y: =16
+                    ZIndex: =9
+
+            "Gallery4 As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dashed
+                BorderThickness: =1
+                DisabledBorderColor: =Gallery4.BorderColor
+                DisabledFill: =Gallery4.Fill
+                HoverBorderColor: =Gallery4.BorderColor
+                HoverFill: =Gallery4.Fill
+                Items: |-
+                    =//Filter(StrucMatList, StrucID <> "")
+                    Filter(StrucMatList, StrucID = DataCardValue89.Text And StrucType = Dropdown13.Selected.Value)
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =Gallery4.BorderColor
+                PressedBorderColor: =Gallery4.BorderColor
+                PressedFill: =Gallery4.Fill
+                TemplatePadding: =0
+                TemplateSize: =83
+                Width: =650
+                X: =696
+                Y: =164
+                ZIndex: =1
+
+                Title6 As label:
+                    FocusedBorderColor: =Title6.BorderColor
+                    Height: =27
+                    HoverBorderColor: =Title6.BorderColor
+                    HoverColor: =Title6.Color
+                    HoverFill: =Title6.Fill
+                    OnSelect: =Select(Parent)
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title6.BorderColor
+                    PressedColor: =Title6.Color
+                    PressedFill: =Title6.Fill
+                    Size: =14
+                    Text: =ThisItem.ItemNumber
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =401
+                    X: =32
+                    Y: =16
+                    ZIndex: =1
+
+                Separator6 As rectangle:
+                    DisabledFill: =Separator6.Fill
+                    FocusedBorderColor: =Separator6.BorderColor
+                    Height: =1
+                    HoverFill: =Separator6.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator6.Fill
+                    Width: =650
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                Icon32 As icon.Trash:
+                    DisabledFill: =Icon32.Fill
+                    DisplayMode: =If(editableClicked4, DisplayMode.Edit, DisplayMode.Disabled)
+                    FocusedBorderColor: =Icon32.BorderColor
+                    Height: =32
+                    HoverBorderColor: =ColorFade(Icon32.BorderColor, 20%)
+                    HoverColor: =ColorFade(Icon32.Color, 20%)
+                    HoverFill: =Icon32.Fill
+                    Icon: =Icon.Trash
+                    OnSelect: |-
+                        =//Collect(MasterMaterialList, LookUp(MasterMaterial_PreferredVendor_List, PrimaryItemNumber = ThisItem.ItemNumber));
+                        Switch(NewEstimateType,
+                            "City of Calgary", Collect(MasterMaterialList, LookUp(MasterMaterial_PreferredVendor_List, CoCItemNumber = ThisItem.ItemNumber));,
+                            "Enmax", Collect(MasterMaterialList, LookUp(MasterMaterial_PreferredVendor_List, EnmaxItemNumber = ThisItem.ItemNumber));,
+                            "Fortis Alberta", Collect(MasterMaterialList, LookUp(MasterMaterial_PreferredVendor_List, FortisItemNumber = ThisItem.ItemNumber));
+                        );
+                        //Remove('[dbo].[StructuresMaterialDetails]',ThisItem);
+                        Remove(StrucMatList, ThisItem);
+                    PressedBorderColor: =ColorFade(Icon32.BorderColor, -20%)
+                    PressedColor: =ColorFade(Icon32.Color, -20%)
+                    PressedFill: =Icon32.Fill
+                    Width: =48
+                    X: =576
+                    Y: =24
+                    ZIndex: =6
+
+                Label107 As label:
+                    FocusedBorderColor: =Label107.BorderColor
+                    HoverBorderColor: =Label107.BorderColor
+                    HoverColor: =Label107.Color
+                    HoverFill: =Label107.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label107.BorderColor
+                    PressedColor: =Label107.Color
+                    PressedFill: =Label107.Fill
+                    Text: =ThisItem.StrucID
+                    Visible: =false
+                    X: =60
+                    Y: =24
+                    ZIndex: =8
+
+                Label108 As label:
+                    FocusedBorderColor: =Label108.BorderColor
+                    HoverBorderColor: =Label108.BorderColor
+                    HoverColor: =Label108.Color
+                    HoverFill: =Label108.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label108.BorderColor
+                    PressedColor: =Label108.Color
+                    PressedFill: =Label108.Fill
+                    Text: =ThisItem.descript
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =424
+                    X: =22
+                    Y: =43
+                    ZIndex: =9
+
+                TextInput26_1 As text:
+                    Default: =ThisItem.ItemCount
+                    DisplayMode: =If(editableClicked4,DisplayMode.Edit, DisplayMode.View)
+                    FocusedBorderColor: =TextInput26_1.BorderColor
+                    Format: =TextFormat.Number
+                    HoverFill: =RGBA(255, 255, 255, 1)
+                    OnChange: |-
+                        =Patch(strucMatList, ThisItem, {ItemCount:Value(TextInput26_1.Text)});
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =TextInput26_1.HoverBorderColor
+                    PressedColor: =TextInput26_1.Color
+                    PressedFill: =TextInput26_1.Fill
+                    Width: =68
+                    X: =433
+                    Y: =24
+                    ZIndex: =10
+
+            Label69 As label:
+                Color: =RGBA(168, 0, 0, 1)
+                FocusedBorderColor: =Label69.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =46
+                HoverBorderColor: =Label69.BorderColor
+                HoverColor: =Label69.Color
+                HoverFill: =Label69.Fill
+                PressedBorderColor: =Label69.BorderColor
+                PressedColor: =Label69.Color
+                PressedFill: =Label69.Fill
+                Text: ="Structure's Material Details"
+                Underline: =true
+                Width: =398
+                X: =16
+                Y: =16
+                ZIndex: =3
+
+            addSrchMatStruc As text:
+                Default: =""
+                FocusedBorderColor: =addSrchMatStruc.BorderColor
+                Height: =45
+                HoverFill: =RGBA(255, 255, 255, 1)
+                PressedBorderColor: =addSrchMatStruc.HoverBorderColor
+                PressedColor: =addSrchMatStruc.Color
+                PressedFill: =addSrchMatStruc.Fill
+                Width: =231
+                X: =183
+                Y: =113
+                ZIndex: =4
+
+            Label63_1 As label:
+                FocusedBorderColor: =Label63_1.BorderColor
+                HoverBorderColor: =Label63_1.BorderColor
+                HoverColor: =Label63_1.Color
+                HoverFill: =Label63_1.Fill
+                PressedBorderColor: =Label63_1.BorderColor
+                PressedColor: =Label63_1.Color
+                PressedFill: =Label63_1.Fill
+                Text: ="Qty"
+                Width: =81
+                X: =490
+                Y: =113
+                ZIndex: =6
+
+            Label68_3 As label:
+                FocusedBorderColor: =Label68_3.BorderColor
+                Height: =41
+                HoverBorderColor: =Label68_3.BorderColor
+                HoverColor: =Label68_3.Color
+                HoverFill: =Label68_3.Fill
+                PressedBorderColor: =Label68_3.BorderColor
+                PressedColor: =Label68_3.Color
+                PressedFill: =Label68_3.Fill
+                Text: ="Qty"
+                Width: =80
+                X: =1133
+                Y: =115
+                ZIndex: =13
+
+            Label72_6 As label:
+                Color: =RGBA(0, 18, 107, 1)
+                FocusedBorderColor: =Label72_6.BorderColor
+                Height: =34
+                HoverBorderColor: =Label72_6.BorderColor
+                HoverColor: =Label72_6.Color
+                HoverFill: =Label72_6.Fill
+                PressedBorderColor: =Label72_6.BorderColor
+                PressedColor: =Label72_6.Color
+                PressedFill: =Label72_6.Fill
+                Text: |-
+                    ="Step1: Add New Material Items if any"
+                Underline: =true
+                Width: =374
+                X: =8
+                Y: =72
+                ZIndex: =14
+
+            Label96_2 As label:
+                FocusedBorderColor: =Label96_2.BorderColor
+                HoverBorderColor: =Label96_2.BorderColor
+                HoverColor: =Label96_2.Color
+                HoverFill: =Label96_2.Fill
+                PressedBorderColor: =Label96_2.BorderColor
+                PressedColor: =Label96_2.Color
+                PressedFill: =Label96_2.Fill
+                Text: ="Search Labour Unit"
+                Width: =175
+                X: =8
+                Y: =116
+                ZIndex: =15
+
+            Label72_7 As label:
+                Color: =RGBA(0, 18, 107, 1)
+                FocusedBorderColor: =Label72_7.BorderColor
+                Height: =45
+                HoverBorderColor: =Label72_7.BorderColor
+                HoverColor: =Label72_7.Color
+                HoverFill: =Label72_7.Fill
+                PressedBorderColor: =Label72_7.BorderColor
+                PressedColor: =Label72_7.Color
+                PressedFill: =Label72_7.Fill
+                Text: |-
+                    ="Step2: Modify/Delete Current Material Items if any"
+                Underline: =true
+                Width: =419
+                X: =696
+                Y: =113
+                ZIndex: =16
+
+            Icon43_3 As icon.Edit:
+                DisabledFill: =Icon43_3.Fill
+                DisplayMode: =If(showAddStruSpinner  || showAddMatSpinner, DisplayMode.Disabled, DisplayMode.Edit)
+                FocusedBorderColor: =Icon43_3.BorderColor
+                Height: =45
+                HoverBorderColor: =ColorFade(Icon43_3.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon43_3.Color, 20%)
+                HoverFill: =Icon43_3.Fill
+                Icon: =Icon.Edit
+                OnSelect: |-
+                    =UpdateContext({editableClicked4:true})
+                PressedBorderColor: =ColorFade(Icon43_3.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon43_3.Color, -20%)
+                PressedFill: =Icon43_3.Fill
+                Tooltip: ="Edit current material qtys"
+                Width: =41
+                X: =1297
+                Y: =106
+                ZIndex: =17
+
+            Icon44_3 As icon.Save:
+                DisabledFill: =Icon44_3.Fill
+                FocusedBorderColor: =Icon44_3.BorderColor
+                Height: =43
+                HoverBorderColor: =ColorFade(Icon44_3.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon44_3.Color, 20%)
+                HoverFill: =Icon44_3.Fill
+                Icon: =Icon.Save
+                OnSelect: |+
+                    =/*UpdateContext({showEditMatSpinner:true});
+                    RemoveIf(StructuresMaterialDetails, StrucID = StructGallery.Selected.StrucID And StrucType = StructGallery.Selected.StrucType);
+                    ForAll(Gallery7.AllItems,
+                          Patch(strucMatList, LookUp(strucMatList, PrimaryItemNumber = Label100.Text),
+                          {ItemCount:Value(TextInput26.Text), LastModifiedBy:User().FullName, LastModifiedDate:Today(), descript:Label142.Text});
+                    );
+                    Collect(StructuresMaterialDetails, strucMatList);
+                    ClearCollect(strucMatList,Filter(StructuresMaterialDetails, StrucID = StructGallery.Selected.StrucID And StrucType = StructGallery.Selected.StrucType));
+                    UpdateContext({showEditMatSpinner:false});
+                    Refresh(MasterMaterial_PreferredVendor_List);
+                    Switch(StructGallery.Selected.StrucType,
+                        "City of Calgary", ClearCollect(MasterMaterialList, Filter(MasterMaterial_PreferredVendor_List, 
+                                          Archived = false And CoCItemNumber <> "NA"));,
+                        "Enmax", ClearCollect(MasterMaterialList, Filter(MasterMaterial_PreferredVendor_List, 
+                                         Archived = false And EnmaxItemNumber <> "NA")),
+                        "Fortis Alberta", ClearCollect(MasterMaterialList, Filter(MasterMaterial_PreferredVendor_List, 
+                                         Archived = false And FortisItemNumber <> "NA"))
+                    );
+                    RemoveIf(MasterMaterialList, PrimaryItemNumber in strucMatList.PrimaryItemNumber);
+                    UpdateContext({editableClicked2:false});*/
+                    
+                    UpdateContext({showAddMatSpinner:true});
+                    RemoveIf(StructuresMaterialDetails, StrucID =  DataCardValue89.Text And StrucType = Dropdown13.Selected.Value);
+                    ForAll(Gallery4.AllItems,
+                          Patch(StrucMatList, LookUp(StrucMatList, ItemNumber = Title6.Text),
+                          {ItemCount:Value(TextInput26_1.Text), LastModifiedBy:User().FullName, LastModifiedDate:Today(), descript:Label108.Text});
+                    );
+                    Collect(StructuresMaterialDetails, StrucMatList);
+                    Refresh(MasterMaterial_PreferredVendor_List);
+                    
+                    Switch(NewEstimateType,
+                        "City of Calgary", ClearCollect(MasterMaterialList, Filter(MasterMaterial_PreferredVendor_List, 
+                                          Archived = false And CoCItemNumber <> "NA"));
+                        RemoveIf(MasterMaterialList, CoCItemNumber in StrucMatList.ItemNumber);,
+                        "Enmax", ClearCollect(MasterMaterialList, Filter(MasterMaterial_PreferredVendor_List, 
+                                         Archived = false And EnmaxItemNumber <> "NA"));
+                        RemoveIf(MasterMaterialList, EnmaxItemNumber in StrucMatList.ItemNumber);,
+                        "Fortis Alberta", ClearCollect(MasterMaterialList, Filter(MasterMaterial_PreferredVendor_List, 
+                                         Archived = false And FortisItemNumber <> "NA"));
+                        RemoveIf(MasterMaterialList, FortisItemNumber in StrucMatList.ItemNumber);
+                    );
+                    
+                    ClearCollect(StrucMatList, Filter(StructuresMaterialDetails, 
+                    StrucID = DataCardValue89.Text And StrucType = Dropdown13.Selected.Value));
+                    UpdateContext({editableClicked4:false});
+                    UpdateContext({showAddMatSpinner:false});
+                    
+                    
+                PressedBorderColor: =ColorFade(Icon44_3.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon44_3.Color, -20%)
+                PressedFill: =Icon44_3.Fill
+                Tooltip: ="Save changes to material section"
+                Visible: =false
+                Width: =58
+                X: =1225
+                Y: =108
+                ZIndex: =18
+
+            AddMatSpinnerGrp As group:
+                Height: =5
+                Width: =5
+                X: =-612
+                Y: =-76
+                ZIndex: =21
+
+                Rectangle1_6 As rectangle:
+                    DisabledFill: =Rectangle1_6.Fill
+                    Fill: =RGBA(255,255, 255, 0.85)
+                    Height: =575
+                    HoverFill: =Rectangle1_6.Fill
+                    PressedFill: =Rectangle1_6.Fill
+                    Visible: =showAddMatSpinner
+                    Width: =650
+                    X: =696
+                    Y: =164
+                    ZIndex: =19
+
+                Image1_6 As image:
+                    Height: =110
+                    HoverBorderColor: =ColorFade(Image1_6.BorderColor, 20%)
+                    HoverFill: =ColorFade(Image1_6.Fill, 20%)
+                    Image: ='Pulse-1s-200px'
+                    PressedBorderColor: =ColorFade(Image1_6.BorderColor, -20%)
+                    PressedFill: =ColorFade(Image1_6.Fill, -20%)
+                    Visible: =showAddMatSpinner
+                    Width: =94
+                    X: =996
+                    Y: =228
+                    ZIndex: =20
+
+    Icon37 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledColor: =RGBA(116, 116, 116, 1)
+        DisabledFill: =Icon37.Fill
+        DisplayMode: =If(showAddStruSpinner  || showAddMatSpinner, DisplayMode.Disabled, DisplayMode.Edit)
+        FocusedBorderColor: =Icon37.BorderColor
+        HoverBorderColor: =ColorFade(Icon37.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon37.Color, 20%)
+        HoverFill: =Icon37.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =ResetForm(basicStrucSetup); Clear(StrucLabList); Clear(StrucMatList);
+            Reset(srchStructures);Reset(addSrchLabStruc);Reset(addSrchMatStruc);Navigate(StructuresMainScreen, ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(Icon37.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon37.Color, -20%)
+        PressedFill: =Icon37.Fill
+        Tooltip: ="Go back"
+        X: =1290
+        Y: =12
+        ZIndex: =4
+
+    Icon59 As icon.Save:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledColor: =RGBA(116, 116, 116, 1)
+        DisabledFill: =Icon59.Fill
+        DisplayMode: =If(showAddStruSpinner  || showAddMatSpinner, DisplayMode.Disabled, DisplayMode.Edit)
+        HoverBorderColor: =ColorFade(Icon59.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon59.Color, 20%)
+        HoverFill: =Icon59.Fill
+        Icon: =Icon.Save
+        OnSelect: |-
+            =If(Not(FirstClicked), 
+              UpdateContext({BasicPatch: Patch(StructuresDetails, Defaults(StructuresDetails), 
+                            {StrucID: DataCardValue89.Text, Description: DataCardValue90.Text, StrucType: Dropdown13.Selected.Value, 
+                            Notes: DataCardValue92.Text, CreatedBy: DataCardValue94.Text, CreatedDate: DataCardValue95.SelectedDate, 
+                            LastModifiedBy:User().FullName, LastModifiedDate: Today()})});
+                            If(Not(IsBlank(BasicPatch)) And IsEmpty(Errors(Structures)),
+                                UpdateContext({FirstClicked:true});, //, labButton:true, matButton:true
+                               "Basic First Patch failed"), 
+              UpdateContext({BasicPatch:Patch(StructuresDetails, 
+                            LookUp(StructuresDetails, StrucID = DataCardValue89.Text And StrucType = Dropdown13.Selected.Value), 
+                            {Description: DataCardValue90.Text,Notes: DataCardValue92.Text, LastModifiedBy:User().FullName, LastModifiedDate: Today()})});
+               // make both spinners visible
+               // doing labour first             
+               UpdateContext({showAddStruSpinner: true, showAddMatSpinner:true});
+               RemoveIf(StructuresLabourDetails, StrucID =  DataCardValue89.Text And StrucType = Dropdown13.Selected.Value);
+               ForAll(Gallery3.AllItems,
+                  Patch(StrucLabList, LookUp(StrucLabList, LabourUnit = Label103.Text),
+                  {ItemCount:Value(TextInput18_1.Text), LastModifiedBy:User().FullName, LastModifiedDate:Today()});
+                );
+                Collect(StructuresLabourDetails, StrucLabList);
+                ClearCollect(StrucLabList,Filter(StructuresLabourDetails, StrucID = DataCardValue89.Text And StrucType = Dropdown13.Selected.Value));
+                Refresh(LabourUnits);
+                ClearCollect(AllLabUnits,LabourUnits);
+                RemoveIf(AllLabUnits, LabourUnit in StrucLabList.LabourUnit);
+                //doing material now
+                RemoveIf(StructuresMaterialDetails, StrucID =  DataCardValue89.Text And StrucType = Dropdown13.Selected.Value);
+                ForAll(Gallery4.AllItems,
+                  Patch(StrucMatList, LookUp(StrucMatList, ItemNumber = Title6.Text),
+                  {ItemCount:Value(TextInput26_1.Text), LastModifiedBy:User().FullName, LastModifiedDate:Today(), descript:Label108.Text, StrucDescript: DataCardValue90.Text});
+                );
+            
+                Collect(StructuresMaterialDetails, StrucMatList);
+                Refresh(MasterMaterial_PreferredVendor_List);
+                Switch(NewEstimateType,
+                "City of Calgary", 
+                                ClearCollect(MasterMaterialList, Filter(MasterMaterial_PreferredVendor_List, Archived = false And CoCItemNumber <> "NA"));
+                                RemoveIf(MasterMaterialList, CoCItemNumber in StrucMatList.ItemNumber);,
+                "Enmax", 
+                        ClearCollect(MasterMaterialList, Filter(MasterMaterial_PreferredVendor_List,  Archived = false And EnmaxItemNumber <> "NA"));
+                        RemoveIf(MasterMaterialList, EnmaxItemNumber in StrucMatList.ItemNumber);,
+                "Fortis Alberta", 
+                        ClearCollect(MasterMaterialList, Filter(MasterMaterial_PreferredVendor_List,  Archived = false And FortisItemNumber <> "NA"));
+                        RemoveIf(MasterMaterialList, FortisItemNumber in StrucMatList.ItemNumber);
+                );
+                ClearCollect(StrucMatList, Filter(StructuresMaterialDetails, StrucID = DataCardValue89.Text And StrucType = Dropdown13.Selected.Value));
+                UpdateContext({editableClicked3:false, editableClicked4:false});
+                UpdateContext({showAddStruSpinner: false, showAddMatSpinner:false});
+            )
+        PressedBorderColor: =ColorFade(Icon59.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon59.Color, -20%)
+        PressedFill: =Icon59.Fill
+        X: =1203
+        Y: =12
+        ZIndex: =5
+

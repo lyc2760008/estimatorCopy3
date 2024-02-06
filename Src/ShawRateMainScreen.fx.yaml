@@ -1,0 +1,523 @@
+ShawRateMainScreen As screen:
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =UpdateContext({visible: false, editable: false, editIcon:true, showShawAdminSpinner: false});
+        Refresh(Shaw_Table);
+        ClearCollect(ShawList, Shaw_Table);
+        ResetForm(ShawItemForm);
+    Orientation: =If(ShawRateMainScreen.Width < ShawRateMainScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= ShawRateMainScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    ScreenLabel_9 As label:
+        Color: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =ScreenLabel_9.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =82
+        HoverBorderColor: =ScreenLabel_9.BorderColor
+        HoverColor: =ScreenLabel_9.Color
+        HoverFill: =ScreenLabel_9.Fill
+        PressedBorderColor: =ScreenLabel_9.BorderColor
+        PressedColor: =ScreenLabel_9.Color
+        PressedFill: =ScreenLabel_9.Fill
+        Size: =26
+        Text: ="  SHAW ITEMS MAIN SCREEN"
+        Width: =1364
+        ZIndex: =1
+
+    "ShawItemsGallery As gallery.'BrowseLayout_Vertical_TwoTextVariant_ver4.0'":
+        DisabledBorderColor: =ShawItemsGallery.BorderColor
+        DisabledFill: =ShawItemsGallery.Fill
+        Height: =564
+        HoverBorderColor: =ShawItemsGallery.BorderColor
+        HoverFill: =ShawItemsGallery.Fill
+        Items: =ShawList
+        Layout: =Layout.Vertical
+        LoadingSpinnerColor: =ShawItemsGallery.BorderColor
+        PressedBorderColor: =ShawItemsGallery.BorderColor
+        PressedFill: =ShawItemsGallery.Fill
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =55
+        Width: =1366
+        Y: =82
+        ZIndex: =1
+
+        Title4_6 As label:
+            FocusedBorderColor: =Title4_6.BorderColor
+            Height: =37
+            HoverBorderColor: =Title4_6.BorderColor
+            HoverColor: =Title4_6.Color
+            HoverFill: =Title4_6.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Title4_6.BorderColor
+            PressedColor: =Title4_6.Color
+            PressedFill: =Title4_6.Fill
+            Text: =ThisItem.shaw_descrip
+            VerticalAlign: =VerticalAlign.Top
+            Width: =945
+            X: =32
+            Y: =8
+            ZIndex: =1
+
+        Separator4_6 As rectangle:
+            DisabledFill: =Separator4_6.Fill
+            Fill: =RGBA(36, 76, 90, 1)
+            FocusedBorderColor: =Separator4_6.BorderColor
+            Height: =1
+            HoverFill: =Separator4_6.Fill
+            OnSelect: =Select(Parent)
+            PressedFill: =Separator4_6.Fill
+            Width: =Parent.TemplateWidth
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =4
+
+        shawID_label As label:
+            FocusedBorderColor: =shawID_label.BorderColor
+            HoverBorderColor: =shawID_label.BorderColor
+            HoverColor: =shawID_label.Color
+            HoverFill: =shawID_label.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =shawID_label.BorderColor
+            PressedColor: =shawID_label.Color
+            PressedFill: =shawID_label.Fill
+            Text: =ThisItem.shaw_id
+            Visible: =false
+            X: =1001
+            Y: =15
+            ZIndex: =6
+
+        UoMInput_3 As text:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Default: =ThisItem.shaw_uom
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            FocusedBorderColor: =UoMInput_3.BorderColor
+            Height: =31
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =UoMInput_3.HoverBorderColor
+            PressedColor: =UoMInput_3.Color
+            PressedFill: =UoMInput_3.Fill
+            Width: =75
+            X: =1089
+            Y: =13
+            ZIndex: =7
+
+        shawfeeInputText As text:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Default: =ThisItem.shaw_fee
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            FocusedBorderColor: =shawfeeInputText.BorderColor
+            Height: =29
+            HoverBorderColor: =RGBA(36, 76, 90, 1)
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =shawfeeInputText.HoverBorderColor
+            PressedColor: =shawfeeInputText.Color
+            PressedFill: =shawfeeInputText.Fill
+            Width: =67
+            X: =1214
+            Y: =15
+            ZIndex: =10
+
+    refreshIcon_6 As icon.Reload:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =refreshIcon_6.Fill
+        FocusedBorderColor: =refreshIcon_6.BorderColor
+        HoverBorderColor: =ColorFade(refreshIcon_6.BorderColor, 20%)
+        HoverColor: =ColorFade(refreshIcon_6.Color, 20%)
+        HoverFill: =refreshIcon_6.Fill
+        Icon: =Icon.Reload
+        OnSelect: |-
+            =Refresh(Shaw_Table);
+            ClearCollect(ShawList, Shaw_Table);
+        PressedBorderColor: =ColorFade(refreshIcon_6.BorderColor, -20%)
+        PressedColor: =ColorFade(refreshIcon_6.Color, -20%)
+        PressedFill: =refreshIcon_6.Fill
+        Tooltip: ="Refresh list"
+        X: =1145
+        Y: =9
+        ZIndex: =3
+
+    SubmitShawItemForm As button:
+        BorderColor: =ColorFade(SubmitShawItemForm.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =SubmitShawItemForm.BorderColor
+        HoverBorderColor: =ColorFade(SubmitShawItemForm.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =SubmitForm(ShawItemForm); 
+            ResetForm(ShawItemForm);
+            UpdateContext({visible:false});
+            Refresh(Shaw_Table);
+            ClearCollect(ShawList, Shaw_Table);
+        PressedBorderColor: =SubmitShawItemForm.Fill
+        PressedColor: =SubmitShawItemForm.Fill
+        PressedFill: =SubmitShawItemForm.Color
+        Text: ="Submit"
+        Visible: =visible
+        X: =1177
+        Y: =662
+        ZIndex: =4
+
+    backIcon_6 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =backIcon_6.Fill
+        FocusedBorderColor: =backIcon_6.BorderColor
+        HoverBorderColor: =ColorFade(backIcon_6.BorderColor, 20%)
+        HoverColor: =ColorFade(backIcon_6.Color, 20%)
+        HoverFill: =backIcon_6.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: =Navigate(MainScreen,ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(backIcon_6.BorderColor, -20%)
+        PressedColor: =ColorFade(backIcon_6.Color, -20%)
+        PressedFill: =backIcon_6.Fill
+        Tooltip: ="Go back to previous screen"
+        X: =1289
+        Y: =9
+        ZIndex: =5
+
+    CancelShawItemForm As button:
+        BorderColor: =ColorFade(CancelShawItemForm.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelShawItemForm.BorderColor
+        HoverBorderColor: =ColorFade(CancelShawItemForm.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |
+            =ResetForm(ShawItemForm);
+            UpdateContext({visible:false})
+        PressedBorderColor: =CancelShawItemForm.Fill
+        PressedColor: =CancelShawItemForm.Fill
+        PressedFill: =CancelShawItemForm.Color
+        Text: ="Cancel"
+        Visible: =visible
+        X: =1177
+        Y: =711
+        ZIndex: =6
+
+    addIcon_6 As icon.Add:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =addIcon_6.Fill
+        FocusedBorderColor: =addIcon_6.BorderColor
+        HoverBorderColor: =ColorFade(addIcon_6.BorderColor, 20%)
+        HoverColor: =ColorFade(addIcon_6.Color, 20%)
+        HoverFill: =addIcon_6.Fill
+        Icon: =Icon.Add
+        OnSelect: |-
+            =UpdateContext({visible: true});
+            NewForm(ShawItemForm);
+        PressedBorderColor: =ColorFade(addIcon_6.BorderColor, -20%)
+        PressedColor: =ColorFade(addIcon_6.Color, -20%)
+        PressedFill: =addIcon_6.Fill
+        Tooltip: ="Add a new item"
+        X: =1225
+        Y: =9
+        ZIndex: =7
+
+    ShawItemForm As form:
+        AcceptsFocus: =false
+        DataSource: =Shaw_Table
+        Height: =105
+        Visible: =visible
+        Width: =1116
+        Y: =662
+        ZIndex: =8
+
+        shaw_descrip_DataCard1 As typedDataCard.textualEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="shaw_descrip"
+            Default: =ThisItem.shaw_descrip
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Item Description"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            MaxLength: =DataSourceInfo([@Shaw_Table], DataSourceInfo.MaxLength, "shaw_descrip")
+            Required: =true
+            Update: =DataCardValue139.Text
+            Width: =372
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey141 As label:
+                AutoHeight: =true
+                Height: =34
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue139 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                MaxLength: =Parent.MaxLength
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue139.HoverBorderColor
+                PressedColor: =DataCardValue139.Color
+                PressedFill: =DataCardValue139.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey141.Y + DataCardKey141.Height + 5
+                ZIndex: =2
+
+            ErrorMessage141 As label:
+                AutoHeight: =true
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue139.Y + DataCardValue139.Height
+                ZIndex: =3
+
+            StarVisible141 As label:
+                Align: =Align.Center
+                Height: =DataCardKey141.Height
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey141.Y
+                ZIndex: =4
+
+        shaw_uom_DataCard1 As typedDataCard.textualEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="shaw_uom"
+            Default: =ThisItem.shaw_uom
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="UoM"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            MaxLength: =DataSourceInfo([@Shaw_Table], DataSourceInfo.MaxLength, "shaw_uom")
+            Required: =true
+            Update: =DataCardValue140.Text
+            Width: =372
+            X: =1
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey142 As label:
+                AutoHeight: =true
+                Height: =34
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue140 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                MaxLength: =Parent.MaxLength
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue140.HoverBorderColor
+                PressedColor: =DataCardValue140.Color
+                PressedFill: =DataCardValue140.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey142.Y + DataCardKey142.Height + 5
+                ZIndex: =2
+
+            ErrorMessage142 As label:
+                AutoHeight: =true
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue140.Y + DataCardValue140.Height
+                ZIndex: =3
+
+            StarVisible142 As label:
+                Align: =Align.Center
+                Height: =DataCardKey142.Height
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey142.Y
+                ZIndex: =4
+
+        shaw_fee_DataCard1 As typedDataCard.numberEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="shaw_fee"
+            Default: =ThisItem.shaw_fee
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Fee"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            Required: =true
+            Update: =Value(DataCardValue141.Text)
+            Width: =372
+            X: =2
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey143 As label:
+                AutoHeight: =true
+                Height: =34
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue141 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                Format: =TextFormat.Number
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue141.HoverBorderColor
+                PressedColor: =DataCardValue141.Color
+                PressedFill: =DataCardValue141.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey143.Y + DataCardKey143.Height + 5
+                ZIndex: =2
+
+            ErrorMessage143 As label:
+                AutoHeight: =true
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue141.Y + DataCardValue141.Height
+                ZIndex: =3
+
+            StarVisible143 As label:
+                Align: =Align.Center
+                Height: =DataCardKey143.Height
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey143.Y
+                ZIndex: =4
+
+    saveIcon_6 As icon.Check:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =saveIcon_6.Fill
+        FocusedBorderColor: =saveIcon_6.BorderColor
+        HoverBorderColor: =ColorFade(saveIcon_6.BorderColor, 20%)
+        HoverColor: =ColorFade(saveIcon_6.Color, 20%)
+        HoverFill: =saveIcon_6.Fill
+        Icon: =Icon.Check
+        OnSelect: |-
+            =UpdateContext({showShawAdminSpinner:true});
+            ForAll(ShawItemsGallery.AllItems,
+                  Patch(Shaw_Table, 
+                        LookUp(ShawList, shaw_id = Value(shawID_label.Text)),
+                        {shaw_fee: Value(shawfeeInputText.Text)},
+                        {shaw_uom:UoMInput_3.Text}
+                  )
+            );
+            Refresh(Shaw_Table);
+            ClearCollect(ShawList, Shaw_Table);
+            UpdateContext({editable:false, editIcon:true, showShawAdminSpinner: false});
+        PressedBorderColor: =ColorFade(saveIcon_6.BorderColor, -20%)
+        PressedColor: =ColorFade(saveIcon_6.Color, -20%)
+        PressedFill: =saveIcon_6.Fill
+        Tooltip: ="Save changes"
+        Visible: =editable
+        X: =986
+        Y: =9
+        ZIndex: =10
+
+    Icon4_5 As icon.Edit:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon4_5.Fill
+        FocusedBorderColor: =Icon4_5.BorderColor
+        HoverBorderColor: =ColorFade(Icon4_5.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon4_5.Color, 20%)
+        HoverFill: =Icon4_5.Fill
+        Icon: =Icon.Edit
+        OnSelect: |-
+            =UpdateContext({editable:true, editIcon:false});
+        PressedBorderColor: =ColorFade(Icon4_5.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon4_5.Color, -20%)
+        PressedFill: =Icon4_5.Fill
+        Visible: =editIcon
+        X: =1065
+        Y: =9
+        ZIndex: =11
+
+    ShawAdminSpinner As group:
+        Height: =5
+        Width: =5
+        X: =40
+        Y: =-48
+        ZIndex: =14
+
+        Rectangle1_13 As rectangle:
+            DisabledFill: =Rectangle1_13.Fill
+            Fill: =RGBA(255,255, 255, 0.85)
+            Height: =768
+            HoverFill: =Rectangle1_13.Fill
+            PressedFill: =Rectangle1_13.Fill
+            Visible: =showShawAdminSpinner
+            Width: =1366
+            ZIndex: =12
+
+        Image1_13 As image:
+            Height: =156
+            HoverBorderColor: =ColorFade(Image1_13.BorderColor, 20%)
+            HoverFill: =ColorFade(Image1_13.Fill, 20%)
+            Image: ='Pulse-1s-200px'
+            PressedBorderColor: =ColorFade(Image1_13.BorderColor, -20%)
+            PressedFill: =ColorFade(Image1_13.Fill, -20%)
+            Visible: =showShawAdminSpinner
+            Width: =199
+            X: =623
+            Y: =285
+            ZIndex: =13
+

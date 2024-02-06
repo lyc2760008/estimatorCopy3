@@ -1,0 +1,599 @@
+EPCInvestmentCostMainScreen As screen:
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =UpdateContext({visible: false, editable: false, editIcon:true, showEPCAdminSpinner:false});
+        Refresh(EPC_table);
+        ClearCollect(EPCList, EPC_table);
+        ResetForm(EPCForm);
+    Orientation: =If(EPCInvestmentCostMainScreen.Width < EPCInvestmentCostMainScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= EPCInvestmentCostMainScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    ScreenLabel_4 As label:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Color: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =ScreenLabel_4.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =82
+        HoverBorderColor: =ScreenLabel_4.BorderColor
+        HoverColor: =ScreenLabel_4.Color
+        HoverFill: =ScreenLabel_4.Fill
+        PressedBorderColor: =ScreenLabel_4.BorderColor
+        PressedColor: =ScreenLabel_4.Color
+        PressedFill: =ScreenLabel_4.Fill
+        Size: =26
+        Text: ="  EPC INVESTMENT & COST SCREEN"
+        Width: =1364
+        ZIndex: =1
+
+    "EPCGallery As gallery.'BrowseLayout_Vertical_TwoTextVariant_ver4.0'":
+        DisabledBorderColor: =EPCGallery.BorderColor
+        DisabledFill: =EPCGallery.Fill
+        Height: =586
+        HoverBorderColor: =EPCGallery.BorderColor
+        HoverFill: =EPCGallery.Fill
+        Items: =EPCList
+        Layout: =Layout.Vertical
+        LoadingSpinnerColor: =EPCGallery.BorderColor
+        PressedBorderColor: =EPCGallery.BorderColor
+        PressedFill: =EPCGallery.Fill
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =56
+        Width: =1366
+        Y: =82
+        ZIndex: =1
+
+        Title4_1 As label:
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            FocusedBorderColor: =Title4_1.BorderColor
+            Height: =33
+            HoverBorderColor: =Title4_1.BorderColor
+            HoverColor: =Title4_1.Color
+            HoverFill: =Title4_1.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Title4_1.BorderColor
+            PressedColor: =Title4_1.Color
+            PressedFill: =Title4_1.Fill
+            Text: =ThisItem.EPC_items
+            VerticalAlign: =VerticalAlign.Top
+            Visible: =false
+            Width: =870
+            X: =30
+            Y: =14
+            ZIndex: =1
+
+        Separator4_1 As rectangle:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            DisabledFill: =Separator4_1.Fill
+            Fill: =RGBA(36, 76, 90, 1)
+            FocusedBorderColor: =Separator4_1.BorderColor
+            Height: =1
+            HoverFill: =Separator4_1.Fill
+            OnSelect: =Select(Parent)
+            PressedFill: =Separator4_1.Fill
+            Width: =Parent.TemplateWidth
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =4
+
+        epc_id_label As label:
+            FocusedBorderColor: =epc_id_label.BorderColor
+            Height: =37
+            HoverBorderColor: =epc_id_label.BorderColor
+            HoverColor: =epc_id_label.Color
+            HoverFill: =epc_id_label.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =epc_id_label.BorderColor
+            PressedColor: =epc_id_label.Color
+            PressedFill: =epc_id_label.Fill
+            Text: =ThisItem.epc_ID
+            Visible: =false
+            X: =1001
+            Y: =12
+            ZIndex: =6
+
+        epcRateInput As text:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Default: |-
+                =If(ThisItem.EPC_items = "EPC COST"  Or ThisItem.EPC_items = "EPC CHEVY", Text(ThisItem.epc_percentage * 100, "[$-en-US] 0.00 %"), Text(ThisItem.epc_rate, "[$-en-US]$ #,###.00"))
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            FocusedBorderColor: =
+            FontWeight: =FontWeight.Semibold
+            Height: =41
+            HoverBorderColor: =RGBA(36, 76, 90, 1)
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =
+            PressedColor: =
+            PressedFill: =
+            Size: =14
+            Width: =130
+            X: =1191
+            Y: =8
+            ZIndex: =7
+
+        TextInput15 As text:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderThickness: =1
+            Default: =ThisItem.EPC_items
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            HoverBorderColor: =RGBA(36, 76, 90, 1)
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =TextInput15.HoverBorderColor
+            PressedColor: =TextInput15.Color
+            PressedFill: =TextInput15.Fill
+            Width: =1044
+            X: =30
+            Y: =7
+            ZIndex: =8
+
+    refreshIcon_1 As icon.Reload:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =refreshIcon_1.Fill
+        FocusedBorderColor: =refreshIcon_1.BorderColor
+        HoverBorderColor: =ColorFade(refreshIcon_1.BorderColor, 20%)
+        HoverColor: =ColorFade(refreshIcon_1.Color, 20%)
+        HoverFill: =refreshIcon_1.Fill
+        Icon: =Icon.Reload
+        OnSelect: |-
+            =Refresh(EPC_table);
+            ClearCollect(EPCList, EPC_table);
+        PressedBorderColor: =ColorFade(refreshIcon_1.BorderColor, -20%)
+        PressedColor: =ColorFade(refreshIcon_1.Color, -20%)
+        PressedFill: =refreshIcon_1.Fill
+        Tooltip: ="Refresh list"
+        X: =1145
+        Y: =9
+        ZIndex: =3
+
+    SubmitEPCForm As button:
+        BorderColor: =ColorFade(SubmitEPCForm.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =SubmitEPCForm.BorderColor
+        HoverBorderColor: =ColorFade(SubmitEPCForm.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =SubmitForm(EPCForm); 
+            ResetForm(EPCForm);
+            UpdateContext({visible:false});
+            Refresh(EPC_table);
+            ClearCollect(EPCList, EPC_table);
+        PressedBorderColor: =SubmitEPCForm.Fill
+        PressedColor: =SubmitEPCForm.Fill
+        PressedFill: =SubmitEPCForm.Color
+        Text: ="Submit"
+        Visible: =visible
+        X: =665
+        Y: =716
+        ZIndex: =4
+
+    backIcon_1 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =backIcon_1.Fill
+        FocusedBorderColor: =backIcon_1.BorderColor
+        HoverBorderColor: =ColorFade(backIcon_1.BorderColor, 20%)
+        HoverColor: =ColorFade(backIcon_1.Color, 20%)
+        HoverFill: =backIcon_1.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: =Navigate(MainScreen,ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(backIcon_1.BorderColor, -20%)
+        PressedColor: =ColorFade(backIcon_1.Color, -20%)
+        PressedFill: =backIcon_1.Fill
+        Tooltip: ="Go back to previous screen"
+        X: =1289
+        Y: =9
+        ZIndex: =5
+
+    CancelEPCSubmission As button:
+        BorderColor: =ColorFade(CancelEPCSubmission.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelEPCSubmission.BorderColor
+        HoverBorderColor: =ColorFade(CancelEPCSubmission.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |
+            =ResetForm(EPCForm);
+            UpdateContext({visible:false})
+        PressedBorderColor: =CancelEPCSubmission.Fill
+        PressedColor: =CancelEPCSubmission.Fill
+        PressedFill: =CancelEPCSubmission.Color
+        Text: ="Cancel"
+        Visible: =visible
+        X: =865
+        Y: =716
+        ZIndex: =6
+
+    addIcon_1 As icon.Add:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =addIcon_1.Fill
+        FocusedBorderColor: =addIcon_1.BorderColor
+        HoverBorderColor: =ColorFade(addIcon_1.BorderColor, 20%)
+        HoverColor: =ColorFade(addIcon_1.Color, 20%)
+        HoverFill: =addIcon_1.Fill
+        Icon: =Icon.Add
+        OnSelect: |-
+            =UpdateContext({visible: true});
+            NewForm(EPCForm);
+        PressedBorderColor: =ColorFade(addIcon_1.BorderColor, -20%)
+        PressedColor: =ColorFade(addIcon_1.Color, -20%)
+        PressedFill: =addIcon_1.Fill
+        Tooltip: ="Add a new item"
+        X: =1225
+        Y: =9
+        ZIndex: =7
+
+    EPCForm As form:
+        AcceptsFocus: =false
+        DataSource: =EPC_table
+        Height: =100
+        NumberOfColumns: =2
+        SnapToColumns: =false
+        Visible: =visible
+        Width: =665
+        Y: =668
+        ZIndex: =8
+
+        EPC_items_DataCard1 As typedDataCard.textualEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="EPC_items"
+            Default: =ThisItem.EPC_items
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="EPC Items"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            MaxLength: =DataSourceInfo(EPC_table, DataSourceInfo.MaxLength, "EPC_items")
+            Required: =true
+            Update: =DataCardValue15.Text
+            Width: =372
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey15 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =DataCardKey15.BorderColor
+                Height: =34
+                HoverBorderColor: =DataCardKey15.BorderColor
+                HoverColor: =DataCardKey15.Color
+                HoverFill: =DataCardKey15.Fill
+                PressedBorderColor: =DataCardKey15.BorderColor
+                PressedColor: =DataCardKey15.Color
+                PressedFill: =DataCardKey15.Fill
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue15 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                FocusedBorderColor: =DataCardValue15.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                MaxLength: =Parent.MaxLength
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue15.HoverBorderColor
+                PressedColor: =DataCardValue15.Color
+                PressedFill: =DataCardValue15.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey15.Y + DataCardKey15.Height + 5
+                ZIndex: =2
+
+            ErrorMessage17 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =ErrorMessage17.BorderColor
+                Height: =10
+                HoverBorderColor: =ErrorMessage17.BorderColor
+                HoverColor: =ErrorMessage17.Color
+                HoverFill: =ErrorMessage17.Fill
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                PressedBorderColor: =ErrorMessage17.BorderColor
+                PressedColor: =ErrorMessage17.Color
+                PressedFill: =ErrorMessage17.Fill
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue15.Y + DataCardValue15.Height
+                ZIndex: =3
+
+            StarVisible17 As label:
+                Align: =Align.Center
+                FocusedBorderColor: =StarVisible17.BorderColor
+                Height: =DataCardKey15.Height
+                HoverBorderColor: =StarVisible17.BorderColor
+                HoverColor: =StarVisible17.Color
+                HoverFill: =StarVisible17.Fill
+                PressedBorderColor: =StarVisible17.BorderColor
+                PressedColor: =StarVisible17.Color
+                PressedFill: =StarVisible17.Fill
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey15.Y
+                ZIndex: =4
+
+        epc_rate_DataCard1 As typedDataCard.numberEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="epc_rate"
+            Default: =ThisItem.epc_rate
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="EPC Rate"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            Required: =true
+            Update: =Value(DataCardValue16.Text)
+            Width: =279
+            X: =1
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey16 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =DataCardKey16.BorderColor
+                Height: =34
+                HoverBorderColor: =DataCardKey16.BorderColor
+                HoverColor: =DataCardKey16.Color
+                HoverFill: =DataCardKey16.Fill
+                PressedBorderColor: =DataCardKey16.BorderColor
+                PressedColor: =DataCardKey16.Color
+                PressedFill: =DataCardKey16.Fill
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue16 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                FocusedBorderColor: =DataCardValue16.BorderColor
+                Format: =TextFormat.Number
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue16.HoverBorderColor
+                PressedColor: =DataCardValue16.Color
+                PressedFill: =DataCardValue16.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey16.Y + DataCardKey16.Height + 5
+                ZIndex: =2
+
+            ErrorMessage18 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =ErrorMessage18.BorderColor
+                Height: =10
+                HoverBorderColor: =ErrorMessage18.BorderColor
+                HoverColor: =ErrorMessage18.Color
+                HoverFill: =ErrorMessage18.Fill
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                PressedBorderColor: =ErrorMessage18.BorderColor
+                PressedColor: =ErrorMessage18.Color
+                PressedFill: =ErrorMessage18.Fill
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue16.Y + DataCardValue16.Height
+                ZIndex: =3
+
+            StarVisible18 As label:
+                Align: =Align.Center
+                FocusedBorderColor: =StarVisible18.BorderColor
+                Height: =DataCardKey16.Height
+                HoverBorderColor: =StarVisible18.BorderColor
+                HoverColor: =StarVisible18.Color
+                HoverFill: =StarVisible18.Fill
+                PressedBorderColor: =StarVisible18.BorderColor
+                PressedColor: =StarVisible18.Color
+                PressedFill: =StarVisible18.Fill
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey16.Y
+                ZIndex: =4
+
+        epc_percentage_DataCard1 As typedDataCard.numberEditCard:
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="epc_percentage"
+            Default: =ThisItem.epc_percentage
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="epc_percentage"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            Required: =true
+            Update: =Value(DataCardValue19.Text)
+            Visible: =false
+            Width: =558
+            X: =0
+            Y: =1
+            ZIndex: =1
+
+            DataCardKey19 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =DataCardKey19.BorderColor
+                Height: =34
+                HoverBorderColor: =DataCardKey19.BorderColor
+                HoverColor: =DataCardKey19.Color
+                HoverFill: =DataCardKey19.Fill
+                PressedBorderColor: =DataCardKey19.BorderColor
+                PressedColor: =DataCardKey19.Color
+                PressedFill: =DataCardKey19.Fill
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue19 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =0.0
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                FocusedBorderColor: =DataCardValue19.BorderColor
+                Format: =TextFormat.Number
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue19.HoverBorderColor
+                PressedColor: =DataCardValue19.Color
+                PressedFill: =DataCardValue19.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey19.Y + DataCardKey19.Height + 5
+                ZIndex: =2
+
+            ErrorMessage19 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =ErrorMessage19.BorderColor
+                Height: =10
+                HoverBorderColor: =ErrorMessage19.BorderColor
+                HoverColor: =ErrorMessage19.Color
+                HoverFill: =ErrorMessage19.Fill
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                PressedBorderColor: =ErrorMessage19.BorderColor
+                PressedColor: =ErrorMessage19.Color
+                PressedFill: =ErrorMessage19.Fill
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue19.Y + DataCardValue19.Height
+                ZIndex: =3
+
+            StarVisible19 As label:
+                Align: =Align.Center
+                FocusedBorderColor: =StarVisible19.BorderColor
+                Height: =DataCardKey19.Height
+                HoverBorderColor: =StarVisible19.BorderColor
+                HoverColor: =StarVisible19.Color
+                HoverFill: =StarVisible19.Fill
+                PressedBorderColor: =StarVisible19.BorderColor
+                PressedColor: =StarVisible19.Color
+                PressedFill: =StarVisible19.Fill
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey19.Y
+                ZIndex: =4
+
+    editIcon_1 As icon.Edit:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =editIcon_1.Fill
+        FocusedBorderColor: =editIcon_1.BorderColor
+        HoverBorderColor: =ColorFade(editIcon_1.BorderColor, 20%)
+        HoverColor: =ColorFade(editIcon_1.Color, 20%)
+        HoverFill: =editIcon_1.Fill
+        Icon: =Icon.Edit
+        OnSelect: |-
+            =UpdateContext({editable:true, editIcon:false});
+        PressedBorderColor: =ColorFade(editIcon_1.BorderColor, -20%)
+        PressedColor: =ColorFade(editIcon_1.Color, -20%)
+        PressedFill: =editIcon_1.Fill
+        Tooltip: ="Edit all items"
+        Visible: =editIcon
+        X: =1066
+        Y: =9
+        ZIndex: =9
+
+    saveIcon_1 As icon.Check:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =saveIcon_1.Fill
+        FocusedBorderColor: =saveIcon_1.BorderColor
+        HoverBorderColor: =ColorFade(saveIcon_1.BorderColor, 20%)
+        HoverColor: =ColorFade(saveIcon_1.Color, 20%)
+        HoverFill: =saveIcon_1.Fill
+        Icon: =Icon.Check
+        OnSelect: |-
+            =UpdateContext({showEPCAdminSpinner:true});
+            ForAll(Filter(EPCGallery.AllItems,epc_rate >= 0),
+                  Patch(EPC_table, 
+                        LookUp(EPCList, epc_ID = Value(epc_id_label.Text)),
+                        If((epc_ID = 14 Or epc_ID = 15),
+                          {epc_percentage:Value(epcRateInput.Text), EPC_items: TextInput15.Text}, 
+                          {epc_rate:Value(epcRateInput.Text), EPC_items: TextInput15.Text})
+                  )
+            );
+            Refresh(EPC_table);
+            ClearCollect(EPCList, EPC_table);
+            UpdateContext({editable:false, editIcon:true, showEPCAdminSpinner:false});
+        PressedBorderColor: =ColorFade(saveIcon_1.BorderColor, -20%)
+        PressedColor: =ColorFade(saveIcon_1.Color, -20%)
+        PressedFill: =saveIcon_1.Fill
+        Tooltip: ="Save changes"
+        Visible: =editable
+        X: =986
+        Y: =9
+        ZIndex: =10
+
+    EPCAdminSpinner As group:
+        Height: =5
+        Width: =5
+        X: =40
+        Y: =-48
+        ZIndex: =13
+
+        Rectangle1_10 As rectangle:
+            DisabledFill: =Rectangle1_10.Fill
+            Fill: =RGBA(255,255, 255, 0.85)
+            Height: =768
+            HoverFill: =Rectangle1_10.Fill
+            PressedFill: =Rectangle1_10.Fill
+            Visible: =showEPCAdminSpinner
+            Width: =1366
+            ZIndex: =11
+
+        Image1_10 As image:
+            Height: =156
+            HoverBorderColor: =ColorFade(Image1_10.BorderColor, 20%)
+            HoverFill: =ColorFade(Image1_10.Fill, 20%)
+            Image: ='Pulse-1s-200px'
+            PressedBorderColor: =ColorFade(Image1_10.BorderColor, -20%)
+            PressedFill: =ColorFade(Image1_10.Fill, -20%)
+            Visible: =showEPCAdminSpinner
+            Width: =199
+            X: =623
+            Y: =285
+            ZIndex: =12
+

@@ -1,0 +1,9 @@
+[
+  {
+    "IsComponentScoped": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "estPermitSecList_Current",
+    "Type": "CollectionDataSourceInfo"
+  }
+]

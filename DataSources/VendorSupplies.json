@@ -1,0 +1,41 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2024-01-29T18:21:51.6390000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "Archive": "Archive",
+      "Category": "Category",
+      "CrewType": "CrewType",
+      "Description": "Description",
+      "GuessPrice": "GuessPrice",
+      "Increment": "Increment",
+      "IncrementPrice": "IncrementPrice",
+      "InStockQuantity": "InStockQuantity",
+      "ItemNum": "ItemNum",
+      "ItemType": "ItemType",
+      "LastModifiedBy": "LastModifiedBy",
+      "LastModifiedDate": "LastModifiedDate",
+      "LeadTime": "LeadTime",
+      "LeadTimeDays": "LeadTimeDays",
+      "ManuName": "ManuName",
+      "minQtyNotes": "minQtyNotes",
+      "minQtyOrder": "minQtyOrder",
+      "Notes": "Notes",
+      "PartNumber": "PartNumber",
+      "Price": "Price",
+      "uom": "uom",
+      "ValidToDate": "ValidToDate",
+      "VendorName": "VendorName"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "VendorSupplies",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

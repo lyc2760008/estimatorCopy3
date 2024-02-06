@@ -1,0 +1,385 @@
+PrefVendorScreen As screen:
+    Fill: =RGBA(255, 255, 255, 1) 
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =Reset(vendorSrchBox);
+        Refresh(MasterMaterial_PreferredVendor_List);
+        Switch(NewEstimateType,
+            "Enmax", ClearCollect(PrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                             Archived = false And EnmaxItemNumber <> "NA")),
+            "Fortis Alberta", ClearCollect(PrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                             Archived = false And FortisItemNumber <> "NA")),
+            "City of Calgary", ClearCollect(PrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                              Archived = false And CoCItemNumber <> "NA"))
+        );
+        Refresh(VendorSupplies);
+        ClearCollect(VendorSupplieList,Filter(VendorSupplies, ItemType = NewEstimateType And Archive = false));
+    Orientation: =If(PrefVendorScreen.Width < PrefVendorScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= PrefVendorScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    "PrefVendGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+        DisabledBorderColor: =PrefVendGallery.BorderColor
+        DisabledFill: =PrefVendGallery.Fill
+        Height: =663
+        HoverBorderColor: =PrefVendGallery.BorderColor
+        HoverFill: =PrefVendGallery.Fill
+        Items: |-
+            =Switch(NewEstimateType,
+                "Enmax", SortByColumns(Search(PrefVendList, vendorSrchBox.Text, "EnmaxItemNumber",  "PreferredVendDescr","EnmaxDescritption","PreferredVendorName", "VendCategory"), "EnmaxItemNumber", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending)),
+                "Fortis Alberta", SortByColumns(Search(PrefVendList, vendorSrchBox.Text, "FortisItemNumber",  "PreferredVendDescr","FortisDescription","PreferredVendorName", "VendCategory"), "FortisItemNumber", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending)),
+                "City of Calgary", SortByColumns(Search(PrefVendList, vendorSrchBox.Text, "CoCItemNumber", "PreferredVendDescr","CoCDescription","PreferredVendorName", "VendCategory"), "CoCItemNumber", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending))
+            )
+            //previously no switch stmt
+        Layout: =Layout.Vertical
+        LoadingSpinnerColor: =PrefVendGallery.BorderColor
+        PressedBorderColor: =PrefVendGallery.BorderColor
+        PressedFill: =PrefVendGallery.Fill
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =147
+        Width: =1366
+        Y: =105
+        ZIndex: =1
+
+        Title3_2 As label:
+            Color: =RGBA(0, 18, 107, 1)
+            FocusedBorderColor: =Title3_2.BorderColor
+            HoverBorderColor: =Title3_2.BorderColor
+            HoverColor: =Title3_2.Color
+            HoverFill: =Title3_2.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Title3_2.BorderColor
+            PressedColor: =Title3_2.Color
+            PressedFill: =Title3_2.Fill
+            Size: =14
+            Text: |-
+                =Switch(NewEstimateType,
+                    "Enmax", Concatenate(ThisItem.EnmaxItemNumber , " | ", ThisItem.PreferredVendorName),
+                    "Fortis Alberta", Concatenate(ThisItem.FortisItemNumber , " | ", ThisItem.PreferredVendorName),
+                    "City of Calgary", Concatenate(ThisItem.CoCItemNumber , " | ", ThisItem.PreferredVendorName)
+                )
+            VerticalAlign: =VerticalAlign.Top
+            Width: =1329
+            X: =18
+            ZIndex: =1
+
+        Subtitle3_2 As label:
+            Color: =RGBA(36, 76, 90, 1)
+            FocusedBorderColor: =Subtitle3_2.BorderColor
+            Height: =36
+            HoverBorderColor: =Subtitle3_2.BorderColor
+            HoverColor: =Subtitle3_2.Color
+            HoverFill: =Subtitle3_2.Fill
+            OnSelect: =Select(Parent)
+            Overflow: =Overflow.Scroll
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Subtitle3_2.BorderColor
+            PressedColor: =Subtitle3_2.Color
+            PressedFill: =Subtitle3_2.Fill
+            Size: =14
+            Text: |-
+                =Switch(NewEstimateType,
+                    "Enmax", ThisItem.EnmaxDescritption,
+                    "Fortis Alberta", Left(ThisItem.FortisDescription,100),
+                    "City of Calgary", ThisItem.CoCDescription
+                )
+            VerticalAlign: =VerticalAlign.Top
+            Width: =952
+            X: =18
+            Y: =40
+            ZIndex: =2
+
+        NextArrow3_2 As icon.ChevronRight:
+            AccessibleLabel: =NextArrow3_2.Tooltip
+            Color: =RGBA(36, 76, 90, 1)
+            DisabledFill: =NextArrow3_2.Fill
+            FocusedBorderColor: =NextArrow3_2.BorderColor
+            Height: =60
+            HoverBorderColor: =ColorFade(NextArrow3_2.BorderColor, 20%)
+            HoverColor: =ColorFade(NextArrow3_2.Color, 40%)
+            HoverFill: =NextArrow3_2.Fill
+            Icon: =Icon.ChevronRight
+            OnSelect: =Navigate(EditViewPrefVendScreen,ScreenTransition.Cover);
+            PaddingBottom: =10
+            PaddingLeft: =10
+            PaddingRight: =10
+            PaddingTop: =10
+            PressedBorderColor: =ColorFade(NextArrow3_2.BorderColor, -20%)
+            PressedColor: =ColorFade(NextArrow3_2.Color, -20%)
+            PressedFill: =NextArrow3_2.Fill
+            TabIndex: =0
+            Tooltip: ="View item details"
+            Width: =60
+            X: =Parent.TemplateWidth - NextArrow3_2.Width - 5
+            Y: =(Parent.TemplateHeight / 2) - (NextArrow3_2.Height / 2)
+            ZIndex: =4
+
+        Separator3_2 As rectangle:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            DisabledFill: =Separator3_2.Fill
+            Fill: =RGBA(36, 76, 90, 1)
+            FocusedBorderColor: =Separator3_2.BorderColor
+            Height: =1
+            HoverFill: =Separator3_2.Fill
+            OnSelect: =Select(Parent)
+            PressedFill: =Separator3_2.Fill
+            Width: =Parent.TemplateWidth
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =5
+
+        PrefVendPrice As label:
+            Color: =If (ThisItem.PreferredVendorPrice > 0 , Color.DarkBlue, Color.Red)
+            FocusedBorderColor: =PrefVendPrice.BorderColor
+            FontWeight: =FontWeight.Semibold
+            HoverBorderColor: =PrefVendPrice.BorderColor
+            HoverColor: =PrefVendPrice.Color
+            HoverFill: =PrefVendPrice.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =PrefVendPrice.BorderColor
+            PressedColor: =PrefVendPrice.Color
+            PressedFill: =PrefVendPrice.Fill
+            Size: =12
+            Text: |-
+                =Text(Value(ThisItem.PreferredVendorPrice),"[$-en-US]$ ###,##0.00")
+            Width: =106
+            X: =1188
+            Y: =42
+            ZIndex: =6
+
+        prefValidDate As label:
+            Color: |-
+                =//If(LookUp(VendorSupplieList, PrimItemNum = ThisItem.PrimaryItemNumber And VendorName = ThisItem.PreferredVendorName , ValidToDate) <= Today(), Red , Green)
+                If(ThisItem.ValidToDate <= Today(), Color.Red , Color.Green)
+            DisplayMode: =DisplayMode.View
+            FocusedBorderColor: =prefValidDate.BorderColor
+            FontWeight: =FontWeight.Semibold
+            HoverBorderColor: =prefValidDate.BorderColor
+            HoverColor: =prefValidDate.Color
+            HoverFill: =prefValidDate.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =prefValidDate.BorderColor
+            PressedColor: =prefValidDate.Color
+            PressedFill: =prefValidDate.Fill
+            Size: =12
+            Text: |-
+                =ThisItem.ValidToDate
+                /*Switch(NewEstimateType,
+                    "Enmax", LookUp(VendorSupplieList, ItemNum = ThisItem.EnmaxItemNumber And VendorName = ThisItem.PreferredVendorName, ValidToDate),
+                    "Fortis Alberta", LookUp(VendorSupplieList, ItemNum = ThisItem.FortisItemNumber And VendorName = ThisItem.PreferredVendorName, ValidToDate),
+                    "City of Calgary", LookUp(VendorSupplieList, ItemNum = ThisItem.CoCItemNumber And VendorName = ThisItem.PreferredVendorName, ValidToDate)
+                )*/
+                //previously no switch stmt
+            Tooltip: ="mm/dd/yyyy"
+            X: =1006
+            Y: =42
+            ZIndex: =7
+
+        TextInput1 As text:
+            Default: |-
+                =Switch(NewEstimateType,
+                    "Enmax", LookUp(VendorSupplieList, ItemNum = ThisItem.EnmaxItemNumber And VendorName = ThisItem.PreferredVendorName And ItemType = "Enmax", Notes),
+                    "Fortis Alberta", LookUp(VendorSupplieList, ItemNum = ThisItem.FortisItemNumber And VendorName = ThisItem.PreferredVendorName And ItemType = "Fortis Alberta", Notes),
+                    "City of Calgary", LookUp(VendorSupplieList, ItemNum = ThisItem.CoCItemNumber And VendorName = ThisItem.PreferredVendorName And ItemType = "City of Calgary", Notes)
+                )
+                //previously no switch stmt
+            DisplayMode: =DisplayMode.View
+            FocusedBorderColor: =TextInput1.BorderColor
+            Height: =64
+            Mode: =TextMode.MultiLine
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =TextInput1.HoverBorderColor
+            PressedColor: =TextInput1.Color
+            PressedFill: =TextInput1.Fill
+            Size: =12
+            Width: =975
+            X: =18
+            Y: =76
+            ZIndex: =8
+
+        leadtime As label:
+            Color: =If(ThisItem.PrefLeadTime, Color.Red, RGBA(36, 76, 90, 1))
+            FocusedBorderColor: =leadtime.BorderColor
+            HoverBorderColor: =leadtime.BorderColor
+            HoverColor: =leadtime.Color
+            HoverFill: =leadtime.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =leadtime.BorderColor
+            PressedColor: =leadtime.Color
+            PressedFill: =leadtime.Fill
+            Size: =12
+            Text: |-
+                =Concatenate("Long Lead Item: ", Text(ThisItem.PrefLeadTime))
+            Width: =198
+            X: =1156
+            Y: =90
+            ZIndex: =9
+
+        stock As label:
+            Color: =If(ThisItem.InStockQuantity > 0, Color.BlueViolet, Color.Red)
+            FocusedBorderColor: =stock.BorderColor
+            HoverBorderColor: =stock.BorderColor
+            HoverColor: =stock.Color
+            HoverFill: =stock.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =stock.BorderColor
+            PressedColor: =stock.Color
+            PressedFill: =stock.Fill
+            Size: =12
+            Text: |-
+                =Concatenate("Stock: ",Text(ThisItem.InStockQuantity))
+            X: =1006
+            Y: =89
+            ZIndex: =10
+
+    Label1_1 As label:
+        Color: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =Label1_1.BorderColor
+        FontWeight: =FontWeight.Bold
+        Height: =76
+        HoverBorderColor: =Label1_1.BorderColor
+        HoverColor: =Label1_1.Color
+        HoverFill: =Label1_1.Fill
+        Italic: =true
+        PressedBorderColor: =Label1_1.BorderColor
+        PressedColor: =Label1_1.Color
+        PressedFill: =Label1_1.Fill
+        Size: =28
+        Text: =" PREFERRED VENDOR LIST"
+        Width: =1366
+        ZIndex: =2
+
+    RefreshVendorGallery As icon.Reload:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =RefreshVendorGallery.Fill
+        FocusedBorderColor: =RefreshVendorGallery.BorderColor
+        HoverBorderColor: =ColorFade(RefreshVendorGallery.BorderColor, 20%)
+        HoverColor: =ColorFade(RefreshVendorGallery.Color, 20%)
+        HoverFill: =RefreshVendorGallery.Fill
+        Icon: =Icon.Reload
+        OnSelect: |-
+            =Refresh(MasterMaterial_PreferredVendor_List);
+            Switch(NewEstimateType,
+                "Enmax", ClearCollect(PrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                                 Archived = false And EnmaxItemNumber <> "NA")),
+                "Fortis Alberta", ClearCollect(PrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                                 Archived = false And FortisItemNumber <> "NA")),
+                "City of Calgary", ClearCollect(PrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                                  Archived = false And CoCItemNumber <> "NA"))
+            );
+            Refresh(VendorSupplies);
+            ClearCollect(VendorSupplieList,Filter(VendorSupplies, ItemType = NewEstimateType And Archive = false));
+        PressedBorderColor: =ColorFade(RefreshVendorGallery.BorderColor, -20%)
+        PressedColor: =ColorFade(RefreshVendorGallery.Color, -20%)
+        PressedFill: =RefreshVendorGallery.Fill
+        Tooltip: ="Refresh list"
+        X: =1149
+        Y: =6
+        ZIndex: =4
+
+    Sorting_1 As icon.ArrowsUpDown:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Sorting_1.Fill
+        FocusedBorderColor: =Sorting_1.BorderColor
+        HoverBorderColor: =ColorFade(Sorting_1.BorderColor, 20%)
+        HoverColor: =ColorFade(Sorting_1.Color, 20%)
+        HoverFill: =Sorting_1.Fill
+        Icon: =Icon.Sort
+        OnSelect: |-
+            =UpdateContext({SortDescending1: !SortDescending1})
+        PressedBorderColor: =ColorFade(Sorting_1.BorderColor, -20%)
+        PressedColor: =ColorFade(Sorting_1.Color, -20%)
+        PressedFill: =Sorting_1.Fill
+        Tooltip: ="Sort list"
+        X: =1225
+        Y: =6
+        ZIndex: =5
+
+    vendorSrchBox As text:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Color: =RGBA(36, 76, 90, 1)
+        Default: =""
+        FocusedBorderColor: =vendorSrchBox.BorderColor
+        Height: =64
+        HoverBorderColor: =RGBA(36, 76, 90, 1)
+        PressedBorderColor: =vendorSrchBox.HoverBorderColor
+        PressedColor: =vendorSrchBox.Color
+        PressedFill: =vendorSrchBox.Fill
+        Tooltip: ="Type here to search for an item"
+        Width: =380
+        X: =671
+        Y: =6
+        ZIndex: =6
+
+    SearchIcon_1 As icon.Search:
+        DisabledFill: =SearchIcon_1.Fill
+        FocusedBorderColor: =SearchIcon_1.BorderColor
+        HoverBorderColor: =ColorFade(SearchIcon_1.BorderColor, 20%)
+        HoverColor: =ColorFade(SearchIcon_1.Color, 20%)
+        HoverFill: =SearchIcon_1.Fill
+        Icon: =Icon.Search
+        PressedBorderColor: =ColorFade(SearchIcon_1.BorderColor, -20%)
+        PressedColor: =ColorFade(SearchIcon_1.Color, -20%)
+        PressedFill: =SearchIcon_1.Fill
+        Width: =48
+        X: =1003
+        Y: =6
+        ZIndex: =7
+
+    Icon16 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon16.Fill
+        FocusedBorderColor: =Icon16.BorderColor
+        HoverBorderColor: =ColorFade(Icon16.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =Icon16.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =Reset(vendorSrchBox);
+            Navigate(MainScreen,ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(Icon16.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon16.Color, -20%)
+        PressedFill: =Icon16.Fill
+        Tooltip: ="Go Back"
+        X: =1289
+        Y: =6
+        ZIndex: =8
+
+    Label17 As label:
+        FocusedBorderColor: =Label17.BorderColor
+        FontWeight: =FontWeight.Semibold
+        HoverBorderColor: =Label17.BorderColor
+        HoverColor: =Label17.Color
+        HoverFill: =Label17.Fill
+        PressedBorderColor: =Label17.BorderColor
+        PressedColor: =Label17.Color
+        PressedFill: =Label17.Fill
+        Size: =14
+        Text: ="Valid To Date"
+        X: =1003
+        Y: =68
+        ZIndex: =9
+
+    Label20 As label:
+        FocusedBorderColor: =Label20.BorderColor
+        FontWeight: =FontWeight.Semibold
+        HoverBorderColor: =Label20.BorderColor
+        HoverColor: =Label20.Color
+        HoverFill: =Label20.Fill
+        PressedBorderColor: =Label20.BorderColor
+        PressedColor: =Label20.Color
+        PressedFill: =Label20.Fill
+        Size: =14
+        Text: ="Price"
+        X: =1182
+        Y: =68
+        ZIndex: =10
+

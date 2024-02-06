@@ -1,0 +1,331 @@
+LabourPricingMainScreen As screen:
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =Reset(LabPriceSearchBox);
+        Refresh(LabourUnitsDetails);
+        ClearCollect(LabUnitDetails, LabourUnitsDetails);
+        Set(LabPricingSrchText, LabPricingSrchText);
+    Orientation: =If(LabourPricingMainScreen.Width < LabourPricingMainScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= LabourPricingMainScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    "LabourPricingGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+        DisabledBorderColor: =LabourPricingGallery.BorderColor
+        DisabledFill: =LabourPricingGallery.Fill
+        Height: =640
+        HoverBorderColor: =LabourPricingGallery.BorderColor
+        HoverFill: =LabourPricingGallery.Fill
+        Items: =SortByColumns(Search(LabUnitDetails, LabPriceSearchBox.Text, "ContractorName", "LabourUnit", "Description", "Notes", "LastModifiedBy"), "LabourUnit", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending))
+        Layout: =Layout.Vertical
+        LoadingSpinnerColor: =LabourPricingGallery.BorderColor
+        PressedBorderColor: =LabourPricingGallery.BorderColor
+        PressedFill: =LabourPricingGallery.Fill
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =Min(168, LabourPricingGallery.Height - 60)
+        Width: =1366
+        Y: =128
+        ZIndex: =1
+
+        Title3_1 As label:
+            FocusedBorderColor: =Title3_1.BorderColor
+            Height: =38
+            HoverBorderColor: =Title3_1.BorderColor
+            HoverColor: =Title3_1.Color
+            HoverFill: =Title3_1.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Title3_1.BorderColor
+            PressedColor: =Title3_1.Color
+            PressedFill: =Title3_1.Fill
+            Text: =Concatenate(ThisItem.ContractorName, " - ", ThisItem.LabourUnit)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =759
+            X: =32
+            Y: =16
+            ZIndex: =1
+
+        Subtitle3_1 As label:
+            FocusedBorderColor: =Subtitle3_1.BorderColor
+            HoverBorderColor: =Subtitle3_1.BorderColor
+            HoverColor: =Subtitle3_1.Color
+            HoverFill: =Subtitle3_1.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Subtitle3_1.BorderColor
+            PressedColor: =Subtitle3_1.Color
+            PressedFill: =Subtitle3_1.Fill
+            Text: =ThisItem.Description
+            VerticalAlign: =VerticalAlign.Top
+            Width: =971
+            X: =32
+            Y: =Title3_1.Y + Title3_1.Height + 2
+            ZIndex: =2
+
+        Body1_1 As label:
+            FocusedBorderColor: =Body1_1.BorderColor
+            Height: =Body1_1.Size * 4
+            HoverBorderColor: =Body1_1.BorderColor
+            HoverColor: =Body1_1.Color
+            HoverFill: =Body1_1.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Body1_1.BorderColor
+            PressedColor: =Body1_1.Color
+            PressedFill: =Body1_1.Fill
+            Text: |-
+                =Concatenate(ThisItem.LastModifiedBy, " - ",Text(ThisItem.LastModifiedDate), " : ", ThisItem.Notes)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =Parent.TemplateWidth - 104
+            X: =32
+            Y: =Subtitle3_1.Y + Subtitle3_1.Height + 4
+            ZIndex: =3
+
+        NextArrow3_1 As icon.ChevronRight:
+            AccessibleLabel: =NextArrow3_1.Tooltip
+            Color: =RGBA(36, 76, 90, 1)
+            DisabledFill: =NextArrow3_1.Fill
+            FocusedBorderColor: =NextArrow3_1.BorderColor
+            Height: =60
+            HoverBorderColor: =ColorFade(NextArrow3_1.BorderColor, 20%)
+            HoverColor: =ColorFade(NextArrow3_1.Color, 40%)
+            HoverFill: =NextArrow3_1.Fill
+            Icon: =Icon.ChevronRight
+            OnSelect: =Navigate(ContractLab_EditViewScreen,ScreenTransition.Cover);
+            PaddingBottom: =10
+            PaddingLeft: =10
+            PaddingRight: =10
+            PaddingTop: =10
+            PressedBorderColor: =ColorFade(NextArrow3_1.BorderColor, -20%)
+            PressedColor: =ColorFade(NextArrow3_1.Color, -20%)
+            PressedFill: =NextArrow3_1.Fill
+            TabIndex: =0
+            Tooltip: ="View item details"
+            Width: =60
+            X: =Parent.TemplateWidth - NextArrow3_1.Width - 5
+            Y: =(Parent.TemplateHeight / 2) - (NextArrow3_1.Height / 2)
+            ZIndex: =4
+
+        Separator3_1 As rectangle:
+            DisabledFill: =Separator3_1.Fill
+            Fill: =RGBA(36, 76, 90, 1)
+            FocusedBorderColor: =Separator3_1.BorderColor
+            Height: =1
+            HoverFill: =Separator3_1.Fill
+            OnSelect: =Select(Parent)
+            PressedFill: =Separator3_1.Fill
+            Width: =Parent.TemplateWidth
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =5
+
+        Price As label:
+            FocusedBorderColor: =Price.BorderColor
+            FontWeight: =FontWeight.Semibold
+            Height: =44
+            HoverBorderColor: =Price.BorderColor
+            HoverColor: =Price.Color
+            HoverFill: =Price.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =Price.BorderColor
+            PressedColor: =Price.Color
+            PressedFill: =Price.Fill
+            Size: =14
+            Text: |-
+                =Text(ThisItem.UnitPrice,"[$-en-US]$ #,###.00")
+            Width: =102
+            X: =1192
+            Y: =60
+            ZIndex: =6
+
+        Label7 As label:
+            Color: =If( ThisItem.ValidToDate <= Today(), Color.Red , Color.Green)
+            FocusedBorderColor: =Label7.BorderColor
+            HoverBorderColor: =Label7.BorderColor
+            HoverColor: =Label7.Color
+            HoverFill: =Label7.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =Label7.BorderColor
+            PressedColor: =Label7.Color
+            PressedFill: =Label7.Fill
+            Text: =ThisItem.ValidToDate
+            X: =1022
+            Y: =60
+            ZIndex: =7
+
+    Title As label:
+        Color: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =Title.BorderColor
+        FontWeight: =FontWeight.Bold
+        Height: =88
+        HoverBorderColor: =Title.BorderColor
+        HoverColor: =Title.Color
+        HoverFill: =Title.Fill
+        Italic: =true
+        PressedBorderColor: =Title.BorderColor
+        PressedColor: =Title.Color
+        PressedFill: =Title.Fill
+        Size: =26
+        Text: =" CONTRACTOR/LABOUR GALLERY"
+        Width: =1366
+        ZIndex: =2
+
+    LapPriceRefresh As icon.Reload:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =LapPriceRefresh.Fill
+        FocusedBorderColor: =LapPriceRefresh.BorderColor
+        HoverBorderColor: =ColorFade(LapPriceRefresh.BorderColor, 20%)
+        HoverColor: =ColorFade(LapPriceRefresh.Color, 20%)
+        HoverFill: =LapPriceRefresh.Fill
+        Icon: =Icon.Reload
+        OnSelect: =Refresh(LabourUnitsDetails)
+        PressedBorderColor: =ColorFade(LapPriceRefresh.BorderColor, -20%)
+        PressedColor: =ColorFade(LapPriceRefresh.Color, -20%)
+        PressedFill: =LapPriceRefresh.Fill
+        Tooltip: ="Refresh list"
+        X: =1166
+        Y: =12
+        ZIndex: =4
+
+    LabPricingSort As icon.ArrowsUpDown:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =LabPricingSort.Fill
+        FocusedBorderColor: =LabPricingSort.BorderColor
+        HoverBorderColor: =ColorFade(LabPricingSort.BorderColor, 20%)
+        HoverColor: =ColorFade(LabPricingSort.Color, 20%)
+        HoverFill: =LabPricingSort.Fill
+        Icon: =Icon.Sort
+        OnSelect: |-
+            =UpdateContext({SortDescending1: !SortDescending1})
+        PressedBorderColor: =ColorFade(LabPricingSort.BorderColor, -20%)
+        PressedColor: =ColorFade(LabPricingSort.Color, -20%)
+        PressedFill: =LabPricingSort.Fill
+        Tooltip: ="Sort list"
+        X: =1244
+        Y: =12
+        ZIndex: =5
+
+    LabPriceSearchBox As text:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Color: =RGBA(0, 18, 107, 1)
+        Default: =""
+        FocusedBorderColor: =LabPriceSearchBox.BorderColor
+        Height: =64
+        HoverBorderColor: =RGBA(36, 76, 90, 1)
+        PressedBorderColor: =LabPriceSearchBox.HoverBorderColor
+        PressedColor: =LabPriceSearchBox.Color
+        PressedFill: =LabPriceSearchBox.Fill
+        Tooltip: ="Search labour unit"
+        Width: =380
+        X: =699
+        Y: =12
+        ZIndex: =6
+
+    LabPriceSearchIcon As icon.Search:
+        Color: =RGBA(36, 76, 90, 1)
+        DisabledFill: =LabPriceSearchIcon.Fill
+        FocusedBorderColor: =LabPriceSearchIcon.BorderColor
+        HoverBorderColor: =ColorFade(LabPriceSearchIcon.BorderColor, 20%)
+        HoverColor: =ColorFade(LabPriceSearchIcon.Color, 20%)
+        HoverFill: =LabPriceSearchIcon.Fill
+        Icon: =Icon.Search
+        PressedBorderColor: =ColorFade(LabPriceSearchIcon.BorderColor, -20%)
+        PressedColor: =ColorFade(LabPriceSearchIcon.Color, -20%)
+        PressedFill: =LabPriceSearchIcon.Fill
+        Width: =48
+        X: =1021
+        Y: =12
+        ZIndex: =7
+
+    Icon5 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon5.Fill
+        FocusedBorderColor: =Icon5.BorderColor
+        HoverBorderColor: =ColorFade(Icon5.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon5.Color, 20%)
+        HoverFill: =Icon5.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: =Reset(LabPriceSearchBox);Navigate(MainScreen,ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(Icon5.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon5.Color, -20%)
+        PressedFill: =Icon5.Fill
+        Tooltip: ="Go back"
+        X: =1302
+        Y: =12
+        ZIndex: =8
+
+    Label8 As label:
+        FocusedBorderColor: =Label8.BorderColor
+        FontWeight: =FontWeight.Semibold
+        HoverBorderColor: =Label8.BorderColor
+        HoverColor: =Label8.Color
+        HoverFill: =Label8.Fill
+        PressedBorderColor: =Label8.BorderColor
+        PressedColor: =Label8.Color
+        PressedFill: =Label8.Fill
+        Size: =14
+        Text: ="Valid Date"
+        X: =1020
+        Y: =88
+        ZIndex: =9
+
+    Label9 As label:
+        FocusedBorderColor: =Label9.BorderColor
+        FontWeight: =FontWeight.Semibold
+        HoverBorderColor: =Label9.BorderColor
+        HoverColor: =Label9.Color
+        HoverFill: =Label9.Fill
+        PressedBorderColor: =Label9.BorderColor
+        PressedColor: =Label9.Color
+        PressedFill: =Label9.Fill
+        Size: =14
+        Text: ="Unit Price"
+        X: =1186
+        Y: =88
+        ZIndex: =10
+
+    Button2 As button:
+        BorderColor: =RGBA(0, 0, 0, 0)
+        Color: =RGBA(0, 0, 0, 1)
+        Fill: =RGBA(251, 188, 159, 1)
+        FocusedBorderColor: =Button2.BorderColor
+        FontWeight: =FontWeight.Bold
+        Height: =64
+        HoverBorderColor: =RGBA(221, 79, 14, 1)
+        HoverFill: =RGBA(246, 88, 16, 1)
+        OnSelect: =Navigate(LabourUnitsMainScreen,ScreenTransition.Fade)
+        PressedBorderColor: =RGBA(253, 222, 207, 1)
+        PressedColor: =Color.Black
+        PressedFill: =RGBA(253, 222, 207, 1)
+        Size: =16
+        Text: ="Labour Units"
+        X: =529
+        Y: =12
+        ZIndex: =11
+
+    Icon7 As icon.Add:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon7.Fill
+        FocusedBorderColor: =Icon7.BorderColor
+        HoverBorderColor: =ColorFade(Icon7.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon7.Color, 20%)
+        HoverFill: =Icon7.Fill
+        Icon: =Icon.Add
+        OnSelect: =NewForm(NewContractLabForm);Navigate(ExistingContractLabAddScreen,ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(Icon7.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon7.Color, -20%)
+        PressedFill: =Icon7.Fill
+        Tooltip: ="Using existing contractor/labour units, create a new contractor/labour unit pair"
+        X: =1090
+        Y: =12
+        ZIndex: =12
+

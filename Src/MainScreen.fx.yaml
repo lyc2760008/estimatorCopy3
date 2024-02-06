@@ -1,0 +1,647 @@
+"MainScreen As screen.'phoneLayout_FluidGridWithHeaderPageLayout_ver3.0'":
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =Refresh(Users);
+        ClearCollect(EstimatorUsers, Users);
+    Orientation: =If(MainScreen.Width < MainScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= MainScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    MainScreenTitleBar As rectangle:
+        DisabledFill: =MainScreenTitleBar.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =MainScreenTitleBar.BorderColor
+        Height: =88
+        HoverFill: =MainScreenTitleBar.Fill
+        PressedFill: =MainScreenTitleBar.Fill
+        Width: =Parent.Width
+        ZIndex: =1
+
+    MainScreenTitle As label:
+        Align: =Align.Center
+        FocusedBorderColor: =MainScreenTitle.BorderColor
+        Font: =Font.'Lato Light'
+        Height: =88
+        HoverBorderColor: =MainScreenTitle.BorderColor
+        HoverColor: =MainScreenTitle.Color
+        HoverFill: =MainScreenTitle.Fill
+        PressedBorderColor: =MainScreenTitle.BorderColor
+        PressedColor: =MainScreenTitle.Color
+        PressedFill: =MainScreenTitle.Fill
+        Size: =30
+        Text: ="MAIN SCREEN"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    Canvas1 As fluidGrid.fluidGridWithBlankCard:
+        BorderThickness: =0
+        Height: =Parent.Height - Canvas1.Y
+        Width: =Parent.Width
+        Y: =MainScreenTitleBar.Y + MainScreenTitleBar.Height
+        ZIndex: =3
+
+        DataCard1 As dataCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            BorderThickness: =0
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =655
+            Width: =Parent.Width
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            NewEstimateButton As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =NewEstimateButton.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: |-
+                    =Set(NewEstimate, true);Set(FirstSaveOnNewEstimate, false);
+                    NewForm(BasicInfo_Form);Navigate(MainEstimateScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="NEW"
+                Width: =190
+                X: =85
+                Y: =66
+                ZIndex: =1
+
+            AddVendor As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =AddVendor.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(AddVendorScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="ADD VENDOR"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =685
+                Y: =329
+                ZIndex: =6
+
+            AddContractor As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =AddContractor.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(AddContractorScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="ADD CONTRACTOR"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =285
+                Y: =229
+                ZIndex: =7
+
+            AddManufacturer As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =AddManufacturer.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(AddManufacturerScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =16
+                Text: ="ADD MANUFACTURER"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =485
+                Y: =329
+                ZIndex: =8
+
+            PrefVendorAdmin As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =PrefVendorAdmin.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(PrefVendorScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =17
+                Text: ="VIEW & EDIT PREFERRED VENDOR"
+                Tooltip: ="View/Edit Preferred Venodr LIst"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =685
+                Y: =229
+                ZIndex: =9
+
+            LabourUnitsAdmin As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =LabourUnitsAdmin.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(LabourPricingMainScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="LABOR UNITS"
+                Tooltip: ="View/Edit Labour units and their contractor prices"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =285
+                Y: =329
+                ZIndex: =10
+
+            StructuresAdmin As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =StructuresAdmin.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =190
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(StructuresMainScreen, ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="STRUCTURES"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =85
+                Y: =229
+                ZIndex: =11
+
+            ExcavationPermits As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =ExcavationPermits.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(PermitsMainScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="EXCAVATION PERMITS"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =885
+                Y: =329
+                ZIndex: =12
+
+            ExtraCostItems As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =ExtraCostItems.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =210
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(ExtraCostItemsMainScreen, ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="EXTRA COSTS"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =885
+                Y: =429
+                ZIndex: =13
+
+            EngResources As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =EngResources.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =210
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(EngResourceMainScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="ENGINEERING"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =285
+                Y: =429
+                ZIndex: =14
+
+            EPC As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                DisabledBorderColor: =RGBA(149, 149, 149, 1)
+                DisabledColor: =RGBA(255, 255, 255, 1)
+                DisabledFill: =RGBA(149, 149, 149, 1)
+                DisplayMode: |-
+                    =If( NewEstimateType in ["Enmax", "Fortis Alberta"] Or CurrentEstimateType in ["Enmax", "Fortis Alberta"],
+                        DisplayMode.Edit,
+                        DisplayMode.Disabled
+                    )
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =EPC.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(EPCInvestmentCostMainScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =17
+                Text: ="EPC INVESTMENT & COST"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =885
+                Y: =229
+                ZIndex: =15
+
+            MarkupContingency As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =MarkupContingency.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =210
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(MarkupContingencyMainScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="CONT & MARKUP"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =85
+                Y: =429
+                ZIndex: =16
+
+            VendorslistsAdmin As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =VendorslistsAdmin.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =210
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(VendorsScreen, ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =17
+                Text: ="ADD EXISTING MATERIAL TO VENDOR'S MATERIAL LIST. VIEW/EDIT VENDOR MATERIAL LIST"
+                Tooltip: ="View/Edit/Add existing materials in vendor's material list"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =685
+                Y: =429
+                ZIndex: =18
+
+            MasterMatAdmin As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =MasterMatAdmin.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(MaterialsMainScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =17
+                Text: ="ADD A NEW MATERIAL TO MASTER LIST"
+                Tooltip: ="Add new materials here. Also see Master Material List."
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =485
+                Y: =229
+                ZIndex: =19
+
+            ViewUpdateEstimateButton As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =ViewUpdateEstimateButton.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: |-
+                    =Set(NewEstimate, false);Set(FirstSaveOnNewEstimate, true);
+                    Navigate(EstimatesGalleryScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="MODIFY"
+                Width: =190
+                X: =285
+                Y: =66
+                ZIndex: =21
+
+            SaveTemplates As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =SaveTemplates.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="TEMPLATE"
+                Width: =190
+                X: =885
+                Y: =66
+                ZIndex: =22
+
+            CombineEstimates As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =CombineEstimates.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="COMBINE"
+                Width: =190
+                X: =685
+                Y: =66
+                ZIndex: =23
+
+            SrchMatInStruc As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =SrchMatInStruc.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(SrchMatinStrucScreen, ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =17
+                Text: ="SEARCH MATERIAL IN STRUCTURES"
+                Width: =190
+                X: =1085
+                Y: =66
+                ZIndex: =24
+
+            EstimatesDownloadButton As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                DisabledColor: =RGBA(255, 255, 255, 1)
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =EstimatesDownloadButton.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =51
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: |-
+                    =Launch("http://pecintranetsrv/Estimates.html")
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="DOWNLOAD"
+                Width: =190
+                X: =1085
+                Y: =10
+                ZIndex: =25
+
+            Label82_1 As label:
+                Color: =RGBA(36, 76, 90, 1)
+                Font: =Font.'Lato Light'
+                FontWeight: =FontWeight.Bold
+                Height: =48
+                Size: =30
+                Text: ="ESTIMATE"
+                Width: =375
+                X: =85
+                Y: =13
+                ZIndex: =27
+
+            Label82_3 As label:
+                Color: =RGBA(36, 76, 90, 1)
+                Font: =Font.'Lato Light'
+                FontWeight: =FontWeight.Bold
+                Height: =59
+                Size: =30
+                Text: ="MAINTENANCE"
+                Width: =459
+                X: =85
+                Y: =167
+                ZIndex: =28
+
+            CopyEstimates As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =CopyEstimates.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(CopyScreen, ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="COPY"
+                Width: =190
+                X: =485
+                Y: =66
+                ZIndex: =29
+
+            AddATCO As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =AddATCO.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(ATCOMainScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="ATCO RATES"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =1085
+                Y: =229
+                ZIndex: =30
+
+            AddShaw As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =AddShaw.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =90
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(ShawRateMainScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="SHAW RATES"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =1085
+                Y: =329
+                ZIndex: =31
+
+            AddSurvey As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =AddSurvey.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =210
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(SurveyRatesMainScreen,ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =18
+                Text: ="SURVEY RATES"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =1085
+                Y: =429
+                ZIndex: =32
+
+            VendorslistsAdmin_1 As button:
+                BorderColor: =RGBA(230, 230, 230, 1)
+                BorderThickness: =0
+                Fill: =RGBA(47, 111, 122, 1)
+                FocusedBorderColor: =VendorslistsAdmin_1.BorderColor
+                FocusedBorderThickness: =0
+                Font: =Font.'Lato Light'
+                Height: =210
+                HoverBorderColor: =RGBA(52, 101, 127, 0.8)
+                HoverFill: =RGBA(52, 101, 127, 0.8)
+                OnSelect: =Navigate(SearchAllMatScreen, ScreenTransition.Fade);
+                PressedBorderColor: =RGBA(52, 101, 127, 1)
+                PressedColor: =RGBA(255, 255, 255, 1)
+                PressedFill: =RGBA(52, 101, 127, 1)
+                Size: =17
+                Text: ="VIEW/EDIT ALL MATERIAL LIST"
+                Tooltip: ="View/Edit/Add existing materials in vendor's material list"
+                Visible: =true//If(LookUp(EstimatorUsers,  email = Lower(User().Email) , role ) = "Admin", true, false)
+                Width: =190
+                X: =485
+                Y: =429
+                ZIndex: =33
+
+    GoBackToHomeScreen As icon.ChevronLeft:
+        BorderColor: =RGBA(255, 255, 255, 1)
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =GoBackToHomeScreen.Fill
+        FocusedBorderColor: =Color.White
+        HoverBorderColor: =ColorFade(GoBackToHomeScreen.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =GoBackToHomeScreen.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: =Set(NewEstimateType, "");Set(CurrentEstimateType, "");Navigate(HomeScreen,ScreenTransition.UnCoverRight);
+        PressedBorderColor: =ColorFade(GoBackToHomeScreen.BorderColor, -20%)
+        PressedColor: =ColorFade(GoBackToHomeScreen.Color, -20%)
+        PressedFill: =GoBackToHomeScreen.Fill
+        Tooltip: ="Go Back"
+        X: =1302
+        Y: =12
+        ZIndex: =4
+
+    PECLogo_1 As image:
+        BorderColor: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(255, 255, 255, 1)
+        FocusedBorderColor: =PECLogo_1.BorderColor
+        Height: =88
+        HoverBorderColor: =ColorFade(PECLogo_1.BorderColor, 20%)
+        HoverFill: =ColorFade(PECLogo_1.Fill, 20%)
+        Image: =PRI_Logo_RGB_TM_201222
+        PressedBorderColor: =ColorFade(PECLogo_1.BorderColor, -20%)
+        PressedFill: =ColorFade(PECLogo_1.Fill, -20%)
+        Width: =168
+        ZIndex: =5
+

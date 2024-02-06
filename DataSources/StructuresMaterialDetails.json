@@ -1,0 +1,26 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2023-11-09T17:32:42.5800000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "descript": "descript",
+      "ItemCount": "ItemCount",
+      "ItemNumber": "ItemNumber",
+      "LastModifiedBy": "LastModifiedBy",
+      "LastModifiedDate": "LastModifiedDate",
+      "StrucDescript": "StrucDescript",
+      "StrucID": "StrucID",
+      "StrucType": "StrucType"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "StructuresMaterialDetails",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

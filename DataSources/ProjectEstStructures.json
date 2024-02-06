@@ -1,0 +1,30 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2022-03-29T18:53:27.9820000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "complexityFactor": "complexityFactor",
+      "Description": "Description",
+      "ProjectID": "ProjectID",
+      "Stage": "Stage",
+      "StrLabourCost": "StrLabourCost",
+      "StrMaterialCost": "StrMaterialCost",
+      "StrQty": "StrQty",
+      "StrucID": "StrucID",
+      "strucTableID": "strucTableID",
+      "StrucType": "StrucType",
+      "Type": "Type",
+      "Version": "Version"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "ProjectEstStructures",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

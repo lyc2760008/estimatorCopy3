@@ -1,0 +1,1034 @@
+"AddPermitsToEst As screen.'phoneLayout_FluidGridWithHeaderPageLayout_ver3.0'":
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =Refresh(Permits);
+        ClearCollect(EstPermitList, Permits);//once type is added filter base on estimate type ie enmax or fortis etc
+        UpdateContext({GP_visible:true, msgWindowP:false, msgToDsiplayP:"", msgWindowCancelP:false, msgWindowOkP:false, saveDisableP:false, procPermit:false});
+        If(NewEstimate, 
+             //exisiting permit list for new estimate should be empty
+             ClearCollect(estPermitSecList_Current, Filter(ProjectEstPermits, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+             And Version = NewEstimateVersion And Type = NewEstimateType));,
+             //existing permit list for est will may or may not have items
+             ClearCollect(estPermitSecList_Current, Filter(ProjectEstPermits, ProjectID = EstimatesGallery.Selected.ProjectID And 
+               Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+        );
+        //Remove permits that are already part of the current est permit list
+        //RemoveIf(EstPermitList, xcav_id in estPermitSecList_Current.xcavID);
+    Orientation: =If(AddPermitsToEst.Width < AddPermitsToEst.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= AddPermitsToEst.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    RectQuickActionBar8 As rectangle:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        DisabledFill: =RectQuickActionBar8.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =RectQuickActionBar8.BorderColor
+        Height: =88
+        HoverFill: =RectQuickActionBar8.Fill
+        PressedFill: =RectQuickActionBar8.Fill
+        Width: =Parent.Width
+        ZIndex: =1
+
+    LblAppName8 As label:
+        FocusedBorderColor: =LblAppName8.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =88
+        HoverBorderColor: =LblAppName8.BorderColor
+        HoverColor: =LblAppName8.Color
+        HoverFill: =LblAppName8.Fill
+        PressedBorderColor: =LblAppName8.BorderColor
+        PressedColor: =LblAppName8.Color
+        PressedFill: =LblAppName8.Fill
+        Size: =20
+        Text: =" ADD ESTIMATES' PERMITS SECTION"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    Canvas2 As fluidGrid.fluidGridWithBlankCard:
+        BorderThickness: =0
+        Height: =Parent.Height - Canvas2.Y
+        Width: =Parent.Width
+        Y: =RectQuickActionBar8.Y + RectQuickActionBar8.Height
+        ZIndex: =3
+
+        DataCard13 As dataCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            BorderThickness: =0
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =680
+            Width: =Parent.Width
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            Label53_4 As label:
+                FocusedBorderColor: =Label53_4.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =Label53_4.BorderColor
+                HoverColor: =Label53_4.Color
+                HoverFill: =Label53_4.Fill
+                PressedBorderColor: =Label53_4.BorderColor
+                PressedColor: =Label53_4.Color
+                PressedFill: =Label53_4.Fill
+                Size: =14
+                Text: |-
+                    ="Total Labour Cost :"
+                Width: =179
+                X: =671
+                Y: =2
+                ZIndex: =1
+
+            "EstPermitGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dotted
+                BorderThickness: =2
+                DisabledBorderColor: =EstPermitGallery.BorderColor
+                DisabledFill: =EstPermitGallery.Fill
+                Height: =539
+                HoverBorderColor: =EstPermitGallery.BorderColor
+                HoverFill: =EstPermitGallery.Fill
+                Items: =SortByColumns(Search(EstPermitList, EstSrcPermitText.Text,"permit_item"), "permit_item", SortOrder.Ascending)
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =EstPermitGallery.BorderColor
+                PressedBorderColor: =EstPermitGallery.BorderColor
+                PressedFill: =EstPermitGallery.Fill
+                TemplatePadding: =0
+                TemplateSize: =101
+                Visible: =GP_visible
+                Width: =594
+                X: =8
+                Y: =129
+                ZIndex: =1
+
+                Title13 As label:
+                    Color: |-
+                        =If(Value(estPermitQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    FocusedBorderColor: =Title13.BorderColor
+                    Height: =37
+                    HoverBorderColor: =Title13.BorderColor
+                    HoverColor: |-
+                        =If(Value(estPermitQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    HoverFill: =Title13.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title13.BorderColor
+                    PressedColor: =Title13.Color
+                    PressedFill: =Title13.Fill
+                    Size: =11
+                    Text: =Concatenate(ThisItem.permit_item, " | ", ThisItem.Vendor, " | ", ThisItem.UoM)
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =462
+                    X: =8
+                    ZIndex: =1
+
+                Separator13 As rectangle:
+                    DisabledFill: =Separator13.Fill
+                    FocusedBorderColor: =Separator13.BorderColor
+                    Height: =1
+                    HoverFill: =Separator13.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator13.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                TextInput23 As text:
+                    Color: |-
+                        =If(Value(estPermitQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    Default: |-
+                        =Concatenate("L: ", Text(ThisItem.LabourCost,"[$-en-US]$ ###,##0.00"))
+                    DisplayMode: =DisplayMode.View
+                    FocusedBorderColor: =TextInput23.BorderColor
+                    Height: =31
+                    HoverColor: |-
+                        =If(Value(estPermitQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =TextInput23.HoverBorderColor
+                    PressedColor: =TextInput23.Color
+                    PressedFill: =TextInput23.Fill
+                    Size: =10
+                    Width: =144
+                    X: =8
+                    Y: =37
+                    ZIndex: =6
+
+                TextInput24 As text:
+                    Color: |-
+                        =If(Value(estPermitQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    Default: |-
+                        =Concatenate("M: ", Text(ThisItem.MaterialCost,"[$-en-US]$ ###,##0.00"))
+                    DisplayMode: =DisplayMode.View
+                    FocusedBorderColor: =TextInput24.BorderColor
+                    Height: =32
+                    HoverColor: |-
+                        =If(Value(estPermitQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =TextInput24.HoverBorderColor
+                    PressedColor: =TextInput24.Color
+                    PressedFill: =TextInput24.Fill
+                    Size: =10
+                    Width: =144
+                    X: =8
+                    Y: =68
+                    ZIndex: =7
+
+                estPermitQty As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: ="0"
+                    FocusedBorderColor: =estPermitQty.BorderColor
+                    Format: =TextFormat.Number
+                    Height: =35
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =estPermitQty.HoverBorderColor
+                    PressedColor: =estPermitQty.Color
+                    PressedFill: =estPermitQty.Fill
+                    Size: =10
+                    Width: =64
+                    X: =471
+                    Y: =8
+                    ZIndex: =8
+
+                PG_add As icon.Add:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Color: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =PG_add.Fill
+                    FocusedBorderColor: =PG_add.BorderColor
+                    Height: =35
+                    HoverBorderColor: =ColorFade(PG_add.BorderColor, 20%)
+                    HoverColor: =ColorFade(PG_add.Color, 20%)
+                    HoverFill: =PG_add.Fill
+                    Icon: =Icon.Add
+                    OnSelect: |-
+                        =If(NewEstimate,
+                           Collect(estPermitSecList_Current,
+                            {ProjectID:NewEstimateProjectID, Stage: NewEstimateStage, Version: NewEstimateVersion, 
+                            Type: NewEstimateType,
+                            xcavID: ThisItem.xcav_id,
+                            permitItem: ThisItem.permit_item, itemtype:ThisItem.itemType,
+                            vendor:  ThisItem.Vendor,
+                            uom: ThisItem.UoM,
+                            labourCost: ThisItem.LabourCost, materialCost: ThisItem.MaterialCost,
+                            qty: Value(estPermitQty.Text),
+                            labourCost_total: Value(estPermitQty.Text) * ThisItem.LabourCost, materialCost_total: Value(estPermitQty.Text) * ThisItem.MaterialCost,
+                            AcctCategory: Left(permitAcct.Selected.Value,5), Task: permitTask.Selected.Value}
+                           ),
+                         Collect(estPermitSecList_Current,
+                            {ProjectID:EstimatesGallery.Selected.ProjectID, Stage: EstimatesGallery.Selected.Stage, Version: EstimatesGallery.Selected.Version, 
+                            Type: EstimatesGallery.Selected.Type,
+                            xcavID: ThisItem.xcav_id,
+                            permitItem: ThisItem.permit_item, itemtype:ThisItem.itemType,
+                            vendor:  ThisItem.Vendor,
+                            uom: ThisItem.UoM,
+                            labourCost: ThisItem.LabourCost, materialCost: ThisItem.MaterialCost,
+                            qty: Value(estPermitQty.Text),
+                            labourCost_total: Value(estPermitQty.Text) * ThisItem.LabourCost, materialCost_total: Value(estPermitQty.Text) * ThisItem.MaterialCost,
+                            AcctCategory: Left(permitAcct.Selected.Value,5), Task: permitTask.Selected.Value}
+                           )
+                        );
+                        //Remove(EstPermitList, ThisItem);
+                        Reset(estPermitQty);
+                    PressedBorderColor: =ColorFade(PG_add.BorderColor, -20%)
+                    PressedColor: =ColorFade(PG_add.Color, -20%)
+                    PressedFill: =PG_add.Fill
+                    Width: =45
+                    X: =538
+                    Y: =8
+                    ZIndex: =9
+
+                permitAcct As dropdown:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    ChevronBackground: =RGBA(36, 76, 90, 1)
+                    ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                    Default: ="50051	City ULA & Excavation Permits"
+                    Height: =34
+                    HoverBorderColor: =ColorFade(permitAcct.BorderColor, 15%)
+                    Items: |-
+                        =["50013	Equipment in",  
+                         "50026	Accomodation", 
+                         "50028	Cost of Materials", 
+                         "50030	Material/reel Deposits",
+                         "50032 Freight", 
+                         "50034 Survey", 
+                         "50036 Construction Labour Sub-Cont", 
+                         "50038	Cable & Transformer Testing", 
+                         "50039	Compaction Testing",
+                         "50040	Concrete Ready Mix", 
+                         "50041 Concrete Cutting", 
+                         "50044	Directional Drilling Services", 
+                         "50045	Landfill Dumping and Disposal", 
+                         "50046	Fusing and Gas Subcontracts", 
+                         "50047 Ground Thawing",
+                         "50048	Hydrovacing & Dumping", 
+                         "50049	Landscaping Material and Subco", 
+                         "50050	Paving", 
+                         "50051	City ULA & Excavation Permits", 
+                         "50052	Rental Signs",
+                         "50053	Sand, Gravel and Aggregates", 
+                         "50054	Traffic Control", 
+                         "50057	Trucking Services", 
+                         "50058	Equipment Rental",
+                         "50059	Field Consumables", 
+                         "50062	Contingency Cost"]
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =permitAcct.HoverBorderColor
+                    PressedFill: =RGBA(36, 76, 90, 1)
+                    SelectionFill: =RGBA(36, 76, 90, 1)
+                    Size: =11
+                    Width: =249
+                    X: =334
+                    Y: =53
+                    ZIndex: =10
+
+                permitTask As dropdown:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    ChevronBackground: =RGBA(36, 76, 90, 1)
+                    ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                    Default: ="X"
+                    Height: =32
+                    HoverBorderColor: =ColorFade(permitTask.BorderColor, 15%)
+                    Items: =["M", "C", "D", "P", "X", "Q", "R", "CC", "IS"]
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =permitTask.HoverBorderColor
+                    PressedFill: =RGBA(36, 76, 90, 1)
+                    SelectionFill: =RGBA(36, 76, 90, 1)
+                    Size: =11
+                    Width: =70
+                    X: =212
+                    Y: =55
+                    ZIndex: =11
+
+                Label152 As label:
+                    Height: =32
+                    OnSelect: =Select(Parent)
+                    Size: =11
+                    Text: |-
+                        ="Task: "
+                    Width: =47
+                    X: =165
+                    Y: =55
+                    ZIndex: =12
+
+                Label152_1 As label:
+                    Height: =34
+                    OnSelect: =Select(Parent)
+                    Size: =11
+                    Text: |-
+                        ="Acct: "
+                    Width: =47
+                    X: =287
+                    Y: =53
+                    ZIndex: =13
+
+            EstSrcPermitText As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                FocusedBorderColor: =EstSrcPermitText.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =EstSrcPermitText.HoverBorderColor
+                PressedColor: =EstSrcPermitText.Color
+                PressedFill: =RGBA(255, 255, 255, 1)
+                Width: =304
+                X: =25
+                Y: =51
+                ZIndex: =2
+
+            Label56_3 As label:
+                FocusedBorderColor: =Label56_3.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =44
+                HoverBorderColor: =Label56_3.BorderColor
+                HoverColor: =Label56_3.Color
+                HoverFill: =Label56_3.Fill
+                PressedBorderColor: =Label56_3.BorderColor
+                PressedColor: =Label56_3.Color
+                PressedFill: =Label56_3.Fill
+                Text: ="Search permit items"
+                Width: =304
+                X: =25
+                Y: =3
+                ZIndex: =3
+
+            estPerSec_LabTot As label:
+                FocusedBorderColor: =estPerSec_LabTot.BorderColor
+                HoverBorderColor: =estPerSec_LabTot.BorderColor
+                HoverColor: =estPerSec_LabTot.Color
+                HoverFill: =estPerSec_LabTot.Fill
+                PressedBorderColor: =estPerSec_LabTot.BorderColor
+                PressedColor: =estPerSec_LabTot.Color
+                PressedFill: =estPerSec_LabTot.Fill
+                Text: |-
+                    =If(CountRows (estPermitSecList_Current.permitItem) > 0,  Text(Sum(estPermitSecList_Current, labourCost_total ),"[$-en-US]$ ###,##0.00"), 0)
+                Width: =156
+                X: =849
+                Y: =2
+                ZIndex: =4
+
+            Label56_4 As label:
+                FocusedBorderColor: =Label56_4.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =39
+                HoverBorderColor: =Label56_4.BorderColor
+                HoverColor: =Label56_4.Color
+                HoverFill: =Label56_4.Fill
+                PressedBorderColor: =Label56_4.BorderColor
+                PressedColor: =Label56_4.Color
+                PressedFill: =Label56_4.Fill
+                Size: =14
+                Text: |-
+                    ="Total Material Cost:"
+                Width: =188
+                X: =1003
+                Y: =2
+                ZIndex: =5
+
+            estPerSec_MatTot As label:
+                FocusedBorderColor: =estPerSec_MatTot.BorderColor
+                Height: =39
+                HoverBorderColor: =estPerSec_MatTot.BorderColor
+                HoverColor: =estPerSec_MatTot.Color
+                HoverFill: =estPerSec_MatTot.Fill
+                PressedBorderColor: =estPerSec_MatTot.BorderColor
+                PressedColor: =estPerSec_MatTot.Color
+                PressedFill: =estPerSec_MatTot.Fill
+                Text: |-
+                    =If(CountRows (estPermitSecList_Current.permitItem) > 0,  Text(Sum(estPermitSecList_Current, materialCost_total ),"[$-en-US]$ ###,##0.00"), 0)
+                Width: =157
+                X: =1191
+                Y: =3
+                ZIndex: =6
+
+            Icon47 As icon.Search:
+                DisabledFill: =Icon47.Fill
+                FocusedBorderColor: =Icon47.BorderColor
+                Height: =44
+                HoverBorderColor: =ColorFade(Icon47.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon47.Color, 20%)
+                HoverFill: =Icon47.Fill
+                Icon: =Icon.Search
+                PressedBorderColor: =ColorFade(Icon47.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon47.Color, -20%)
+                PressedFill: =Icon47.Fill
+                Width: =36
+                X: =293
+                Y: =47
+                ZIndex: =7
+
+            Label77_3 As label:
+                FocusedBorderColor: =Label77_3.BorderColor
+                Height: =34
+                HoverBorderColor: =Label77_3.BorderColor
+                HoverColor: =Label77_3.Color
+                HoverFill: =Label77_3.Fill
+                PressedBorderColor: =Label77_3.BorderColor
+                PressedColor: =Label77_3.Color
+                PressedFill: =Label77_3.Fill
+                Size: =11
+                Text: ="Quantity"
+                Width: =84
+                X: =476
+                Y: =95
+                ZIndex: =8
+
+            Label57_3 As label:
+                BorderThickness: =1
+                Color: =RGBA(0, 18, 107, 1)
+                Fill: =RGBA(241, 244, 249, 1)
+                FocusedBorderColor: =Label57_3.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =56
+                HoverBorderColor: =Label57_3.BorderColor
+                HoverColor: =Label57_3.Color
+                HoverFill: =Label57_3.Fill
+                PressedBorderColor: =Label57_3.BorderColor
+                PressedColor: =Label57_3.Color
+                PressedFill: =Label57_3.Fill
+                Size: =16
+                Text: =" PERMITS SELECTED FOR THE ESTIMATE"
+                Width: =729
+                X: =632
+                Y: =52
+                ZIndex: =9
+
+            Label48_4 As label:
+                Color: =RGBA(168, 0, 0, 1)
+                FocusedBorderColor: =Label48_4.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =34
+                HoverBorderColor: =Label48_4.BorderColor
+                HoverColor: =Label48_4.Color
+                HoverFill: =Label48_4.Fill
+                Italic: =true
+                PressedBorderColor: =Label48_4.BorderColor
+                PressedColor: =Label48_4.Color
+                PressedFill: =Label48_4.Fill
+                Text: ="In case you want to delete ALL selected items "
+                Width: =370
+                X: =631
+                Y: =111
+                ZIndex: =11
+
+            Icon33_3 As icon.Trash:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon33_3.Fill
+                FocusedBorderColor: =Icon33_3.BorderColor
+                Height: =39
+                HoverBorderColor: =ColorFade(Icon33_3.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon33_3.Color, 20%)
+                HoverFill: =Icon33_3.Fill
+                Icon: =Icon.Trash
+                OnSelect: |
+                    =If(NewEstimate,
+                       Remove(ProjectEstPermits, Filter(ProjectEstPermits, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                           And Version = NewEstimateVersion And Type = NewEstimateType));
+                        UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                           And Version = NewEstimateVersion And Type = NewEstimateType, 
+                           {Permit_M_Cost: 0.0, Permit_L_Cost: 0.0}),
+                        Remove(ProjectEstPermits, Filter(ProjectEstPermits, ProjectID = EstimatesGallery.Selected.ProjectID And 
+                        Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                        UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                         And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                         {Permit_M_Cost: 0.0, Permit_L_Cost: 0.0});
+                     );
+                    ClearCollect(EstPermitList, Permits);//once type is added filter base on estimate type ie enmax or fortis etc
+                    UpdateContext({GP_visible:true, msgWindowP:false, msgToDsiplayP:"", msgWindowCancelP:false, msgWindowOkP:false, saveDisableP:false});
+                    If(NewEstimate, 
+                         //exisiting permit list for new estimate should be empty
+                         ClearCollect(estPermitSecList_Current, Filter(ProjectEstPermits, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                         And Version = NewEstimateVersion And Type = NewEstimateType));,
+                         //existing permit list for est will may or may not have items
+                         ClearCollect(estPermitSecList_Current, Filter(ProjectEstPermits, ProjectID = EstimatesGallery.Selected.ProjectID And 
+                           Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                    );
+                    //Remove permits that are already part of the current est permit list
+                    //RemoveIf(EstPermitList, xcav_id in estPermitSecList_Current.xcavID);
+                PressedBorderColor: =ColorFade(Icon33_3.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon33_3.Color, -20%)
+                PressedFill: =Icon33_3.Fill
+                Width: =62
+                X: =994
+                Y: =111
+                ZIndex: =12
+
+            estSrcSelectedPermit As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                FocusedBorderColor: =estSrcSelectedPermit.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =estSrcSelectedPermit.HoverBorderColor
+                PressedColor: =estSrcSelectedPermit.Color
+                PressedFill: =estSrcSelectedPermit.Fill
+                X: =876
+                Y: =156
+                ZIndex: =13
+
+            Label85 As label:
+                FocusedBorderColor: =Label85.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =Label85.BorderColor
+                HoverColor: =Label85.Color
+                HoverFill: =Label85.Fill
+                PressedBorderColor: =Label85.BorderColor
+                PressedColor: =Label85.Color
+                PressedFill: =Label85.Fill
+                Text: ="Search selected permits"
+                Width: =237
+                X: =638
+                Y: =154
+                ZIndex: =14
+
+            Icon49 As icon.Search:
+                DisabledFill: =Icon49.Fill
+                FocusedBorderColor: =Icon49.BorderColor
+                Height: =40
+                HoverBorderColor: =ColorFade(Icon49.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon49.Color, 20%)
+                HoverFill: =Icon49.Fill
+                Icon: =Icon.Search
+                PressedBorderColor: =ColorFade(Icon49.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon49.Color, -20%)
+                PressedFill: =Icon49.Fill
+                Width: =40
+                X: =1156
+                Y: =156
+                ZIndex: =15
+
+            "EstSelectedPermitGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dotted
+                BorderThickness: =2
+                DisabledBorderColor: =EstSelectedPermitGallery.BorderColor
+                DisabledFill: =EstSelectedPermitGallery.Fill
+                Height: =430
+                HoverBorderColor: =EstSelectedPermitGallery.BorderColor
+                HoverFill: =EstSelectedPermitGallery.Fill
+                Items: |+
+                    =SortByColumns(Search(estPermitSecList_Current, estSrcSelectedPermit.Text, "permitItem"), "permitItem", SortOrder.Ascending)
+                    
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =EstSelectedPermitGallery.BorderColor
+                PressedBorderColor: =EstSelectedPermitGallery.BorderColor
+                PressedFill: =EstSelectedPermitGallery.Fill
+                ShowNavigation: =true
+                ShowScrollbar: =false
+                TemplatePadding: =0
+                TemplateSize: =94
+                Width: =741
+                X: =620
+                Y: =238
+                ZIndex: =16
+
+                Title1_3 As label:
+                    FocusedBorderColor: =Title1_3.BorderColor
+                    Height: =43
+                    HoverBorderColor: =Title1_3.BorderColor
+                    HoverColor: =Title1_3.Color
+                    HoverFill: =Title1_3.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title1_3.BorderColor
+                    PressedColor: =Title1_3.Color
+                    PressedFill: =Title1_3.Fill
+                    Size: =10
+                    Text: =Concatenate(ThisItem.permitItem, " | ", ThisItem.vendor, " | ", ThisItem.uom)
+                    Width: =355
+                    X: =16
+                    Y: =3
+                    ZIndex: =1
+
+                Subtitle2_3 As label:
+                    FocusedBorderColor: =Subtitle2_3.BorderColor
+                    Height: =38
+                    HoverBorderColor: =Subtitle2_3.BorderColor
+                    HoverColor: =Subtitle2_3.Color
+                    HoverFill: =Subtitle2_3.Fill
+                    OnSelect: =Select(Parent)
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Subtitle2_3.BorderColor
+                    PressedColor: =Subtitle2_3.Color
+                    PressedFill: =Subtitle2_3.Fill
+                    Size: =10
+                    Text: |-
+                        =Concatenate("L:",Text(ThisItem.qty * ThisItem.labourCost,"[$-en-US]$ ###,##0.00"))
+                    Width: =100
+                    X: =445
+                    Y: =16
+                    ZIndex: =2
+
+                Separator1_3 As rectangle:
+                    DisabledFill: =Separator1_3.Fill
+                    FocusedBorderColor: =Separator1_3.BorderColor
+                    Height: =1
+                    HoverFill: =Separator1_3.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator1_3.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                Icon18_3 As icon.Trash:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Color: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =Icon18_3.Fill
+                    FocusedBorderColor: =Icon18_3.BorderColor
+                    Height: =30
+                    HoverBorderColor: =ColorFade(Icon18_3.BorderColor, 20%)
+                    HoverColor: =ColorFade(Icon18_3.Color, 20%)
+                    HoverFill: =Icon18_3.Fill
+                    Icon: =Icon.Trash
+                    OnSelect: |-
+                        =/*If(GP_visible,
+                            Collect(EstPermitList, LookUp('[dbo].[Permits]', xcav_id = ThisItem.xcavID)), false);*/
+                        Remove(estPermitSecList_Current, ThisItem);
+                    PressedBorderColor: =ColorFade(Icon18_3.BorderColor, -20%)
+                    PressedColor: =ColorFade(Icon18_3.Color, -20%)
+                    PressedFill: =Icon18_3.Fill
+                    Width: =33
+                    X: =692
+                    Y: =16
+                    ZIndex: =6
+
+                Label83_3 As label:
+                    FocusedBorderColor: =Label83_3.BorderColor
+                    Height: =39
+                    HoverBorderColor: =Label83_3.BorderColor
+                    HoverColor: =Label83_3.Color
+                    HoverFill: =Label83_3.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label83_3.BorderColor
+                    PressedColor: =Label83_3.Color
+                    PressedFill: =Label83_3.Fill
+                    Size: =10
+                    Text: |-
+                        =Concatenate("M:",Text(ThisItem.qty * ThisItem.materialCost,"[$-en-US]$ ###,##0.00"))
+                    Width: =91
+                    X: =545
+                    Y: =15
+                    ZIndex: =8
+
+                Label86 As label:
+                    FocusedBorderColor: =Label86.BorderColor
+                    Height: =38
+                    HoverBorderColor: =Label86.BorderColor
+                    HoverColor: =Label86.Color
+                    HoverFill: =Label86.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label86.BorderColor
+                    PressedColor: =Label86.Color
+                    PressedFill: =Label86.Fill
+                    Size: =10
+                    Text: =ThisItem.qty
+                    Visible: =false
+                    Width: =35
+                    X: =432
+                    Y: =16
+                    ZIndex: =9
+
+                TextInput9 As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: =ThisItem.qty
+                    Format: =TextFormat.Number
+                    Height: =34
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    OnChange: |-
+                        =Patch(estPermitSecList_Current, ThisItem, 
+                            {qty: Value(TextInput9.Text), 
+                            labourCost_total: Value(TextInput9.Text) * ThisItem.labourCost, 
+                            materialCost_total: Value(TextInput9.Text) * ThisItem.materialCost})
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =TextInput9.HoverBorderColor
+                    PressedColor: =TextInput9.Color
+                    PressedFill: =TextInput9.Fill
+                    Size: =11
+                    Width: =52
+                    X: =383
+                    Y: =15
+                    ZIndex: =11
+
+                estPermitTask As dropdown:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    ChevronBackground: =RGBA(36, 76, 90, 1)
+                    ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                    Default: =ThisItem.Task
+                    Height: =29
+                    HoverBorderColor: =ColorFade(estPermitTask.BorderColor, 15%)
+                    Items: =["M", "C", "D", "P", "X", "Q", "R", "CC", "IS"]
+                    OnChange: |-
+                        =If(Not(IsBlank(ThisItem.permitTableID)),
+                            UpdateIf(estPermitSecList_Current, permitTableID = ThisItem.permitTableID, {Task: estPermitTask.Selected.Value}),
+                            Patch(estPermitSecList_Current, ThisItem, {Task: estPermitTask.Selected.Value}))
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =estPermitTask.HoverBorderColor
+                    PressedFill: =RGBA(36, 76, 90, 1)
+                    SelectionFill: =RGBA(36, 76, 90, 1)
+                    Size: =11
+                    Width: =73
+                    X: =52
+                    Y: =60
+                    ZIndex: =12
+
+                estPermitAcct As dropdown:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    ChevronBackground: =RGBA(36, 76, 90, 1)
+                    ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                    Default: |-
+                        =Switch(ThisItem.AcctCategory,
+                            "50013", "50013	Equipment in",
+                            "50026", "50026	Accomodation",
+                            "50028", "50028	Cost of Materials", 
+                            "50030", "50030	Material/reel Deposits",
+                            "50032", "50032	Freight",
+                            "50034", "50034 Survey",	
+                            "50036", "50036	Construction Labour Sub-Cont", 
+                            "50038", "50038	Cable & Transformer Testing", 
+                            "50039", "50039	Compaction Testing",
+                            "50040", "50040	Concrete Ready Mix",
+                            "50041", "50041 Concrete Cutting",	
+                            "50044", "50044	Directional Drilling Services",
+                            "50045", "50045	Landfill Dumping and Disposal", 
+                            "50046", "50046	Fusing and Gas Subcontracts",
+                        	"50047", "50047 Ground Thawing",
+                            "50048", "50048	Hydrovacing & Dumping",  
+                            "50049", "50049	Landscaping Material and Subco",
+                            "50050", "50050	Paving", 
+                            "50051", "50051	City ULA & Excavation Permits",
+                            "50052", "50052	Rental Signs",
+                            "50053", "50053	Sand, Gravel and Aggregates",  
+                            "50054", "50054	Traffic Control", 
+                            "50057", "50057	Trucking Services", 
+                            "50058", "50058	Equipment Rental",
+                            "50059", "50059	Field Consumables",
+                            "50062", "50062	Contingency Cost"
+                        )
+                    Height: =29
+                    HoverBorderColor: =ColorFade(estPermitAcct.BorderColor, 15%)
+                    Items: |-
+                        =["50013	Equipment in",  
+                         "50026	Accomodation", 
+                         "50028	Cost of Materials", 
+                         "50030	Material/reel Deposits",
+                         "50032 Freight", 
+                         "50034 Survey", 
+                         "50036 Construction Labour Sub-Cont", 
+                         "50038	Cable & Transformer Testing", 
+                         "50039	Compaction Testing",
+                         "50040	Concrete Ready Mix", 
+                         "50041 Concrete Cutting", 
+                         "50044	Directional Drilling Services", 
+                         "50045	Landfill Dumping and Disposal", 
+                         "50046	Fusing and Gas Subcontracts", 
+                         "50047 Ground Thawing",
+                         "50048	Hydrovacing & Dumping", 
+                         "50049	Landscaping Material and Subco", 
+                         "50050	Paving", 
+                         "50051	City ULA & Excavation Permits", 
+                         "50052	Rental Signs",
+                         "50053	Sand, Gravel and Aggregates", 
+                         "50054	Traffic Control", 
+                         "50057	Trucking Services", 
+                         "50058	Equipment Rental",
+                         "50059	Field Consumables", 
+                         "50062	Contingency Cost"]
+                    OnChange: |-
+                        =If(Not(IsBlank(ThisItem.permitTableID)),
+                            UpdateIf(estPermitSecList_Current, permitTableID = ThisItem.permitTableID, {AcctCategory: Left(estPermitAcct.Selected.Value,5)}),
+                             Patch(estPermitSecList_Current, ThisItem, {AcctCategory: Left(estPermitAcct.Selected.Value,5)}))
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =estPermitAcct.HoverBorderColor
+                    PressedFill: =RGBA(36, 76, 90, 1)
+                    SelectionFill: =RGBA(36, 76, 90, 1)
+                    Size: =11
+                    Width: =228
+                    X: =192
+                    Y: =60
+                    ZIndex: =13
+
+                Label152_2 As label:
+                    Height: =29
+                    OnSelect: =Select(Parent)
+                    Size: =11
+                    Text: |-
+                        ="Task: "
+                    Width: =47
+                    X: =5
+                    Y: =60
+                    ZIndex: =14
+
+                Label152_3 As label:
+                    Height: =32
+                    OnSelect: =Select(Parent)
+                    Size: =11
+                    Text: |-
+                        ="Acct: "
+                    Width: =47
+                    X: =145
+                    Y: =60
+                    ZIndex: =15
+
+            Label77_4 As label:
+                FocusedBorderColor: =Label77_4.BorderColor
+                Height: =36
+                HoverBorderColor: =Label77_4.BorderColor
+                HoverColor: =Label77_4.Color
+                HoverFill: =Label77_4.Fill
+                PressedBorderColor: =Label77_4.BorderColor
+                PressedColor: =Label77_4.Color
+                PressedFill: =Label77_4.Fill
+                Size: =11
+                Text: ="Quantity"
+                Width: =71
+                X: =1004
+                Y: =199
+                ZIndex: =17
+
+    Icon45 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon45.Fill
+        FocusedBorderColor: =Icon45.BorderColor
+        HoverBorderColor: =ColorFade(Icon45.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon45.Color, 20%)
+        HoverFill: =Icon45.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =UpdateContext({saveDisableP:true,  msgWindowP:true, msgWindowOkP:true, msgWindowCancelP:true, procPermit:true, 
+            msgToDsiplayP:""});
+            /*msgToDsiplayP:Concatenate("Choose one of the following options, it is recommended to save your work before going back", Char(13), Char(13), "Press Save to save your work, if needed.", Char(13), Char(13), "Press Cancel to stay on this screen.",
+            Char(13), Char(13), "Press Proceed Without Save to go back and ignore the changes you made.")*/
+        PressedBorderColor: =ColorFade(Icon45.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon45.Color, -20%)
+        PressedFill: =Icon45.Fill
+        Tooltip: ="Go back"
+        X: =1290
+        Y: =13
+        ZIndex: =4
+
+    SavePermitstoEst As icon.Save:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =SavePermitstoEst.Fill
+        DisplayMode: =If(Not(saveDisableP), DisplayMode.Edit, DisplayMode.Disabled)
+        FocusedBorderColor: =SavePermitstoEst.BorderColor
+        HoverBorderColor: =ColorFade(SavePermitstoEst.BorderColor, 20%)
+        HoverColor: =ColorFade(SavePermitstoEst.Color, 20%)
+        HoverFill: =SavePermitstoEst.Fill
+        Icon: =Icon.Save
+        OnSelect: |-
+            =If(NewEstimate,
+               Remove(ProjectEstPermits, Filter(ProjectEstPermits, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType));
+                    UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, 
+                   {Permit_M_Cost: Value(estPerSec_MatTot.Text), Permit_L_Cost: Value(estPerSec_LabTot.Text)}),
+                Remove(ProjectEstPermits, Filter(ProjectEstPermits, ProjectID = EstimatesGallery.Selected.ProjectID And
+                   Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                {Permit_M_Cost: Value(estPerSec_MatTot.Text), Permit_L_Cost: Value(estPerSec_LabTot.Text)});
+             );
+            Collect(ProjectEstPermits, estPermitSecList_Current);
+            If(IsEmpty(Errors(ProjectEstPermits)),
+                   // UpdateContext({msgWindow:true, msgToDsiplay:"Changes made to estimate's material section were successful!"})
+                    true,
+                    UpdateContext({msgWindowP:true, msgWindowCancelP:true, msgToDsiplayP:"Changes made to estimate's permit section failed, contact IT"})
+            );
+        PressedBorderColor: =ColorFade(SavePermitstoEst.BorderColor, -20%)
+        PressedColor: =ColorFade(SavePermitstoEst.Color, -20%)
+        PressedFill: =SavePermitstoEst.Fill
+        Tooltip: ="Save changes"
+        Visible: =false
+        X: =1226
+        Y: =12
+        ZIndex: =5
+
+    estPermitPopUpWindow As rectangle:
+        BorderStyle: =BorderStyle.Dashed
+        BorderThickness: =2
+        DisabledFill: =estPermitPopUpWindow.Fill
+        Fill: =RGBA(241, 244, 249, 0.9)
+        FocusedBorderColor: =estPermitPopUpWindow.BorderColor
+        Height: =662
+        HoverFill: =estPermitPopUpWindow.Fill
+        PressedFill: =estPermitPopUpWindow.Fill
+        Visible: =msgWindowP
+        Width: =1305
+        X: =33
+        Y: =88
+        ZIndex: =6
+
+    estPermitMsg As label:
+        Color: =RGBA(168, 0, 0, 1)
+        FocusedBorderColor: =estPermitMsg.BorderColor
+        FontWeight: =FontWeight.Bold
+        Height: =237
+        HoverBorderColor: =estPermitMsg.BorderColor
+        HoverColor: =estPermitMsg.Color
+        HoverFill: =estPermitMsg.Fill
+        PressedBorderColor: =estPermitMsg.BorderColor
+        PressedColor: =estPermitMsg.Color
+        PressedFill: =estPermitMsg.Fill
+        Size: =18
+        Text: =Text(msgToDsiplayP)
+        VerticalAlign: =VerticalAlign.Top
+        Visible: =msgWindowP
+        Width: =1198
+        X: =82
+        Y: =208
+        ZIndex: =7
+
+    okSaveDone_3 As button:
+        BorderColor: =ColorFade(okSaveDone_3.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =okSaveDone_3.BorderColor
+        Height: =60
+        HoverBorderColor: =ColorFade(okSaveDone_3.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =If(NewEstimate,
+               Remove(ProjectEstPermits, Filter(ProjectEstPermits, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType));
+                UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, 
+                   {Permit_M_Cost: Value(estPerSec_MatTot.Text), Permit_L_Cost: Value(estPerSec_LabTot.Text)}),
+                Remove(ProjectEstPermits, Filter(ProjectEstPermits, ProjectID = EstimatesGallery.Selected.ProjectID And
+                   Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                 And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                 {Permit_M_Cost: Value(estPerSec_MatTot.Text), Permit_L_Cost: Value(estPerSec_LabTot.Text)});
+             );
+            //Collect(ProjectEstPermits, estPermitSecList_Current);
+            ForAll(estPermitSecList_Current, Patch(ProjectEstPermits, Defaults(ProjectEstPermits), 
+                {ProjectID:ThisRecord.ProjectID, Stage: ThisRecord.Stage, Version: ThisRecord.Version, Type:ThisRecord.Type,
+                xcavID:ThisRecord.xcavID, permitItem: ThisRecord.permitItem, vendor: ThisRecord.vendor, uom: ThisRecord.uom, itemtype:ThisRecord.itemtype,
+                labourCost: ThisRecord.labourCost, materialCost: ThisRecord.materialCost, qty: ThisRecord.qty, labourCost_total:ThisRecord.labourCost_total,
+                materialCost_total:ThisRecord.materialCost_total, AcctCategory: ThisRecord.AcctCategory, Task: ThisRecord.Task}));
+            If(IsEmpty(Errors(ProjectEstPermits)),
+                    UpdateContext({GP_visible:false, msgWindowP:false, msgWindowCancelP:false, msgToDsiplayP:"", msgWindowOkP:false, procPermit:false});
+                    Navigate(MainEstimateScreen, ScreenTransition.Fade);,
+                    //UpdateContext({msgWindowP:true, msgToDsiplayP:"Changes made to estimate's permits section failed, contact IT", msgWindowCancelP:true})
+                    UpdateContext({msgWindowP:true, msgToDsiplayP:"", msgWindowCancelP:true});
+                    Navigate(MainEstimateScreen, ScreenTransition.Fade)
+            );
+            Reset(estSrcSelectedPermit);
+            Reset(EstSrcPermitText);
+        PressedBorderColor: =okSaveDone_3.Fill
+        PressedColor: =okSaveDone_3.Fill
+        PressedFill: =okSaveDone_3.Color
+        Text: ="Save"
+        Visible: = msgWindowOkP
+        X: =322
+        Y: =485
+        ZIndex: =8
+
+    CancelStay_3 As button:
+        BorderColor: =ColorFade(CancelStay_3.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelStay_3.BorderColor
+        Height: =60
+        HoverBorderColor: =ColorFade(CancelStay_3.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({saveDisableP:false,msgWindowP:false, msgWindowCancelP:false, msgToDsiplayP:"", msgWindowOkP:false, procPermit:false})
+        PressedBorderColor: =CancelStay_3.Fill
+        PressedColor: =CancelStay_3.Fill
+        PressedFill: =CancelStay_3.Color
+        Text: ="Cancel"
+        Visible: =msgWindowCancelP
+        X: =727
+        Y: =485
+        ZIndex: =9
+
+    proceedPermit As button:
+        BorderColor: =ColorFade(proceedPermit.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        Height: =60
+        HoverBorderColor: =ColorFade(proceedPermit.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({GP_visible:false, msgWindowP:false, msgWindowCancelP:false, msgToDsiplayP:"", msgWindowOkP:false, procPermit:false});
+            Navigate(MainEstimateScreen, ScreenTransition.Fade);
+        PressedBorderColor: =proceedPermit.Fill
+        PressedColor: =proceedPermit.Fill
+        PressedFill: =proceedPermit.Color
+        Text: ="Proceed Without Save"
+        Visible: =procPermit
+        X: =524
+        Y: =485
+        ZIndex: =10
+

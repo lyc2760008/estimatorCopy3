@@ -1,0 +1,125 @@
+HomeScreen As screen:
+    Fill: |-
+        =RGBA(255, 255, 255, 1)
+        //this is test from yichen's branch
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =UpdateContext({showSpinner: true });
+        Refresh(Users); 
+        ClearCollect(EstimatorUsers, Users);
+        UpdateContext({showSpinner: false });
+    Orientation: =If(HomeScreen.Width < HomeScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= HomeScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    HomeScreenTitleBar As rectangle:
+        DisabledFill: =HomeScreenTitleBar.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =HomeScreenTitleBar.BorderColor
+        Height: =88
+        HoverFill: =HomeScreenTitleBar.Fill
+        PressedFill: =HomeScreenTitleBar.Fill
+        Width: =Parent.Width
+        ZIndex: =1
+
+    HomeScreenTitle As label:
+        Align: =Align.Center
+        FocusedBorderColor: =HomeScreenTitle.BorderColor
+        Font: =Font.'Lato Light'
+        Height: =88
+        HoverBorderColor: =HomeScreenTitle.BorderColor
+        HoverColor: =HomeScreenTitle.Color
+        HoverFill: =HomeScreenTitle.Fill
+        PressedBorderColor: =HomeScreenTitle.BorderColor
+        PressedColor: =HomeScreenTitle.Color
+        PressedFill: =HomeScreenTitle.Fill
+        Size: =30
+        Text: ="DESIGN BUILD ESTIMATOR"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    Enmax As image:
+        FocusedBorderColor: =Enmax.BorderColor
+        HoverBorderColor: =ColorFade(Enmax.BorderColor, 20%)
+        HoverFill: =ColorFade(Enmax.Fill, 20%)
+        Image: ='ENMAX.svg'
+        OnSelect: =Set(NewEstimateType, "Enmax");Set(CurrentEstimateType, "Enmax");Navigate(MainScreen,ScreenTransition.Cover);
+        PressedBorderColor: =ColorFade(Enmax.BorderColor, -20%)
+        PressedFill: =ColorFade(Enmax.Fill, -20%)
+        Tooltip: ="Enmax Estimate"
+        Width: =238
+        X: =177
+        Y: =156
+        ZIndex: =3
+
+    FortisAlberta As image:
+        FocusedBorderColor: =FortisAlberta.BorderColor
+        HoverBorderColor: =ColorFade(FortisAlberta.BorderColor, 20%)
+        HoverFill: =ColorFade(FortisAlberta.Fill, 20%)
+        Image: =fortisab_blue
+        OnSelect: =Set(NewEstimateType, "Fortis Alberta");Set(CurrentEstimateType, "Fortis Alberta");Navigate(MainScreen,ScreenTransition.Cover);
+        PressedBorderColor: =ColorFade(FortisAlberta.BorderColor, -20%)
+        PressedFill: =ColorFade(FortisAlberta.Fill, -20%)
+        Tooltip: ="Fortis Alberta Estimate"
+        Width: =238
+        X: =550
+        Y: =156
+        ZIndex: =4
+
+    CityofCalgary As image:
+        FocusedBorderColor: =CityofCalgary.BorderColor
+        HoverBorderColor: =ColorFade(CityofCalgary.BorderColor, 20%)
+        HoverFill: =ColorFade(CityofCalgary.Fill, 20%)
+        Image: ='CoC logo'
+        OnSelect: =Set(NewEstimateType, "City of Calgary");Set(CurrentEstimateType, "City of Calgary");Navigate(MainScreen,ScreenTransition.Cover);
+        PressedBorderColor: =ColorFade(CityofCalgary.BorderColor, -20%)
+        PressedFill: =ColorFade(CityofCalgary.Fill, -20%)
+        Tooltip: ="City of Calgary Estimate"
+        Width: =238
+        X: =908
+        Y: =156
+        ZIndex: =5
+
+    PECLogo As image:
+        BorderColor: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(255, 255, 255, 1)
+        FocusedBorderColor: =PECLogo.BorderColor
+        Height: =88
+        HoverBorderColor: =ColorFade(PECLogo.BorderColor, 20%)
+        HoverFill: =ColorFade(PECLogo.Fill, 20%)
+        Image: =PRI_Logo_RGB_TM_201222
+        PressedBorderColor: =ColorFade(PECLogo.BorderColor, -20%)
+        PressedFill: =ColorFade(PECLogo.Fill, -20%)
+        Width: =168
+        ZIndex: =6
+
+    HomeSpinnerGrp As group:
+        Height: =5
+        Width: =5
+        X: =40
+        Y: =-48
+        ZIndex: =9
+
+        Rectangle1_1 As rectangle:
+            DisabledFill: =Rectangle1_1.Fill
+            Fill: =RGBA(255,255, 255, 0.85)
+            Height: =768
+            HoverFill: =Rectangle1_1.Fill
+            PressedFill: =Rectangle1_1.Fill
+            Visible: =showSpinner
+            Width: =1366
+            ZIndex: =7
+
+        Image1 As image:
+            Height: =156
+            HoverBorderColor: =ColorFade(Image1.BorderColor, 20%)
+            HoverFill: =ColorFade(Image1.Fill, 20%)
+            Image: ='Pulse-1s-200px'
+            PressedBorderColor: =ColorFade(Image1.BorderColor, -20%)
+            PressedFill: =ColorFade(Image1.Fill, -20%)
+            Visible: =showSpinner
+            Width: =199
+            X: =623
+            Y: =285
+            ZIndex: =8
+

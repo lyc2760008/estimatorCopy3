@@ -1,0 +1,9 @@
+[
+  {
+    "IsComponentScoped": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "labPrices_edit_Struc",
+    "Type": "CollectionDataSourceInfo"
+  }
+]

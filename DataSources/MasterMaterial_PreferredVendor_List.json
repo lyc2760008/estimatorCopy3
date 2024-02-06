@@ -1,0 +1,48 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2022-04-26T20:48:40.5090000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "Archived": "Archived",
+      "CoCDescription": "CoCDescription",
+      "CoCItemNumber": "CoCItemNumber",
+      "ConstructionDescription": "ConstructionDescription",
+      "ConstructionItemNumber": "ConstructionItemNumber",
+      "EnmaxDescritption": "EnmaxDescritption",
+      "EnmaxItemNumber": "EnmaxItemNumber",
+      "FortisDescription": "FortisDescription",
+      "FortisItemNumber": "FortisItemNumber",
+      "InStockQuantity": "InStockQuantity",
+      "LastModifiedBy": "LastModifiedBy",
+      "LastModifiedDate": "LastModifiedDate",
+      "minQtyNotes": "minQtyNotes",
+      "minQtyOrder": "minQtyOrder",
+      "PreferredVendDescr": "PreferredVendDescr",
+      "PreferredVendorGPrice": "PreferredVendorGPrice",
+      "PreferredVendorName": "PreferredVendorName",
+      "PreferredVendorPrice": "PreferredVendorPrice",
+      "PrefIncrement": "PrefIncrement",
+      "PrefIncrementPrice": "PrefIncrementPrice",
+      "PrefLeadTime": "PrefLeadTime",
+      "PrefLeadTimeDays": "PrefLeadTimeDays",
+      "PrimaryItemNumber": "PrimaryItemNumber",
+      "TelecomDescription": "TelecomDescription",
+      "TelecomItemNumber": "TelecomItemNumber",
+      "TrafficSignalDescription": "TrafficSignalDescription",
+      "TrafficSignalItemNumber": "TrafficSignalItemNumber",
+      "UoM": "UoM",
+      "ValidToDate": "ValidToDate",
+      "VendCategory": "VendCategory"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "MasterMaterial_PreferredVendor_List",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

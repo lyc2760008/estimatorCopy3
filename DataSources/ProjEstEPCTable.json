@@ -1,0 +1,28 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2022-03-29T18:53:27.9820000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "epc_ID": "epc_ID",
+      "epcItem": "epcItem",
+      "epcPercentage": "epcPercentage",
+      "epcQty_Factor": "epcQty_Factor",
+      "epcRate": "epcRate",
+      "ProjectID": "ProjectID",
+      "Stage": "Stage",
+      "totalEPCValue": "totalEPCValue",
+      "Type": "Type",
+      "Version": "Version"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "ProjEstEPCTable",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

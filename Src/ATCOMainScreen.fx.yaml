@@ -1,0 +1,597 @@
+ATCOMainScreen As screen:
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =UpdateContext({visible: false, editable: false, editIcon:true, showATCOAdminSpinner:false});
+        Refresh(ATCO_Table);
+        ClearCollect(ATCOList, ATCO_Table);
+        ResetForm(ATCOForm);
+    Orientation: =If(ATCOMainScreen.Width < ATCOMainScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= ATCOMainScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    ScreenLabel_8 As label:
+        Color: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =ScreenLabel_8.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =82
+        HoverBorderColor: =ScreenLabel_8.BorderColor
+        HoverColor: =ScreenLabel_8.Color
+        HoverFill: =ScreenLabel_8.Fill
+        PressedBorderColor: =ScreenLabel_8.BorderColor
+        PressedColor: =ScreenLabel_8.Color
+        PressedFill: =ScreenLabel_8.Fill
+        Size: =26
+        Text: ="  ATCO RATES MAIN SCREEN"
+        Width: =1364
+        ZIndex: =1
+
+    "ATCOGallery As gallery.'BrowseLayout_Vertical_TwoTextVariant_ver4.0'":
+        DisabledBorderColor: =ATCOGallery.BorderColor
+        DisabledFill: =ATCOGallery.Fill
+        Height: =568
+        HoverBorderColor: =ATCOGallery.BorderColor
+        HoverFill: =ATCOGallery.Fill
+        Items: =ATCOList
+        Layout: =Layout.Vertical
+        LoadingSpinnerColor: =ATCOGallery.BorderColor
+        PressedBorderColor: =ATCOGallery.BorderColor
+        PressedFill: =ATCOGallery.Fill
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =55
+        Width: =1366
+        Y: =82
+        ZIndex: =1
+
+        Title4_5 As label:
+            FocusedBorderColor: =Title4_5.BorderColor
+            Height: =37
+            HoverBorderColor: =Title4_5.BorderColor
+            HoverColor: =Title4_5.Color
+            HoverFill: =Title4_5.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Title4_5.BorderColor
+            PressedColor: =Title4_5.Color
+            PressedFill: =Title4_5.Fill
+            Text: =ThisItem.ATCO_descrip
+            VerticalAlign: =VerticalAlign.Top
+            Width: =945
+            X: =32
+            Y: =8
+            ZIndex: =1
+
+        Separator4_5 As rectangle:
+            DisabledFill: =Separator4_5.Fill
+            FocusedBorderColor: =Separator4_5.BorderColor
+            Height: =1
+            HoverFill: =Separator4_5.Fill
+            OnSelect: =Select(Parent)
+            PressedFill: =Separator4_5.Fill
+            Width: =Parent.TemplateWidth
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =4
+
+        atcoID_label As label:
+            FocusedBorderColor: =atcoID_label.BorderColor
+            HoverBorderColor: =atcoID_label.BorderColor
+            HoverColor: =atcoID_label.Color
+            HoverFill: =atcoID_label.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =atcoID_label.BorderColor
+            PressedColor: =atcoID_label.Color
+            PressedFill: =atcoID_label.Fill
+            Text: =ThisItem.ATCO_id
+            Visible: =false
+            X: =1001
+            Y: =15
+            ZIndex: =6
+
+        UoMInput_2 As text:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Default: =ThisItem.ATCO_uom
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            FocusedBorderColor: =UoMInput_2.BorderColor
+            Height: =32
+            HoverBorderColor: =RGBA(36, 76, 90, 1)
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =UoMInput_2.HoverBorderColor
+            PressedColor: =UoMInput_2.Color
+            PressedFill: =UoMInput_2.Fill
+            Width: =54
+            X: =1111
+            Y: =13
+            ZIndex: =7
+
+        atcoRebateAmt As text:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Default: =ThisItem.ATCO_price
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            FocusedBorderColor: =atcoRebateAmt.BorderColor
+            Height: =29
+            HoverBorderColor: =RGBA(36, 76, 90, 1)
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =atcoRebateAmt.HoverBorderColor
+            PressedColor: =atcoRebateAmt.Color
+            PressedFill: =atcoRebateAmt.Fill
+            Width: =67
+            X: =1214
+            Y: =15
+            ZIndex: =10
+
+    refreshIcon_5 As icon.Reload:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =refreshIcon_5.Fill
+        FocusedBorderColor: =refreshIcon_5.BorderColor
+        HoverBorderColor: =ColorFade(refreshIcon_5.BorderColor, 20%)
+        HoverColor: =ColorFade(refreshIcon_5.Color, 20%)
+        HoverFill: =refreshIcon_5.Fill
+        Icon: =Icon.Reload
+        OnSelect: |-
+            =Refresh(ATCO_Table);
+            ClearCollect(ATCOList, ATCO_Table);
+        PressedBorderColor: =ColorFade(refreshIcon_5.BorderColor, -20%)
+        PressedColor: =ColorFade(refreshIcon_5.Color, -20%)
+        PressedFill: =refreshIcon_5.Fill
+        Tooltip: ="Refresh list"
+        X: =1145
+        Y: =9
+        ZIndex: =3
+
+    SubmitATCOItemForm As button:
+        BorderColor: =ColorFade(SubmitATCOItemForm.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =SubmitATCOItemForm.BorderColor
+        HoverBorderColor: =ColorFade(SubmitATCOItemForm.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =SubmitForm(ATCOForm); 
+            ResetForm(ATCOForm);
+            UpdateContext({visible:false});
+            Refresh(ATCO_Table);
+            ClearCollect(ATCOList, ATCO_Table);
+        PressedBorderColor: =SubmitATCOItemForm.Fill
+        PressedColor: =SubmitATCOItemForm.Fill
+        PressedFill: =SubmitATCOItemForm.Color
+        Text: ="Submit"
+        Visible: =visible
+        X: =1177
+        Y: =663
+        ZIndex: =4
+
+    backIcon_5 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =backIcon_5.Fill
+        FocusedBorderColor: =backIcon_5.BorderColor
+        HoverBorderColor: =ColorFade(backIcon_5.BorderColor, 20%)
+        HoverColor: =ColorFade(backIcon_5.Color, 20%)
+        HoverFill: =backIcon_5.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: =Navigate(MainScreen,ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(backIcon_5.BorderColor, -20%)
+        PressedColor: =ColorFade(backIcon_5.Color, -20%)
+        PressedFill: =backIcon_5.Fill
+        Tooltip: ="Go back to previous screen"
+        X: =1289
+        Y: =9
+        ZIndex: =5
+
+    CancelATCOItemForm As button:
+        BorderColor: =ColorFade(CancelATCOItemForm.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelATCOItemForm.BorderColor
+        HoverBorderColor: =ColorFade(CancelATCOItemForm.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |
+            =ResetForm(ATCOForm);
+            UpdateContext({visible:false})
+        PressedBorderColor: =CancelATCOItemForm.Fill
+        PressedColor: =CancelATCOItemForm.Fill
+        PressedFill: =CancelATCOItemForm.Color
+        Text: ="Cancel"
+        Visible: =visible
+        X: =1177
+        Y: =712
+        ZIndex: =6
+
+    addIcon_5 As icon.Add:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =addIcon_5.Fill
+        FocusedBorderColor: =addIcon_5.BorderColor
+        HoverBorderColor: =ColorFade(addIcon_5.BorderColor, 20%)
+        HoverColor: =ColorFade(addIcon_5.Color, 20%)
+        HoverFill: =addIcon_5.Fill
+        Icon: =Icon.Add
+        OnSelect: |-
+            =UpdateContext({visible: true});
+            NewForm(ATCOForm);
+        PressedBorderColor: =ColorFade(addIcon_5.BorderColor, -20%)
+        PressedColor: =ColorFade(addIcon_5.Color, -20%)
+        PressedFill: =addIcon_5.Fill
+        Tooltip: ="Add a new item"
+        X: =1225
+        Y: =9
+        ZIndex: =7
+
+    ATCOForm As form:
+        AcceptsFocus: =false
+        DataSource: =ATCO_Table
+        Height: =104
+        NumberOfColumns: =4
+        SnapToColumns: =false
+        Visible: =visible
+        Width: =1122
+        Y: =663
+        ZIndex: =8
+
+        ATCO_descrip_DataCard1 As typedDataCard.textualEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="ATCO_descrip"
+            Default: =ThisItem.ATCO_descrip
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Item Description"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =81
+            MaxLength: =DataSourceInfo([@ATCO_Table], DataSourceInfo.MaxLength, "ATCO_descrip")
+            Required: =true
+            Update: =DataCardValue129.Text
+            Width: =280
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey131 As label:
+                AutoHeight: =true
+                Height: =34
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue129 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                MaxLength: =Parent.MaxLength
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue129.HoverBorderColor
+                PressedColor: =DataCardValue129.Color
+                PressedFill: =DataCardValue129.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey131.Y + DataCardKey131.Height + 5
+                ZIndex: =2
+
+            ErrorMessage131 As label:
+                AutoHeight: =true
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue129.Y + DataCardValue129.Height
+                ZIndex: =3
+
+            StarVisible131 As label:
+                Align: =Align.Center
+                Height: =DataCardKey131.Height
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey131.Y
+                ZIndex: =4
+
+        ATCO_notes_DataCard1 As typedDataCard.textualEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="ATCO_notes"
+            Default: =ThisItem.ATCO_notes
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Notes"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =71
+            MaxLength: =DataSourceInfo([@ATCO_Table], DataSourceInfo.MaxLength, "ATCO_notes")
+            Required: =false
+            Update: =DataCardValue130.Text
+            Width: =280
+            X: =1
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey132 As label:
+                AutoHeight: =true
+                Height: =34
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue130 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                MaxLength: =Parent.MaxLength
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue130.HoverBorderColor
+                PressedColor: =DataCardValue130.Color
+                PressedFill: =DataCardValue130.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey132.Y + DataCardKey132.Height + 5
+                ZIndex: =2
+
+            ErrorMessage132 As label:
+                AutoHeight: =true
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue130.Y + DataCardValue130.Height
+                ZIndex: =3
+
+            StarVisible132 As label:
+                Align: =Align.Center
+                Height: =DataCardKey132.Height
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey132.Y
+                ZIndex: =4
+
+        ATCO_uom_DataCard1 As typedDataCard.textualEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="ATCO_uom"
+            Default: =ThisItem.ATCO_uom
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="UoM"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =77
+            MaxLength: =DataSourceInfo([@ATCO_Table], DataSourceInfo.MaxLength, "ATCO_uom")
+            Required: =false
+            Update: =DataCardValue131.Text
+            Width: =280
+            X: =2
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey133 As label:
+                AutoHeight: =true
+                Height: =34
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue131 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                MaxLength: =Parent.MaxLength
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue131.HoverBorderColor
+                PressedColor: =DataCardValue131.Color
+                PressedFill: =DataCardValue131.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey133.Y + DataCardKey133.Height + 5
+                ZIndex: =2
+
+            ErrorMessage133 As label:
+                AutoHeight: =true
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue131.Y + DataCardValue131.Height
+                ZIndex: =3
+
+            StarVisible133 As label:
+                Align: =Align.Center
+                Height: =DataCardKey133.Height
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey133.Y
+                ZIndex: =4
+
+        ATCO_price_DataCard1 As typedDataCard.numberEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="ATCO_price"
+            Default: =ThisItem.ATCO_price
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: =DataSourceInfo([@ATCO_Table],DataSourceInfo.DisplayName,"ATCO_price")
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            Required: =true
+            Update: =Value(DataCardValue132.Text)
+            Width: =280
+            X: =3
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey134 As label:
+                AutoHeight: =true
+                Height: =34
+                Text: ="Price"
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue132 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                Format: =TextFormat.Number
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue132.HoverBorderColor
+                PressedColor: =DataCardValue132.Color
+                PressedFill: =DataCardValue132.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey134.Y + DataCardKey134.Height + 5
+                ZIndex: =2
+
+            ErrorMessage134 As label:
+                AutoHeight: =true
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue132.Y + DataCardValue132.Height
+                ZIndex: =3
+
+            StarVisible134 As label:
+                Align: =Align.Center
+                Height: =DataCardKey134.Height
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey134.Y
+                ZIndex: =4
+
+    saveIcon_5 As icon.Check:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =saveIcon_5.Fill
+        FocusedBorderColor: =saveIcon_5.BorderColor
+        HoverBorderColor: =ColorFade(saveIcon_5.BorderColor, 20%)
+        HoverColor: =ColorFade(saveIcon_5.Color, 20%)
+        HoverFill: =saveIcon_5.Fill
+        Icon: =Icon.Check
+        OnSelect: |
+            =UpdateContext({showATCOAdminSpinner:true});
+            ForAll(ATCOGallery.AllItems,
+                    Patch(ATCO_Table,
+                         LookUp(ATCOList, ATCO_id = Value(atcoID_label.Text)),
+                         {ATCO_price: Value(atcoRebateAmt.Text)},
+                         {ATCO_uom: UoMInput_2.Text}
+                    )
+            );
+            Refresh(ATCO_Table);
+            ClearCollect(ATCOList, ATCO_Table);
+            UpdateContext({editable:false, editIcon:true, showATCOAdminSpinner:false});
+        PressedBorderColor: =ColorFade(saveIcon_5.BorderColor, -20%)
+        PressedColor: =ColorFade(saveIcon_5.Color, -20%)
+        PressedFill: =saveIcon_5.Fill
+        Tooltip: ="Save changes"
+        Visible: =editable
+        X: =986
+        Y: =9
+        ZIndex: =10
+
+    Icon4_4 As icon.Edit:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon4_4.Fill
+        FocusedBorderColor: =Icon4_4.BorderColor
+        HoverBorderColor: =ColorFade(Icon4_4.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon4_4.Color, 20%)
+        HoverFill: =Icon4_4.Fill
+        Icon: =Icon.Edit
+        OnSelect: |-
+            =UpdateContext({editable:true, editIcon:false});
+        PressedBorderColor: =ColorFade(Icon4_4.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon4_4.Color, -20%)
+        PressedFill: =Icon4_4.Fill
+        Visible: =editIcon
+        X: =1065
+        Y: =9
+        ZIndex: =11
+
+    ATCOAdminSpinner As group:
+        Height: =5
+        Width: =5
+        X: =40
+        Y: =-48
+        ZIndex: =14
+
+        Rectangle1_11 As rectangle:
+            DisabledFill: =Rectangle1_11.Fill
+            Fill: =RGBA(255,255, 255, 0.85)
+            Height: =768
+            HoverFill: =Rectangle1_11.Fill
+            PressedFill: =Rectangle1_11.Fill
+            Visible: =showATCOAdminSpinner
+            Width: =1366
+            ZIndex: =12
+
+        Image1_11 As image:
+            Height: =156
+            HoverBorderColor: =ColorFade(Image1_11.BorderColor, 20%)
+            HoverFill: =ColorFade(Image1_11.Fill, 20%)
+            Image: ='Pulse-1s-200px'
+            PressedBorderColor: =ColorFade(Image1_11.BorderColor, -20%)
+            PressedFill: =ColorFade(Image1_11.Fill, -20%)
+            Visible: =showATCOAdminSpinner
+            Width: =199
+            X: =623
+            Y: =285
+            ZIndex: =13
+

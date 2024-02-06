@@ -1,0 +1,1506 @@
+"AddMaterialsToEst As screen.'phoneLayout_FluidGridWithHeaderPageLayout_ver3.0'":
+    Fill: =RGBA(255, 255, 255, 1) 
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |
+        =Refresh(MasterMaterial_PreferredVendor_List);
+        Refresh(VendorSupplies);
+        Refresh(ProjectEstMaterials);
+        Clear(estMaterialSecList_Current);
+        Set(matCountTemp,0);//this will help in doing multiple material entries for the same material item
+        UpdateContext({G1_visible: false ,G2_visible: false ,msgWindow: false ,msgToDsiplay:"",msgWindowCancel: false ,msgWindowOk: false ,saveDisable: false ,procMat: false ,matPrice:0.0, toggleDefault:false});
+        If(NewEstimate,
+             //exisiting mat list for new estimate should be empty
+            ClearCollect(estMaterialSecList_Current,Filter(ProjectEstMaterials,ProjectID=NewEstimateProjectID And Stage=NewEstimateStage And Version=NewEstimateVersion And Type=NewEstimateType));
+            ClearCollect(EstVendorSupplieList,Filter(VendorSupplies,Archive= false  And VendorName=NewEstimateVendor And ItemType=NewEstimateType));
+            If(NewEstimateVendor="Preferred Vendor",
+                UpdateContext({G1_visible: true ,G2_visible: false }),
+                UpdateContext({G1_visible: false ,G2_visible: true }));,
+             //existing mat list for est will may or may not have items
+            ClearCollect(estMaterialSecList_Current,Filter(ProjectEstMaterials,ProjectID=EstimatesGallery.Selected.ProjectID And Stage=EstimatesGallery.Selected.Stage And Version=EstimatesGallery.Selected.Version And Type=EstimatesGallery.Selected.Type));       
+            ClearCollect(EstVendorSupplieList,Filter(VendorSupplies,Archive= false  And VendorName=EstimatesGallery.Selected.MaterialSupplier And ItemType=EstimatesGallery.Selected.Type));
+            If(EstimatesGallery.Selected.MaterialSupplier="Preferred Vendor",
+                UpdateContext({G1_visible: true ,G2_visible: false }),
+                UpdateContext({G1_visible: false ,G2_visible: true })););
+        // lists to choose from G1 -->EstPrefVendList always Pref Vend
+        // old code only when enmax modified aug19,21
+        //ClearCollect(EstPrefVendList,Filter('[dbo].[MasterMaterial_PreferredVendor_List]',Archived= false ));
+        Switch(NewEstimateType,
+            "Enmax", ClearCollect(EstPrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                             Archived = false And EnmaxItemNumber <> "NA")),
+            "Fortis Alberta", ClearCollect(EstPrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                             Archived = false And FortisItemNumber <> "NA")),
+            "City of Calgary", ClearCollect(EstPrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                              Archived = false And CoCItemNumber <> "NA"))
+        );
+        //RemoveIf(EstPrefVendList, PrimaryItemNumber in estMaterialSecList_Current.PrimaryNum); to allow multiple entries of same material item
+        
+        //G2-->EstVendorSupplieList the chosen vendor other than pref vend.
+        
+        //RemoveIf(EstVendorSupplieList, PrimItemNum in estMaterialSecList_Current.PrimaryNum);
+    Orientation: =If(AddMaterialsToEst.Width < AddMaterialsToEst.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= AddMaterialsToEst.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    RectQuickActionBar4 As rectangle:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        DisabledFill: =RectQuickActionBar4.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =RectQuickActionBar4.BorderColor
+        Height: =88
+        HoverFill: =RectQuickActionBar4.Fill
+        PressedFill: =RectQuickActionBar4.Fill
+        Width: =Parent.Width
+        ZIndex: =1
+
+    LblAppName4 As label:
+        FocusedBorderColor: =LblAppName4.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =88
+        HoverBorderColor: =LblAppName4.BorderColor
+        HoverColor: =LblAppName4.Color
+        HoverFill: =LblAppName4.Fill
+        PressedBorderColor: =LblAppName4.BorderColor
+        PressedColor: =LblAppName4.Color
+        PressedFill: =LblAppName4.Fill
+        Size: =20
+        Text: =" ADD ESTIMATE'S MATERIAL SECTION"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    Canvas6 As fluidGrid.fluidGridWithBlankCard:
+        BorderThickness: =0
+        Height: =680
+        Width: =Parent.Width
+        Y: =RectQuickActionBar4.Y + RectQuickActionBar4.Height
+        ZIndex: =3
+
+        DataCard6 As dataCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            BorderThickness: =0
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =649
+            Width: =Parent.Width
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            ChooseSupLabel As label:
+                FocusedBorderColor: =ChooseSupLabel.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =42
+                HoverBorderColor: =ChooseSupLabel.BorderColor
+                HoverColor: =ChooseSupLabel.Color
+                HoverFill: =ChooseSupLabel.Fill
+                PressedBorderColor: =ChooseSupLabel.BorderColor
+                PressedColor: =ChooseSupLabel.Color
+                PressedFill: =ChooseSupLabel.Fill
+                Size: =12
+                Text: |-
+                    =If(NewEstimate,  
+                          Concatenate("Choosen supplier for this estimate is : ", NewEstimateVendor),
+                          Concatenate("Choosen supplier for this estimate is : ", EstimatesGallery.Selected.MaterialSupplier)
+                    )
+                Width: =616
+                X: =28
+                Y: =1
+                ZIndex: =1
+
+            "EstChosenSupplierGallery1 As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dotted
+                BorderThickness: =2
+                DisabledBorderColor: =EstChosenSupplierGallery1.BorderColor
+                DisabledFill: =EstChosenSupplierGallery1.Fill
+                Height: =508
+                HoverBorderColor: =EstChosenSupplierGallery1.BorderColor
+                HoverFill: =EstChosenSupplierGallery1.Fill
+                Items: |+
+                    =Switch(NewEstimateType,
+                      "Enmax",
+                        SortByColumns(Search(EstPrefVendList, EstSrchMatSec.Text,"PreferredVendDescr","EnmaxItemNumber","EnmaxDescritption","PreferredVendorName","VendCategory"),"EnmaxItemNumber", SortOrder.Ascending),
+                     "Fortis Alberta",
+                        SortByColumns(Search(EstPrefVendList, EstSrchMatSec.Text,"PreferredVendDescr","FortisItemNumber","FortisDescription","PreferredVendorName","VendCategory"),"FortisItemNumber", SortOrder.Ascending),
+                        "City of Calgary",
+                        SortByColumns(Search(EstPrefVendList, EstSrchMatSec.Text,"PreferredVendDescr","CoCItemNumber","CoCDescription","PreferredVendorName","VendCategory"),"CoCItemNumber", SortOrder.Ascending)
+                    )
+                    
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =EstChosenSupplierGallery1.BorderColor
+                PressedBorderColor: =EstChosenSupplierGallery1.BorderColor
+                PressedFill: =EstChosenSupplierGallery1.Fill
+                TemplatePadding: =0
+                TemplateSize: =130
+                Visible: =G1_visible
+                Width: =657
+                X: =6
+                Y: =115
+                ZIndex: =1
+
+                Title8 As label:
+                    Color: |-
+                        =If(Value(G1_QTY.Text) > 0,
+                          Color.Green,
+                          Color.Black
+                        )
+                    FocusedBorderColor: =Title8.BorderColor
+                    HoverBorderColor: =Title8.BorderColor
+                    HoverColor: |-
+                        =If(Value(G1_QTY.Text) > 0,
+                          Color.Green,
+                          Color.Black
+                        )
+                    HoverFill: =
+                    OnSelect: =Select(Parent)
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title8.BorderColor
+                    PressedColor: =Title8.Color
+                    PressedFill: =Title8.Fill
+                    Size: =10
+                    Text: |-
+                        =Switch(
+                            NewEstimateType,
+                            "Enmax",
+                            Concatenate(
+                                ThisItem.EnmaxItemNumber,
+                                " | ",
+                                ThisItem.PreferredVendorName,
+                                " | ",
+                                Left(
+                                    ThisItem.PreferredVendDescr,
+                                    60
+                                ),
+                                " | ",
+                                ThisItem.UoM
+                            ),
+                            "Fortis Alberta",
+                            Concatenate(
+                                ThisItem.FortisItemNumber,
+                                " | ",
+                                ThisItem.PreferredVendorName,
+                                " | ",
+                                Left(
+                                    ThisItem.PreferredVendDescr,
+                                    60
+                                ),
+                                " | ",
+                                ThisItem.UoM
+                            ),
+                            "City of Calgary",
+                            Concatenate(
+                                ThisItem.CoCItemNumber,
+                                " | ",
+                                ThisItem.PreferredVendorName,
+                                " | ",
+                                ThisItem.PreferredVendDescr,
+                                " | ",
+                                ThisItem.UoM
+                            )
+                        )
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =491
+                    X: =16
+                    Y: =4
+                    ZIndex: =1
+
+                Subtitle6 As label:
+                    FocusedBorderColor: =Subtitle6.BorderColor
+                    Height: =31
+                    HoverBorderColor: =Subtitle6.BorderColor
+                    HoverColor: =Subtitle6.Color
+                    HoverFill: =Subtitle6.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Subtitle6.BorderColor
+                    PressedColor: =Subtitle6.Color
+                    PressedFill: =Subtitle6.Fill
+                    Size: =10
+                    Text: |-
+                        =Switch(
+                            NewEstimateType,
+                            "Enmax",
+                            Concatenate(
+                                ThisItem.EnmaxItemNumber,
+                                " | ",
+                                ThisItem.EnmaxDescritption,
+                                " | ",
+                                ThisItem.UoM
+                            ),
+                            "Fortis Alberta",
+                            Concatenate(
+                                ThisItem.FortisItemNumber,
+                                " | ",
+                                Left(
+                                    ThisItem.FortisDescription,
+                                    60
+                                ),
+                                " | ",
+                                ThisItem.UoM
+                            ),
+                            "City of Calgary",
+                            Concatenate(
+                                ThisItem.CoCItemNumber,
+                                " | ",
+                                ThisItem.CoCDescription,
+                                " | ",
+                                ThisItem.UoM
+                            )
+                        )
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =491
+                    X: =16
+                    Y: =44
+                    ZIndex: =2
+
+                Separator8 As rectangle:
+                    BorderStyle: =BorderStyle.Dashed
+                    BorderThickness: =2
+                    DisabledFill: =Separator8.Fill
+                    FocusedBorderColor: =Separator8.BorderColor
+                    Height: =0
+                    HoverFill: =Separator8.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator8.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                g1_add As icon.Add:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Color: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =g1_add.Fill
+                    FocusedBorderColor: =g1_add.BorderColor
+                    Height: =36
+                    HoverBorderColor: =ColorFade(g1_add.BorderColor, 20%)
+                    HoverColor: =ColorFade(g1_add.Color, 20%)
+                    HoverFill: =g1_add.Fill
+                    Icon: =Icon.Add
+                    OnSelect: |-
+                        =UpdateContext({tempMatItemNUmber : ""});
+                        If(ThisItem.ValidToDate <=Now(),
+                           If(ThisItem.PreferredVendorPrice > 0, 
+                                 UpdateContext({matPrice:ThisItem.PreferredVendorPrice}),
+                                 UpdateContext({matPrice:ThisItem.PreferredVendorGPrice})),
+                           UpdateContext({matPrice:ThisItem.PreferredVendorPrice})
+                        );
+                        Switch(NewEstimateType,
+                            "Enmax",
+                            UpdateContext({tempMatItemNUmber : ThisItem.EnmaxItemNumber}),
+                            "Fortis Alberta",
+                            UpdateContext({tempMatItemNUmber : ThisItem.FortisItemNumber}),
+                            "City of Calgary",
+                            UpdateContext({tempMatItemNUmber : ThisItem.CoCItemNumber})
+                        );
+                        If(NewEstimate,
+                           Collect(estMaterialSecList_Current,
+                            {ProjectID:NewEstimateProjectID, Stage: NewEstimateStage, Version: NewEstimateVersion, 
+                            Type: NewEstimateType,
+                            //PrimaryNum: ThisItem.PrimaryItemNumber,
+                            //itemNumber: LookUp(VendorSupplies,VendorName = ThisItem.PreferredVendorName And PrimItemNum = ThisItem.PrimaryItemNumber And ItemType = NewEstimateType, ItemNum),
+                            itemNumber : tempMatItemNUmber,
+                            qty: Value(G1_QTY.Text),
+                            price: matPrice,
+                            descr: ThisItem.PreferredVendDescr,
+                            AcctCategory: Left(matAcctDropdown.Selected.Value,5), Task: matTaskDropdown.Selected.Value}
+                           );,
+                         Collect(estMaterialSecList_Current,
+                            {ProjectID:EstimatesGallery.Selected.ProjectID, Stage: EstimatesGallery.Selected.Stage, Version: EstimatesGallery.Selected.Version, 
+                            Type: EstimatesGallery.Selected.Type,
+                            //PrimaryNum: ThisItem.PrimaryItemNumber,
+                            //itemNumber:  LookUp(VendorSupplies,VendorName = ThisItem.PreferredVendorName And PrimItemNum = ThisItem.PrimaryItemNumber And ItemType = EstimatesGallery.Selected.Type, ItemNum),
+                            itemNumber : tempMatItemNUmber,
+                            qty: Value(G1_QTY.Text),
+                            price: matPrice,
+                            //descr: LookUp('[dbo].[VendorSupplies]',VendorName = ThisItem.PreferredVendorName And PrimItemNum = ThisItem.PrimaryItemNumber And ItemType = EstimatesGallery.Selected.Type, Description),
+                            descr: ThisItem.PreferredVendDescr,
+                            AcctCategory: Left(matAcctDropdown.Selected.Value,5), Task: matTaskDropdown.Selected.Value}
+                           );
+                        );
+                        //Remove(EstPrefVendList, ThisItem);
+                        Reset(G1_QTY); Reset(matTaskDropdown); Reset(matAcctDropdown);
+                        UpdateContext({tempMatItemNUmber : ""});
+                    PressedBorderColor: =ColorFade(g1_add.BorderColor, -20%)
+                    PressedColor: =ColorFade(g1_add.Color, -20%)
+                    PressedFill: =g1_add.Fill
+                    Width: =52
+                    X: =592
+                    Y: =2
+                    ZIndex: =6
+
+                G1_QTY As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: ="0"
+                    FocusedBorderColor: =G1_QTY.BorderColor
+                    Format: =TextFormat.Number
+                    Height: =28
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =G1_QTY.HoverBorderColor
+                    PressedColor: =G1_QTY.Color
+                    PressedFill: =RGBA(255, 255, 255, 1)
+                    Size: =10
+                    Width: =62
+                    X: =530
+                    Y: =4
+                    ZIndex: =7
+
+                G1_PRICE As label:
+                    Color: |-
+                        =If(ThisItem.ValidToDate <=Now(),
+                           Color.Red,
+                           Color.Green
+                        )
+                    FocusedBorderColor: =G1_PRICE.BorderColor
+                    Height: =41
+                    HoverBorderColor: =G1_PRICE.BorderColor
+                    HoverColor: =G1_PRICE.Color
+                    HoverFill: =G1_PRICE.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =G1_PRICE.BorderColor
+                    PressedColor: =G1_PRICE.Color
+                    PressedFill: =G1_PRICE.Fill
+                    Size: =10
+                    Text: |-
+                        =If(ThisItem.ValidToDate <=Now(),
+                           If(ThisItem.PreferredVendorPrice > 0, 
+                                 If(Value(G1_QTY.Text) > 0,
+                                     Text(ThisItem.PreferredVendorPrice * G1_QTY.Text,"[$-en-US]$ ###,##0.00"),
+                                     Text(ThisItem.PreferredVendorPrice,"[$-en-US]$ ###,##0.00")),
+                                 If(Value(G1_QTY.Text) > 0,
+                                     Text(ThisItem.PreferredVendorGPrice * G1_QTY.Text,"[$-en-US]$ ###,##0.00"),
+                                     Text(ThisItem.PreferredVendorGPrice,"[$-en-US]$ ###,##0.00"))),
+                           If(Value(G1_QTY.Text) > 0,
+                                     Text(ThisItem.PreferredVendorPrice * G1_QTY.Text,"[$-en-US]$ ###,##0.00"),
+                                     Text(ThisItem.PreferredVendorPrice,"[$-en-US]$ ###,##0.00"))
+                        )
+                    Width: =100
+                    X: =553
+                    Y: =38
+                    ZIndex: =8
+
+                Label78 As label:
+                    FocusedBorderColor: =Label78.BorderColor
+                    Height: =29
+                    HoverBorderColor: =Label78.BorderColor
+                    HoverColor: =Label78.Color
+                    HoverFill: =Label78.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label78.BorderColor
+                    PressedColor: =Label78.Color
+                    PressedFill: =Label78.Fill
+                    Size: =10
+                    Text: |-
+                        =Concatenate("Min Qty: ", Text(ThisItem.minQtyOrder))
+                    Tooltip: =ThisItem.minQtyNotes
+                    Width: =112
+                    X: =16
+                    Y: =79
+                    ZIndex: =9
+
+                matTaskDropdown As dropdown:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    ChevronBackground: =RGBA(36, 76, 90, 1)
+                    ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                    Default: ="M"
+                    Height: =27
+                    HoverBorderColor: =ColorFade(matTaskDropdown.BorderColor, 15%)
+                    Items: =["M", "C", "D", "P", "X", "Q", "R", "CC", "IS"]
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =matTaskDropdown.HoverBorderColor
+                    PressedFill: =RGBA(36, 76, 90, 1)
+                    SelectionFill: =RGBA(36, 76, 90, 1)
+                    Size: =10
+                    Width: =71
+                    X: =310
+                    Y: =81
+                    ZIndex: =10
+
+                Label15 As label:
+                    Height: =34
+                    OnSelect: =Select(Parent)
+                    Size: =10
+                    Text: |-
+                        ="Task:" 
+                    Width: =44
+                    X: =266
+                    Y: =79
+                    ZIndex: =11
+
+                Label66 As label:
+                    Height: =27
+                    OnSelect: =Select(Parent)
+                    Size: =10
+                    Text: |-
+                        ="Acct:"
+                    Width: =41
+                    X: =389
+                    Y: =81
+                    ZIndex: =12
+
+                matAcctDropdown As dropdown:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    ChevronBackground: =RGBA(36, 76, 90, 1)
+                    ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                    Default: ="50028	Cost of Materials"
+                    Height: =32
+                    HoverBorderColor: =ColorFade(matAcctDropdown.BorderColor, 15%)
+                    Items: |-
+                        =["50013	Equipment in",  
+                         "50026	Accomodation", 
+                         "50028	Cost of Materials", 
+                         "50030	Material/reel Deposits",
+                         "50032 Freight", 
+                         "50034 Survey", 
+                         "50036 Construction Labour Sub-Cont", 
+                         "50038	Cable & Transformer Testing", 
+                         "50039	Compaction Testing",
+                         "50040	Concrete Ready Mix", 
+                         "50041 Concrete Cutting", 
+                         "50044	Directional Drilling Services", 
+                         "50045	Landfill Dumping and Disposal", 
+                         "50046	Fusing and Gas Subcontracts", 
+                         "50047 Ground Thawing",
+                         "50048	Hydrovacing & Dumping", 
+                         "50049	Landscaping Material and Subco", 
+                         "50050	Paving", 
+                         "50051	City ULA & Excavation Permits", 
+                         "50052	Rental Signs",
+                         "50053	Sand, Gravel and Aggregates", 
+                         "50054	Traffic Control", 
+                         "50057	Trucking Services", 
+                         "50058	Equipment Rental",
+                         "50059	Field Consumables", 
+                         "50062	Contingency Cost"]
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =matAcctDropdown.HoverBorderColor
+                    PressedFill: =RGBA(36, 76, 90, 1)
+                    SelectionFill: =RGBA(36, 76, 90, 1)
+                    Size: =10
+                    Width: =212
+                    X: =430
+                    Y: =81
+                    ZIndex: =13
+
+            Label53 As label:
+                FocusedBorderColor: =Label53.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =Label53.BorderColor
+                HoverColor: =Label53.Color
+                HoverFill: =Label53.Fill
+                PressedBorderColor: =Label53.BorderColor
+                PressedColor: =Label53.Color
+                PressedFill: =Label53.Fill
+                Size: =14
+                Text: |-
+                    ="Total Material Cost :"
+                Width: =202
+                X: =917
+                Y: =3
+                ZIndex: =2
+
+            EstMatSecTotal As label:
+                FocusedBorderColor: =EstMatSecTotal.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =EstMatSecTotal.BorderColor
+                HoverColor: =EstMatSecTotal.Color
+                HoverFill: =EstMatSecTotal.Fill
+                PressedBorderColor: =EstMatSecTotal.BorderColor
+                PressedColor: =EstMatSecTotal.Color
+                PressedFill: =EstMatSecTotal.Fill
+                Size: =14
+                Text: |-
+                    =If(CountRows (estMaterialSecList_Current.itemNumber) > 0,  Text(Sum(estMaterialSecList_Current, price * qty),"[$-en-US]$ ###,##0.00"), 0)
+                X: =1117
+                Y: =1
+                ZIndex: =3
+
+            EstSrchMatSec As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                FocusedBorderColor: =EstSrchMatSec.BorderColor
+                Height: =38
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =EstSrchMatSec.HoverBorderColor
+                PressedColor: =EstSrchMatSec.Color
+                PressedFill: =RGBA(255, 255, 255, 1)
+                Width: =393
+                X: =28
+                Y: =59
+                ZIndex: =4
+
+            Icon27 As icon.Search:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon27.Fill
+                FocusedBorderColor: =Icon27.BorderColor
+                Height: =38
+                HoverBorderColor: =ColorFade(Icon27.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon27.Color, 20%)
+                HoverFill: =Icon27.Fill
+                Icon: =Icon.Search
+                PressedBorderColor: =ColorFade(Icon27.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon27.Color, -20%)
+                PressedFill: =Icon27.Fill
+                Width: =46
+                X: =375
+                Y: =59
+                ZIndex: =5
+
+            Label56 As label:
+                FocusedBorderColor: =Label56.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =44
+                HoverBorderColor: =Label56.BorderColor
+                HoverColor: =Label56.Color
+                HoverFill: =Label56.Fill
+                PressedBorderColor: =Label56.BorderColor
+                PressedColor: =Label56.Color
+                PressedFill: =Label56.Fill
+                Size: =12
+                Text: ="Search choosen supplier's list"
+                Width: =304
+                X: =28
+                Y: =22
+                ZIndex: =6
+
+            Label77 As label:
+                FocusedBorderColor: =Label77.BorderColor
+                HoverBorderColor: =Label77.BorderColor
+                HoverColor: =Label77.Color
+                HoverFill: =Label77.Fill
+                PressedBorderColor: =Label77.BorderColor
+                PressedColor: =Label77.Color
+                PressedFill: =Label77.Fill
+                Size: =11
+                Text: |-
+                    ="Qty /
+                    Unit Cost"
+                Width: =80
+                X: =519
+                Y: =75
+                ZIndex: =7
+
+            "EstChosenSupplierGallery2 As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dotted
+                BorderThickness: =2
+                DisabledBorderColor: =EstChosenSupplierGallery2.BorderColor
+                DisabledFill: =EstChosenSupplierGallery2.Fill
+                Height: =508
+                HoverBorderColor: =EstChosenSupplierGallery2.BorderColor
+                HoverFill: =EstChosenSupplierGallery2.Fill
+                Items: |+
+                    =SortByColumns(Search(EstVendorSupplieList, EstSrchMatSec.Text,"ItemNum","Description","Category"), "ItemNum", SortOrder.Ascending)
+                    
+                    
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =EstChosenSupplierGallery2.BorderColor
+                PressedBorderColor: =EstChosenSupplierGallery2.BorderColor
+                PressedFill: =EstChosenSupplierGallery2.Fill
+                TemplatePadding: =0
+                TemplateSize: =107
+                Visible: =G2_visible
+                Width: =638
+                X: =6
+                Y: =115
+                ZIndex: =8
+
+                Title8_4 As label:
+                    Color: |-
+                        =If(Value(G1_QTY_1.Text) > 0,
+                          Color.Green,
+                          Color.Black
+                        )
+                    FocusedBorderColor: =Title8_4.BorderColor
+                    Height: =36
+                    HoverBorderColor: =Title8_4.BorderColor
+                    HoverColor: |-
+                        =If(Value(G1_QTY_1.Text) > 0,
+                          Color.Green,
+                          Color.Black
+                        )
+                    HoverFill: =Title8_4.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title8_4.BorderColor
+                    PressedColor: =Title8_4.Color
+                    PressedFill: =Title8_4.Fill
+                    Size: =10
+                    Text: |+
+                        =Concatenate(ThisItem.ItemNum,": ",ThisItem.Description, " | ", ThisItem.uom)
+                        
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =484
+                    X: =16
+                    Y: =7
+                    ZIndex: =1
+
+                Subtitle6_2 As label:
+                    FocusedBorderColor: =Subtitle6_2.BorderColor
+                    Height: =27
+                    HoverBorderColor: =Subtitle6_2.BorderColor
+                    HoverColor: =Subtitle6_2.Color
+                    HoverFill: =Subtitle6_2.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Subtitle6_2.BorderColor
+                    PressedColor: =Subtitle6_2.Color
+                    PressedFill: =Subtitle6_2.Fill
+                    Size: =10
+                    Text: |-
+                        =Concatenate("Min Qty: ", Text(ThisItem.minQtyOrder))
+                    Tooltip: =ThisItem.minQtyNotes
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =116
+                    X: =24
+                    Y: =52
+                    ZIndex: =2
+
+                Separator8_4 As rectangle:
+                    DisabledFill: =Separator8_4.Fill
+                    FocusedBorderColor: =Separator8_4.BorderColor
+                    Height: =1
+                    HoverFill: =Separator8_4.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator8_4.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                g1_add_1 As icon.Add:
+                    DisabledFill: =g1_add_1.Fill
+                    FocusedBorderColor: =g1_add_1.BorderColor
+                    Height: =36
+                    HoverBorderColor: =ColorFade(g1_add_1.BorderColor, 20%)
+                    HoverColor: =ColorFade(g1_add_1.Color, 20%)
+                    HoverFill: =g1_add_1.Fill
+                    Icon: =Icon.Add
+                    OnSelect: |-
+                        =If(ThisItem.ValidToDate <=Now(),
+                           If(ThisItem.Price > 0, 
+                                 UpdateContext({matPrice:ThisItem.Price}),
+                                 UpdateContext({matPrice:ThisItem.GuessPrice})),
+                           UpdateContext({matPrice:ThisItem.Price})
+                        );
+                        If(NewEstimate,
+                           Collect(estMaterialSecList_Current,
+                            {ProjectID:NewEstimateProjectID, Stage: NewEstimateStage, Version: NewEstimateVersion, 
+                            Type: NewEstimateType,
+                            //PrimaryNum: ThisItem.PrimItemNum,
+                            itemNumber: ThisItem.ItemNum,
+                            descr:  ThisItem.Description,
+                            qty: Value(G1_QTY_1.Text),
+                            price: matPrice,
+                            AcctCategory: Left(matAcctDropdown_1.Selected.Value, 5), Task: matTaskDropdown_1.Selected.Value}
+                           ),
+                         Collect(estMaterialSecList_Current,
+                            {ProjectID:EstimatesGallery.Selected.ProjectID, Stage: EstimatesGallery.Selected.Stage, Version: EstimatesGallery.Selected.Version, 
+                            Type: EstimatesGallery.Selected.Type,
+                            //PrimaryNum: ThisItem.PrimItemNum,
+                            itemNumber: ThisItem.ItemNum,
+                            descr:  ThisItem.Description,
+                            qty: Value(G1_QTY_1.Text),
+                            price: matPrice,
+                            AcctCategory: Left(matAcctDropdown_1.Selected.Value, 5), Task: matTaskDropdown_1.Selected.Value}
+                           )
+                        );
+                        Reset(G1_QTY_1); Reset(matAcctDropdown_1); Reset(matTaskDropdown_1);
+                        //Remove(EstVendorSupplieList, ThisItem);
+                    PressedBorderColor: =ColorFade(g1_add_1.BorderColor, -20%)
+                    PressedColor: =ColorFade(g1_add_1.Color, -20%)
+                    PressedFill: =g1_add_1.Fill
+                    Width: =52
+                    X: =578
+                    Y: =7
+                    ZIndex: =6
+
+                G1_QTY_1 As text:
+                    Default: ="0"
+                    FocusedBorderColor: =G1_QTY_1.BorderColor
+                    Format: =TextFormat.Number
+                    Height: =30
+                    HoverFill: =RGBA(255, 255, 255, 1)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =G1_QTY_1.HoverBorderColor
+                    PressedColor: =G1_QTY_1.Color
+                    PressedFill: =RGBA(255, 255, 255, 1)
+                    Size: =10
+                    Width: =57
+                    X: =505
+                    Y: =10
+                    ZIndex: =7
+
+                G1_PRICE_1 As label:
+                    Color: |-
+                        =If(ThisItem.ValidToDate <=Now(),
+                           Color.Red,
+                           Color.Green
+                        )
+                    FocusedBorderColor: =G1_PRICE_1.BorderColor
+                    HoverBorderColor: =G1_PRICE_1.BorderColor
+                    HoverColor: =G1_PRICE_1.Color
+                    HoverFill: =G1_PRICE_1.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =G1_PRICE_1.BorderColor
+                    PressedColor: =G1_PRICE_1.Color
+                    PressedFill: =G1_PRICE_1.Fill
+                    Size: =10
+                    Text: |-
+                        =If(ThisItem.ValidToDate <=Now(),
+                           If(ThisItem.Price > 0, 
+                                 If(Value(G1_QTY_1.Text) > 0,
+                                     Text(ThisItem.Price * G1_QTY_1.Text,"[$-en-US]$ ###,##0.00"),
+                                     Text(ThisItem.Price,"[$-en-US]$ ###,##0.00")),
+                                 If(Value(G1_QTY_1.Text) > 0,
+                                     Text(ThisItem.GuessPrice * G1_QTY_1.Text,"[$-en-US]$ ###,##0.00"),
+                                     Text(ThisItem.GuessPrice,"[$-en-US]$ ###,##0.00"))),
+                           If(Value(G1_QTY_1.Text) > 0,
+                                     Text(ThisItem.Price * G1_QTY_1.Text,"[$-en-US]$ ###,##0.00"),
+                                     Text(ThisItem.Price,"[$-en-US]$ ###,##0.00"))
+                        )
+                    Width: =102
+                    X: =527
+                    Y: =52
+                    ZIndex: =8
+
+                matTaskDropdown_1 As dropdown:
+                    Default: ="M"
+                    Height: =27
+                    HoverBorderColor: =ColorFade(matTaskDropdown_1.BorderColor, 15%)
+                    Items: =["M", "C", "D", "P", "X", "Q", "R", "CC", "IS"]
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =matTaskDropdown_1.HoverBorderColor
+                    Size: =10
+                    Width: =71
+                    X: =172
+                    Y: =66
+                    ZIndex: =9
+
+                matAcctDropdown_1 As dropdown:
+                    Default: ="50028	Cost of Materials"
+                    Height: =32
+                    HoverBorderColor: =ColorFade(matAcctDropdown_1.BorderColor, 15%)
+                    Items: |-
+                        =["50013	Equipment in", "50026	Accomodation", "50028	Cost of Materials", "50030	Material/reel Deposits",
+                        "50032	Freight", "50036	Construction Labour Sub-Cont", "50038	Cable & Transformer Testing", "50039	Compaction Testing",
+                        "50040	Concrete Ready Mix", "50044	Directional Drilling Services", "50045	Landfill Dumping and Disposal", "50046	Fusing and Gas Subcontracts",
+                        "50048	Hydrovacing & Dumping", "50049	Landscaping Material and Subco", "50050	Paving", "50051	City ULA & Excavation Permits", "50052	Rental Signs",
+                        "50053	Sand, Gravel and Aggregates", "50054	Traffic Control", "50057	Trucking Services", "50058	Equipment Rental",
+                        "50059	Field Consumables", "50062	Contingency Cost"]
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =matAcctDropdown_1.HoverBorderColor
+                    Size: =10
+                    Width: =212
+                    X: =294
+                    Y: =64
+                    ZIndex: =10
+
+                Label106 As label:
+                    Height: =28
+                    OnSelect: =Select(Parent)
+                    Size: =10
+                    Text: |-
+                        ="Task:"
+                    Width: =55
+                    X: =130
+                    Y: =65
+                    ZIndex: =11
+
+                Label122 As label:
+                    Height: =32
+                    OnSelect: =Select(Parent)
+                    Size: =10
+                    Text: |-
+                        ="Acct:"
+                    Width: =54
+                    X: =252
+                    Y: =64
+                    ZIndex: =12
+
+            "EstSelectedMatGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dotted
+                BorderThickness: =2
+                DisabledBorderColor: =EstSelectedMatGallery.BorderColor
+                DisabledFill: =EstSelectedMatGallery.Fill
+                Height: =388
+                HoverBorderColor: =EstSelectedMatGallery.BorderColor
+                HoverFill: =EstSelectedMatGallery.Fill
+                Items: |+
+                    =SortByColumns(Search(estMaterialSecList_Current, EstChosenMat.Text, "itemNumber", "descr"), "itemNumber", SortOrder.Ascending)
+                    
+                    
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =EstSelectedMatGallery.BorderColor
+                PressedBorderColor: =EstSelectedMatGallery.BorderColor
+                PressedFill: =EstSelectedMatGallery.Fill
+                ShowNavigation: =true
+                ShowScrollbar: =false
+                TemplatePadding: =0
+                TemplateSize: =92
+                Width: =647
+                X: =696
+                Y: =235
+                ZIndex: =9
+
+                Title1 As label:
+                    FocusedBorderColor: =Title1.BorderColor
+                    Height: =42
+                    HoverBorderColor: =Title1.BorderColor
+                    HoverColor: =Title1.Color
+                    HoverFill: =Title1.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title1.BorderColor
+                    PressedColor: =Title1.Color
+                    PressedFill: =Title1.Fill
+                    Size: =10
+                    Text: |
+                        =//Concatenate(ThisItem.itemNumber, "|", Left(ThisItem.descr,60))
+                        Switch(NewEstimateType,
+                            "Enmax",Concatenate(ThisItem.itemNumber, " | ", ThisItem.descr),
+                            "Fortis Alberta",Concatenate(ThisItem.itemNumber, " | ", Left(ThisItem.descr, 60)),
+                            "City of Calgary",Concatenate(ThisItem.itemNumber, " | ", ThisItem.descr)
+                        )
+                    Tooltip: =ThisItem.descr
+                    Width: =291
+                    X: =13
+                    Y: =8
+                    ZIndex: =1
+
+                Subtitle2 As label:
+                    FocusedBorderColor: =Subtitle2.BorderColor
+                    Height: =38
+                    HoverBorderColor: =Subtitle2.BorderColor
+                    HoverColor: =Subtitle2.Color
+                    HoverFill: =Subtitle2.Fill
+                    OnSelect: =Select(Parent)
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Subtitle2.BorderColor
+                    PressedColor: =Subtitle2.Color
+                    PressedFill: =Subtitle2.Fill
+                    Size: =10
+                    Text: |-
+                        =Text(ThisItem.price,"[$-en-US]$ ###,##0.00")
+                    Width: =85
+                    X: =304
+                    Y: =9
+                    ZIndex: =2
+
+                Separator1 As rectangle:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =Separator1.Fill
+                    Fill: =RGBA(36, 76, 90, 1)
+                    FocusedBorderColor: =Separator1.BorderColor
+                    Height: =1
+                    HoverFill: =Separator1.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator1.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                Icon18 As icon.Trash:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Color: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =Icon18.Fill
+                    FocusedBorderColor: =Icon18.BorderColor
+                    Height: =39
+                    HoverBorderColor: =ColorFade(Icon18.BorderColor, 20%)
+                    HoverColor: =ColorFade(Icon18.Color, 20%)
+                    HoverFill: =Icon18.Fill
+                    Icon: =Icon.Trash
+                    OnSelect: |-
+                        =/*If(NewEstimate,  
+                              If(G2_visible,Collect(EstVendorSupplieList, LookUp('[dbo].[VendorSupplies]', PrimItemNum = ThisItem.PrimaryNum And
+                                      VendorName = NewEstimateVendor )), false),
+                              If(G2_visible,Collect(EstVendorSupplieList, LookUp('[dbo].[VendorSupplies]', PrimItemNum = ThisItem.PrimaryNum And
+                                      VendorName =  EstimatesGallery.Selected.MaterialSupplier )), false);
+                        );
+                        If(G1_visible,
+                           Collect(EstPrefVendList, LookUp('[dbo].[MasterMaterial_PreferredVendor_List]', PrimaryItemNumber = ThisItem.PrimaryNum)), false);*/
+                        Remove(estMaterialSecList_Current, ThisItem);
+                    PressedBorderColor: =ColorFade(Icon18.BorderColor, -20%)
+                    PressedColor: =ColorFade(Icon18.Color, -20%)
+                    PressedFill: =Icon18.Fill
+                    Width: =33
+                    X: =607
+                    Y: =8
+                    ZIndex: =6
+
+                Label83 As label:
+                    FocusedBorderColor: =Label83.BorderColor
+                    Height: =39
+                    HoverBorderColor: =Label83.BorderColor
+                    HoverColor: =Label83.Color
+                    HoverFill: =Label83.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label83.BorderColor
+                    PressedColor: =Label83.Color
+                    PressedFill: =Label83.Fill
+                    Size: =10
+                    Text: |-
+                        =Text(ThisItem.price * matQty.Text,"[$-en-US]$ ###,##0.00")
+                    Width: =90
+                    X: =483
+                    Y: =8
+                    ZIndex: =8
+
+                matQtyLabel As label:
+                    FocusedBorderColor: =matQtyLabel.BorderColor
+                    Height: =38
+                    HoverBorderColor: =matQtyLabel.BorderColor
+                    HoverColor: =matQtyLabel.Color
+                    HoverFill: =matQtyLabel.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =matQtyLabel.BorderColor
+                    PressedColor: =matQtyLabel.Color
+                    PressedFill: =matQtyLabel.Fill
+                    Size: =10
+                    Text: |-
+                        =Text(ThisItem.qty,"[$-en-US] ###,##0.00")
+                    Visible: =false
+                    Width: =46
+                    X: =403
+                    Y: =9
+                    ZIndex: =9
+
+                matQty As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: |-
+                        =Text(ThisItem.qty,"[$-en-US] ###,##0.00")
+                    Format: =TextFormat.Number
+                    Height: =39
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    OnChange: |
+                        =Patch(estMaterialSecList_Current, ThisItem,  {qty: Value(matQty.Text)});
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =matQty.HoverBorderColor
+                    PressedColor: =matQty.Color
+                    PressedFill: =matQty.Fill
+                    Size: =10
+                    Width: =87
+                    X: =381
+                    Y: =8
+                    ZIndex: =11
+
+                Dropdown22 As dropdown:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    ChevronBackground: =RGBA(36, 76, 90, 1)
+                    ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                    Default: =ThisItem.Task
+                    Height: =29
+                    HoverBorderColor: =ColorFade(Dropdown22.BorderColor, 15%)
+                    Items: =["M", "C", "D", "P", "X", "Q", "R", "CC", "IS"]
+                    OnChange: |-
+                        =If(Not(IsBlank(ThisItem.tableID)),
+                            UpdateIf(estMaterialSecList_Current, tableID = ThisItem.tableID, {Task: Dropdown22.Selected.Value}),
+                            Patch(estMaterialSecList_Current, ThisItem, {Task: Dropdown22.Selected.Value}))
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Dropdown22.HoverBorderColor
+                    PressedFill: =RGBA(36, 76, 90, 1)
+                    SelectionFill: =RGBA(36, 76, 90, 1)
+                    Size: =10
+                    Width: =64
+                    X: =58
+                    Y: =54
+                    ZIndex: =12
+
+                Label147 As label:
+                    Height: =32
+                    OnSelect: =Select(Parent)
+                    Size: =10
+                    Text: |-
+                        ="Task:"
+                    Width: =45
+                    X: =13
+                    Y: =50
+                    ZIndex: =13
+
+                Label148 As label:
+                    Height: =28
+                    OnSelect: =Select(Parent)
+                    Size: =10
+                    Text: |-
+                        ="Acct:"
+                    Width: =47
+                    X: =138
+                    Y: =54
+                    ZIndex: =14
+
+                Dropdown23 As dropdown:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    ChevronBackground: =RGBA(36, 76, 90, 1)
+                    ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                    Default: |-
+                        =Switch(ThisItem.AcctCategory,
+                            "50013", "50013	Equipment in",
+                            "50026", "50026	Accomodation",
+                            "50028", "50028	Cost of Materials", 
+                            "50030", "50030	Material/reel Deposits",
+                            "50032", "50032	Freight",
+                            "50034", "50034 Survey",	
+                            "50036", "50036	Construction Labour Sub-Cont", 
+                            "50038", "50038	Cable & Transformer Testing", 
+                            "50039", "50039	Compaction Testing",
+                            "50040", "50040	Concrete Ready Mix",
+                            "50041", "50041 Concrete Cutting",	
+                            "50044", "50044	Directional Drilling Services",
+                            "50045", "50045	Landfill Dumping and Disposal", 
+                            "50046", "50046	Fusing and Gas Subcontracts",
+                        	"50047", "50047 Ground Thawing",
+                            "50048", "50048	Hydrovacing & Dumping",  
+                            "50049", "50049	Landscaping Material and Subco",
+                            "50050", "50050	Paving", 
+                            "50051", "50051	City ULA & Excavation Permits",
+                            "50052", "50052	Rental Signs",
+                            "50053", "50053	Sand, Gravel and Aggregates",  
+                            "50054", "50054	Traffic Control", 
+                            "50057", "50057	Trucking Services", 
+                            "50058", "50058	Equipment Rental",
+                            "50059", "50059	Field Consumables",
+                            "50062", "50062	Contingency Cost"
+                        )
+                    Height: =28
+                    HoverBorderColor: =ColorFade(Dropdown23.BorderColor, 15%)
+                    Items: |-
+                        =["50013	Equipment in",  
+                         "50026	Accomodation", 
+                         "50028	Cost of Materials", 
+                         "50030	Material/reel Deposits",
+                         "50032 Freight", 
+                         "50034 Survey", 
+                         "50036 Construction Labour Sub-Cont", 
+                         "50038	Cable & Transformer Testing", 
+                         "50039	Compaction Testing",
+                         "50040	Concrete Ready Mix", 
+                         "50041 Concrete Cutting", 
+                         "50044	Directional Drilling Services", 
+                         "50045	Landfill Dumping and Disposal", 
+                         "50046	Fusing and Gas Subcontracts", 
+                         "50047 Ground Thawing",
+                         "50048	Hydrovacing & Dumping", 
+                         "50049	Landscaping Material and Subco", 
+                         "50050	Paving", 
+                         "50051	City ULA & Excavation Permits", 
+                         "50052	Rental Signs",
+                         "50053	Sand, Gravel and Aggregates", 
+                         "50054	Traffic Control", 
+                         "50057	Trucking Services", 
+                         "50058	Equipment Rental",
+                         "50059	Field Consumables", 
+                         "50062	Contingency Cost"]
+                    OnChange: |-
+                        =If(Not(IsBlank(ThisItem.tableID)),
+                            UpdateIf(estMaterialSecList_Current, tableID = ThisItem.tableID, {AcctCategory: Left(Dropdown23.Selected.Value,5)}),
+                             Patch(estMaterialSecList_Current, ThisItem, {AcctCategory: Left(Dropdown23.Selected.Value,5)}))
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Dropdown23.HoverBorderColor
+                    PressedFill: =RGBA(36, 76, 90, 1)
+                    SelectionFill: =RGBA(36, 76, 90, 1)
+                    Size: =10
+                    Width: =200
+                    X: =181
+                    Y: =54
+                    ZIndex: =15
+
+            Label57 As label:
+                BorderThickness: =1
+                Color: =RGBA(0, 18, 107, 1)
+                Fill: =RGBA(241, 244, 249, 1)
+                FocusedBorderColor: =Label57.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =56
+                HoverBorderColor: =Label57.BorderColor
+                HoverColor: =Label57.Color
+                HoverFill: =Label57.Fill
+                PressedBorderColor: =Label57.BorderColor
+                PressedColor: =Label57.Color
+                PressedFill: =Label57.Fill
+                Size: =16
+                Text: =" MATERIALS SELECTED FOR THE ESTIMATE"
+                Width: =660
+                X: =704
+                Y: =57
+                ZIndex: =10
+
+            Label81 As label:
+                Color: =RGBA(255, 0, 0, 1)
+                FocusedBorderColor: =Label81.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =30
+                HoverBorderColor: =Label81.BorderColor
+                HoverColor: =Label81.Color
+                HoverFill: =Label81.Fill
+                PressedBorderColor: =Label81.BorderColor
+                PressedColor: =Label81.Color
+                PressedFill: =Label81.Fill
+                Size: =12
+                Text: ="Once you are satisfied with the Selected Matrial list, Only then press save icon"
+                Underline: =true
+                Visible: =false
+                Width: =661
+                X: =688
+                Y: =125
+                ZIndex: =11
+
+            Icon33 As icon.Trash:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon33.Fill
+                FocusedBorderColor: =Icon33.BorderColor
+                Height: =35
+                HoverBorderColor: =ColorFade(Icon33.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon33.Color, 20%)
+                HoverFill: =Icon33.Fill
+                Icon: =Icon.Trash
+                OnSelect: |+
+                    =If(NewEstimate,
+                       Remove(ProjectEstMaterials, Filter(ProjectEstMaterials, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                           And Version = NewEstimateVersion And Type = NewEstimateType));
+                        UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                           And Version = NewEstimateVersion And Type = NewEstimateType, {Material_Cost: 0.0}),
+                        Remove(ProjectEstMaterials, Filter(ProjectEstMaterials, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                        UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                         And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                         {Material_Cost: 0.0})
+                     );
+                    If(NewEstimate, 
+                         //exisiting mat list for new estimate should be empty
+                         ClearCollect(estMaterialSecList_Current, Filter(ProjectEstMaterials, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                         And Version = NewEstimateVersion And Type = NewEstimateType));
+                        ClearCollect(EstVendorSupplieList, Filter(VendorSupplies, Archive = false And VendorName = NewEstimateVendor And 
+                                   ItemType = NewEstimateType));
+                        If(NewEstimateVendor = "Preferred Vendor", 
+                             UpdateContext({G1_visible:true, G2_visible:false}), 
+                             UpdateContext({G1_visible:false, G2_visible:true}));,
+                         //existing mat list for est will may or may not have items
+                         ClearCollect(estMaterialSecList_Current, Filter(ProjectEstMaterials, ProjectID = EstimatesGallery.Selected.ProjectID And 
+                           Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                        ClearCollect(EstVendorSupplieList, Filter(VendorSupplies, Archive = false And VendorName = EstimatesGallery.Selected.MaterialSupplier
+                            And ItemType = EstimatesGallery.Selected.Type));
+                        If(EstimatesGallery.Selected.MaterialSupplier = "Preferred Vendor", 
+                             UpdateContext({G1_visible:true, G2_visible:false}), 
+                             UpdateContext({G1_visible:false, G2_visible:true}));
+                    );
+                    // lists to choose from G1 -->EstPrefVendList always Pref Vend
+                    // old code only when enmax modified aug19,21
+                    //ClearCollect(EstPrefVendList, Filter('[dbo].[MasterMaterial_PreferredVendor_List]', Archived = false));
+                    Switch(NewEstimateType,
+                        "Enmax", ClearCollect(EstPrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                                         Archived = false And EnmaxItemNumber <> "NA")),
+                        "Fortis Alberta", ClearCollect(EstPrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                                         Archived = false And FortisItemNumber <> "NA")),
+                        "City of Calgary", ClearCollect(EstPrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                                          Archived = false And CoCItemNumber <> "NA"))
+                    );
+                    //RemoveIf(EstPrefVendList, PrimaryItemNumber in estMaterialSecList_Current.PrimaryNum);
+                    //G2-->EstVendorSupplieList the chosen vendor other than pref vend.
+                    //RemoveIf(EstVendorSupplieList, PrimItemNum in estMaterialSecList_Current.PrimaryNum);
+                    
+                PressedBorderColor: =ColorFade(Icon33.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon33.Color, -20%)
+                PressedFill: =Icon33.Fill
+                Width: =50
+                X: =1220
+                Y: =123
+                ZIndex: =12
+
+            Label48 As label:
+                Color: =RGBA(168, 0, 0, 1)
+                FocusedBorderColor: =Label48.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =31
+                HoverBorderColor: =Label48.BorderColor
+                HoverColor: =Label48.Color
+                HoverFill: =Label48.Fill
+                Italic: =true
+                PressedBorderColor: =Label48.BorderColor
+                PressedColor: =Label48.Color
+                PressedFill: =Label48.Fill
+                Size: =12
+                Text: ="If you change vendor during an estimate please delete ALL items first"
+                Width: =516
+                X: =704
+                Y: =124
+                ZIndex: =13
+
+            EstChosenMat As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                FocusedBorderColor: =EstChosenMat.BorderColor
+                Height: =38
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =EstChosenMat.HoverBorderColor
+                PressedColor: =EstChosenMat.Color
+                PressedFill: =EstChosenMat.Fill
+                Width: =243
+                X: =1093
+                Y: =163
+                ZIndex: =14
+
+            Label61 As label:
+                FocusedBorderColor: =Label61.BorderColor
+                Height: =41
+                HoverBorderColor: =Label61.BorderColor
+                HoverColor: =Label61.Color
+                HoverFill: =Label61.Fill
+                PressedBorderColor: =Label61.BorderColor
+                PressedColor: =Label61.Color
+                PressedFill: =Label61.Fill
+                Size: =12
+                Text: ="Search selected material items for the estimate"
+                Width: =385
+                X: =708
+                Y: =167
+                ZIndex: =15
+
+            Icon27_4 As icon.Search:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon27_4.Fill
+                FocusedBorderColor: =Icon27_4.BorderColor
+                Height: =37
+                HoverBorderColor: =ColorFade(Icon27_4.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon27_4.Color, 20%)
+                HoverFill: =Icon27_4.Fill
+                Icon: =Icon.Search
+                PressedBorderColor: =ColorFade(Icon27_4.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon27_4.Color, -20%)
+                PressedFill: =Icon27_4.Fill
+                Width: =46
+                X: =1289
+                Y: =164
+                ZIndex: =16
+
+            Label121 As label:
+                Height: =27
+                Size: =12
+                Text: ="Unit Cost"
+                Width: =83
+                X: =994
+                Y: =208
+                ZIndex: =20
+
+            Label82 As label:
+                Height: =27
+                Size: =12
+                Text: ="Qty"
+                Width: =66
+                X: =1092
+                Y: =208
+                ZIndex: =22
+
+            EstMatSecTotal_X As label:
+                FocusedBorderColor: =EstMatSecTotal_X.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =EstMatSecTotal_X.BorderColor
+                HoverColor: =EstMatSecTotal_X.Color
+                HoverFill: =EstMatSecTotal_X.Fill
+                PressedBorderColor: =EstMatSecTotal_X.BorderColor
+                PressedColor: =EstMatSecTotal_X.Color
+                PressedFill: =EstMatSecTotal_X.Fill
+                Size: =14
+                Text: |-
+                    =If(CountRows (estMaterialSecList_Current.itemNumber) > 0,  Text(Sum(Filter(estMaterialSecList_Current, Task = "X"), price * qty),"[$-en-US]$ ###,##0.00"), 0)
+                X: =513
+                Y: =3
+                ZIndex: =23
+
+    Icon25 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledColor: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon25.Fill
+        FocusedBorderColor: =Icon25.BorderColor
+        HoverBorderColor: =ColorFade(Icon25.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =Icon25.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =UpdateContext({saveDisable:true, msgWindow:true, msgWindowOk:true, msgWindowCancel:true, procMat:true, 
+            msgToDsiplay:Concatenate("")});
+            /*
+            msgToDsiplay:Concatenate("Choose one of the following options, it is recommended to save your work before going back", Char(13), Char(13), "Press Save to save your work, if needed.", Char(13), Char(13), "Press Cancel to stay on this screen.",
+            Char(13), Char(13), "Press Proceed Without Save to go back and ignore the changes you made."
+            */
+        PressedBorderColor: =ColorFade(Icon25.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon25.Color, -20%)
+        PressedFill: =Icon25.Fill
+        Tooltip: ="Go Back"
+        X: =1280
+        Y: =12
+        ZIndex: =4
+
+    estMatPopUpWindow As rectangle:
+        BorderStyle: =BorderStyle.Dashed
+        BorderThickness: =2
+        DisabledFill: =estMatPopUpWindow.Fill
+        Fill: =RGBA(241, 244, 249, 0.9)
+        FocusedBorderColor: =estMatPopUpWindow.BorderColor
+        Height: =680
+        HoverFill: =estMatPopUpWindow.Fill
+        PressedFill: =estMatPopUpWindow.Fill
+        Visible: =msgWindow
+        Width: =1282
+        X: =42
+        Y: =88
+        ZIndex: =8
+
+    estMatMsg As label:
+        Color: =RGBA(168, 0, 0, 1)
+        FocusedBorderColor: =estMatMsg.BorderColor
+        FontWeight: =FontWeight.Bold
+        Height: =240
+        HoverBorderColor: =estMatMsg.BorderColor
+        HoverColor: =estMatMsg.Color
+        HoverFill: =estMatMsg.Fill
+        PressedBorderColor: =estMatMsg.BorderColor
+        PressedColor: =estMatMsg.Color
+        PressedFill: =estMatMsg.Fill
+        Size: =18
+        Text: =Text(msgToDsiplay)
+        VerticalAlign: =VerticalAlign.Top
+        Visible: =msgWindow
+        Width: =1198
+        X: =82
+        Y: =199
+        ZIndex: =9
+
+    okSaveDone As button:
+        BorderColor: =ColorFade(okSaveDone.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =okSaveDone.BorderColor
+        Height: =71
+        HoverBorderColor: =ColorFade(okSaveDone.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =If(NewEstimate,
+               Remove(ProjectEstMaterials, Filter(ProjectEstMaterials, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType));
+                UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, {Material_Cost: Value(EstMatSecTotal.Text)}),
+                Remove(ProjectEstMaterials, Filter(ProjectEstMaterials, ProjectID = EstimatesGallery.Selected.ProjectID And
+                   Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                 And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                 {Material_Cost: Value(EstMatSecTotal.Text)});
+             );
+            //Collect('[dbo].[ProjectEstMaterials]', estMaterialSecList_Current);
+            ForAll(estMaterialSecList_Current,
+                Patch(ProjectEstMaterials, Defaults(ProjectEstMaterials),
+                {ProjectID: ThisRecord.ProjectID, Stage: ThisRecord.Stage, Version: ThisRecord.Version, 
+                Type: ThisRecord.Type,
+                //PrimaryNum: ThisRecord.PrimaryNum,
+                itemNumber: ThisRecord.itemNumber,
+                qty: ThisRecord.qty,
+                price: ThisRecord.price,
+                descr: ThisRecord.descr,
+                AcctCategory: ThisRecord.AcctCategory, Task: ThisRecord.Task})
+            );
+            If(IsEmpty(Errors(ProjectEstMaterials)),
+                    UpdateContext({msgWindow:false, msgWindowCancel:false, msgToDsiplay:"", msgWindowOk:false, procMat:false});
+                    Navigate(MainEstimateScreen, ScreenTransition.Fade);,
+                    UpdateContext({msgWindow:true, msgToDsiplay:"Changes made to estimate's material section failed, contact IT", msgWindowCancel:true})
+            );
+            Reset(EstSrchMatSec);
+            Reset(EstChosenMat);
+        PressedBorderColor: =okSaveDone.Fill
+        PressedColor: =okSaveDone.Fill
+        PressedFill: =okSaveDone.Color
+        Text: ="Save"
+        Visible: = msgWindowOk
+        X: =356
+        Y: =476
+        ZIndex: =10
+
+    CancelStay As button:
+        BorderColor: =ColorFade(CancelStay.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelStay.BorderColor
+        Height: =71
+        HoverBorderColor: =ColorFade(CancelStay.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({saveDisable: false, msgWindow:false, msgWindowCancel:false, msgToDsiplay:"", msgWindowOk:false, procMat:false});
+        PressedBorderColor: =CancelStay.Fill
+        PressedColor: =CancelStay.Fill
+        PressedFill: =CancelStay.Color
+        Text: ="Cancel"
+        Visible: =msgWindowCancel
+        X: =759
+        Y: =476
+        ZIndex: =11
+
+    SaveMaterialstoEst As icon.Save:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =SaveMaterialstoEst.Fill
+        DisplayMode: =If(Not(saveDisable),DisplayMode.Edit, DisplayMode.Disabled) 
+        FocusedBorderColor: =SaveMaterialstoEst.BorderColor
+        HoverBorderColor: =ColorFade(SaveMaterialstoEst.BorderColor, 20%)
+        HoverColor: =ColorFade(SaveMaterialstoEst.Color, 20%)
+        HoverFill: =SaveMaterialstoEst.Fill
+        Icon: =Icon.Save
+        OnSelect: |-
+            =If(NewEstimate,
+               Remove(ProjectEstMaterials, Filter(ProjectEstMaterials, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType));
+                    UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, {Material_Cost: Value(EstMatSecTotal.Text)}),
+                Remove(ProjectEstMaterials, Filter(ProjectEstMaterials, ProjectID = EstimatesGallery.Selected.ProjectID And
+                   Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, {Material_Cost: Value(EstMatSecTotal.Text)});
+             );
+            Collect(ProjectEstMaterials, estMaterialSecList_Current);
+            If(IsEmpty(Errors(ProjectEstMaterials)),
+                   // UpdateContext({msgWindow:true, msgToDsiplay:"Changes made to estimate's material section were successful!"})
+                    true,
+                    UpdateContext({msgWindow:true, msgWindowCancel:true, msgToDsiplay:"Changes made to estimate's material section failed, contact IT"})
+            );
+        PressedBorderColor: =ColorFade(SaveMaterialstoEst.BorderColor, -20%)
+        PressedColor: =ColorFade(SaveMaterialstoEst.Color, -20%)
+        PressedFill: =SaveMaterialstoEst.Fill
+        Tooltip: ="Save changes"
+        Visible: =false
+        X: =1202
+        Y: =12
+        ZIndex: =12
+
+    proceedMat As button:
+        BorderColor: =ColorFade(proceedMat.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        Height: =71
+        HoverBorderColor: =ColorFade(proceedMat.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({msgWindow:false, msgWindowCancel:false, msgToDsiplay:"", msgWindowOk:false, procMat:false});
+            Navigate(MainEstimateScreen, ScreenTransition.Fade);
+        PressedBorderColor: =proceedMat.Fill
+        PressedColor: =proceedMat.Fill
+        PressedFill: =proceedMat.Color
+        Text: ="Proceed Without Save"
+        Visible: =procMat
+        X: =557
+        Y: =476
+        ZIndex: =13
+

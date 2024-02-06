@@ -1,0 +1,1130 @@
+"AddLabourToEst As screen.'phoneLayout_FluidGridWithHeaderPageLayout_ver3.0'":
+    Fill: =RGBA(255, 255, 255, 1) 
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |+
+        =Refresh(LabourUnitsDetails);
+        UpdateContext({G_visible:true, msgWindowL:false, msgToDsiplayL:"", msgWindowCancelL:false, msgWindowOkL:false, saveDisableL:false, procLab:false, labScreenConstrDays:0});
+        If(NewEstimate, 
+             //exisiting lab list for new estimate should be empty
+             ClearCollect(estLabSecList_Current, Filter(ProjectEstLabour, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+             And Version = NewEstimateVersion And Type = NewEstimateType));
+            ClearCollect(EstContractList, LabourUnitsDetails);,
+             //existing lab list for est will may or may not have items
+             ClearCollect(estLabSecList_Current, Filter(ProjectEstLabour, ProjectID = EstimatesGallery.Selected.ProjectID And 
+               Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+            ClearCollect(EstContractList, LabourUnitsDetails);
+        );
+        //Remove labour unit(s) that are already part of the current est lab list
+        //RemoveIf(EstContractList, LabourUnit in estLabSecList_Current.LabourUnit);
+        
+        //April 6, we decided to allow all labour unit-contractor combination after discussing with James.
+        //ClearCollect(EstContractList, Filter(LabourUnitsDetails,  ContractorName = EstimatesGallery.Selected.Contractor));
+        //ClearCollect(EstContractList, Filter(LabourUnitsDetails,  ContractorName = NewEstimateContractor))
+        
+    Orientation: =If(AddLabourToEst.Width < AddLabourToEst.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= AddLabourToEst.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    RectQuickActionBar4_2 As rectangle:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        DisabledFill: =RectQuickActionBar4_2.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =RectQuickActionBar4_2.BorderColor
+        Height: =88
+        HoverFill: =RectQuickActionBar4_2.Fill
+        PressedFill: =RectQuickActionBar4_2.Fill
+        Width: =Parent.Width
+        ZIndex: =1
+
+    LblAppName4_2 As label:
+        FocusedBorderColor: =LblAppName4_2.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =88
+        HoverBorderColor: =LblAppName4_2.BorderColor
+        HoverColor: =LblAppName4_2.Color
+        HoverFill: =LblAppName4_2.Fill
+        PressedBorderColor: =LblAppName4_2.BorderColor
+        PressedColor: =LblAppName4_2.Color
+        PressedFill: =LblAppName4_2.Fill
+        Size: =20
+        Text: =" ADD ESTIMATE'S LABOUR SECTION"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    Canvas6_2 As fluidGrid.fluidGridWithBlankCard:
+        BorderThickness: =0
+        Height: =671
+        Width: =Parent.Width
+        Y: =RectQuickActionBar4_2.Y + RectQuickActionBar4_2.Height
+        ZIndex: =3
+
+        DataCard6_2 As dataCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            BorderThickness: =0
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =670
+            Width: =Parent.Width
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            ChooseSupLabel_2 As label:
+                FocusedBorderColor: =ChooseSupLabel_2.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =ChooseSupLabel_2.BorderColor
+                HoverColor: =ChooseSupLabel_2.Color
+                HoverFill: =ChooseSupLabel_2.Fill
+                PressedBorderColor: =ChooseSupLabel_2.BorderColor
+                PressedColor: =ChooseSupLabel_2.Color
+                PressedFill: =ChooseSupLabel_2.Fill
+                Size: =14
+                Text: |-
+                    =If(NewEstimate,  
+                          Concatenate("Choosen contractor for this estimate is : ", NewEstimateContractor),
+                          Concatenate("Choosen contractor for this estimate is : ", EstimatesGallery.Selected.Contractor)
+                    )
+                Width: =555
+                X: =12
+                ZIndex: =1
+
+            Label53_3 As label:
+                FocusedBorderColor: =Label53_3.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =Label53_3.BorderColor
+                HoverColor: =Label53_3.Color
+                HoverFill: =Label53_3.Fill
+                PressedBorderColor: =Label53_3.BorderColor
+                PressedColor: =Label53_3.Color
+                PressedFill: =Label53_3.Fill
+                Size: =14
+                Text: |-
+                    ="Total Labour Cost :"
+                Width: =202
+                X: =901
+                Y: =2
+                ZIndex: =2
+
+            EstLavSecTotal As label:
+                FocusedBorderColor: =EstLavSecTotal.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =EstLavSecTotal.BorderColor
+                HoverColor: =EstLavSecTotal.Color
+                HoverFill: =EstLavSecTotal.Fill
+                PressedBorderColor: =EstLavSecTotal.BorderColor
+                PressedColor: =EstLavSecTotal.Color
+                PressedFill: =EstLavSecTotal.Fill
+                Size: =14
+                Text: |-
+                    =If(CountRows (estLabSecList_Current.LabourUnit) > 0,  Text(Sum(estLabSecList_Current, UnitPrice * ItemCount * complexityFactor),"[$-en-US]$ ###,##0.00"), 0)
+                X: =1125
+                ZIndex: =3
+
+            EstSrcChosenLab As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                FocusedBorderColor: =EstSrcChosenLab.BorderColor
+                Height: =33
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =EstSrcChosenLab.HoverBorderColor
+                PressedColor: =EstSrcChosenLab.Color
+                PressedFill: =RGBA(255, 255, 255, 1)
+                Width: =312
+                X: =12
+                Y: =76
+                ZIndex: =4
+
+            Icon27_2 As icon.Search:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon27_2.Fill
+                FocusedBorderColor: =Icon27_2.BorderColor
+                Height: =33
+                HoverBorderColor: =ColorFade(Icon27_2.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon27_2.Color, 20%)
+                HoverFill: =Icon27_2.Fill
+                Icon: =Icon.Search
+                PressedBorderColor: =ColorFade(Icon27_2.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon27_2.Color, -20%)
+                PressedFill: =Icon27_2.Fill
+                Width: =30
+                X: =294
+                Y: =76
+                ZIndex: =5
+
+            Label56_2 As label:
+                FocusedBorderColor: =Label56_2.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =36
+                HoverBorderColor: =Label56_2.BorderColor
+                HoverColor: =Label56_2.Color
+                HoverFill: =Label56_2.Fill
+                PressedBorderColor: =Label56_2.BorderColor
+                PressedColor: =Label56_2.Color
+                PressedFill: =Label56_2.Fill
+                Text: ="Search choosen contractor's labour unit list"
+                Width: =445
+                X: =12
+                Y: =40
+                ZIndex: =6
+
+            Label77_2 As label:
+                FocusedBorderColor: =Label77_2.BorderColor
+                HoverBorderColor: =Label77_2.BorderColor
+                HoverColor: =Label77_2.Color
+                HoverFill: =Label77_2.Fill
+                PressedBorderColor: =Label77_2.BorderColor
+                PressedColor: =Label77_2.Color
+                PressedFill: =Label77_2.Fill
+                Size: =11
+                Text: |-
+                    ="Qty /
+                    Unit Cost"
+                X: =417
+                Y: =76
+                ZIndex: =7
+
+            "EstChosenLabUnitGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dotted
+                BorderThickness: =2
+                DisabledBorderColor: =EstChosenLabUnitGallery.BorderColor
+                DisabledFill: =EstChosenLabUnitGallery.Fill
+                Height: =539
+                HoverBorderColor: =EstChosenLabUnitGallery.BorderColor
+                HoverFill: =EstChosenLabUnitGallery.Fill
+                Items: =SortByColumns(Search(EstContractList, EstSrcChosenLab.Text,"LabourUnit", "Description"), "LabourUnit", SortOrder.Ascending)
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =EstChosenLabUnitGallery.BorderColor
+                PressedBorderColor: =EstChosenLabUnitGallery.BorderColor
+                PressedFill: =EstChosenLabUnitGallery.Fill
+                TemplatePadding: =0
+                TemplateSize: =121
+                Visible: =G_visible
+                Width: =561
+                X: =12
+                Y: =125
+                ZIndex: =8
+
+                Title8_7 As label:
+                    Color: |-
+                        =If(Value(G_QTY.Text) > 0,
+                          Color.Green,
+                          Color.Black
+                        )
+                    FocusedBorderColor: =Title8_7.BorderColor
+                    Height: =36
+                    HoverBorderColor: =Title8_7.BorderColor
+                    HoverColor: |-
+                        =If(Value(G_QTY.Text) > 0,
+                          Color.Green,
+                          Color.Black
+                        )
+                    HoverFill: =Title8_7.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title8_7.BorderColor
+                    PressedColor: =Title8_7.Color
+                    PressedFill: =Title8_7.Fill
+                    Size: =11
+                    Text: |+
+                        =Concatenate(ThisItem.LabourUnit, " | ", ThisItem.Description, " | ", ThisItem.UoM)
+                        
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =326
+                    X: =8
+                    Y: =2
+                    ZIndex: =1
+
+                Subtitle6_5 As label:
+                    FocusedBorderColor: =Subtitle6_5.BorderColor
+                    Height: =73
+                    HoverBorderColor: =Subtitle6_5.BorderColor
+                    HoverColor: =Subtitle6_5.Color
+                    HoverFill: =Subtitle6_5.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Subtitle6_5.BorderColor
+                    PressedColor: =Subtitle6_5.Color
+                    PressedFill: =Subtitle6_5.Fill
+                    Size: =10
+                    Text: =ThisItem.Notes
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =190
+                    X: =8
+                    Y: =47
+                    ZIndex: =2
+
+                Separator8_7 As rectangle:
+                    DisabledFill: =Separator8_7.Fill
+                    FocusedBorderColor: =Separator8_7.BorderColor
+                    Height: =1
+                    HoverFill: =Separator8_7.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator8_7.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                G_add As icon.Add:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Color: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =G_add.Fill
+                    FocusedBorderColor: =G_add.BorderColor
+                    Height: =30
+                    HoverBorderColor: =ColorFade(G_add.BorderColor, 20%)
+                    HoverColor: =ColorFade(G_add.Color, 20%)
+                    HoverFill: =G_add.Fill
+                    Icon: =Icon.Add
+                    OnSelect: |-
+                        =If(NewEstimate,
+                           Collect(estLabSecList_Current,
+                            {ProjectID:NewEstimateProjectID, Stage: NewEstimateStage, Version: NewEstimateVersion, 
+                            ConstrDays: 10,
+                            Type: NewEstimateType,
+                            ContractorID: ThisItem.ContractorID,
+                            LabourUnit: ThisItem.LabourUnit,
+                            UnitPrice:  Value(ThisItem.UnitPrice),
+                            ItemCount: Value(G_QTY.Text),
+                            totalValue: Value(G_QTY.Text) * Value(ThisItem.UnitPrice) * Value(compexFactor.Text),
+                            AcctCategory: Left(labAcctDropdown.Selected.Value,5), Task: labTaskDropdown.Selected.Value, complexityFactor: Value(compexFactor.Text)}
+                           ),
+                         Collect(estLabSecList_Current,
+                            {ProjectID:EstimatesGallery.Selected.ProjectID, Stage: EstimatesGallery.Selected.Stage, Version: EstimatesGallery.Selected.Version, 
+                            Type: EstimatesGallery.Selected.Type,
+                            ContractorID: ThisItem.ContractorID,
+                            LabourUnit: ThisItem.LabourUnit,
+                            UnitPrice:  Value(ThisItem.UnitPrice),
+                            ItemCount: Value(G_QTY.Text),
+                            totalValue: Value(G_QTY.Text) * Value(ThisItem.UnitPrice) * Value(compexFactor.Text),
+                            AcctCategory: Left(labAcctDropdown.Selected.Value,5), Task: labTaskDropdown.Selected.Value, complexityFactor: Value(compexFactor.Text)}
+                           )
+                        );
+                        //Remove(EstContractList, ThisItem);
+                        Reset(G_QTY);Reset(compexFactor); Reset(labAcctDropdown); Reset(labTaskDropdown);
+                    PressedBorderColor: =ColorFade(G_add.BorderColor, -20%)
+                    PressedColor: =ColorFade(G_add.Color, -20%)
+                    PressedFill: =G_add.Fill
+                    Width: =40
+                    X: =505
+                    Y: =8
+                    ZIndex: =6
+
+                G_QTY As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: ="0"
+                    FocusedBorderColor: =G_QTY.BorderColor
+                    Format: =TextFormat.Number
+                    Height: =36
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =G_QTY.HoverBorderColor
+                    PressedColor: =G_QTY.Color
+                    PressedFill: =RGBA(255, 255, 255, 1)
+                    Size: =11
+                    Width: =90
+                    X: =406
+                    Y: =9
+                    ZIndex: =7
+
+                G_PRICE As label:
+                    Color: |-
+                        =If(ThisItem.ValidToDate <=Now(),
+                           Color.Red,
+                           Color.Green
+                        )
+                    FocusedBorderColor: =G_PRICE.BorderColor
+                    Height: =24
+                    HoverBorderColor: =G_PRICE.BorderColor
+                    HoverColor: =G_PRICE.Color
+                    HoverFill: =G_PRICE.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =G_PRICE.BorderColor
+                    PressedColor: =G_PRICE.Color
+                    PressedFill: =G_PRICE.Fill
+                    Size: =11
+                    Text: |-
+                        =If(Value(G_QTY.Text) > 0,
+                            Text(ThisItem.UnitPrice * G_QTY.Text *compexFactor.Text,"[$-en-US]$ ###,##0.00"),
+                            Text(ThisItem.UnitPrice,"[$-en-US]$ ###,##0.00")
+                        )
+                                 
+                    Width: =113
+                    X: =448
+                    Y: =47
+                    ZIndex: =8
+
+                compexFactor As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: ="1"
+                    FocusedBorderColor: =compexFactor.BorderColor
+                    Format: =TextFormat.Number
+                    Height: =37
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =compexFactor.HoverBorderColor
+                    PressedColor: =compexFactor.Color
+                    PressedFill: =compexFactor.Fill
+                    Size: =11
+                    Width: =61
+                    X: =334
+                    Y: =8
+                    ZIndex: =9
+
+                labTaskDropdown As dropdown:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    ChevronBackground: =RGBA(36, 76, 90, 1)
+                    ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                    Default: ="C"
+                    Height: =31
+                    HoverBorderColor: =ColorFade(labTaskDropdown.BorderColor, 15%)
+                    Items: =["M", "C", "D", "P", "X", "Q", "R", "CC", "IS"]
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =labTaskDropdown.HoverBorderColor
+                    PressedFill: =RGBA(36, 76, 90, 1)
+                    SelectionFill: =RGBA(36, 76, 90, 1)
+                    Size: =10
+                    Width: =88
+                    X: =254
+                    Y: =74
+                    ZIndex: =10
+
+                labAcctDropdown As dropdown:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    ChevronBackground: =RGBA(36, 76, 90, 1)
+                    ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                    Default: ="50036	Construction Labour Sub-Cont"
+                    Height: =31
+                    HoverBorderColor: =ColorFade(labAcctDropdown.BorderColor, 15%)
+                    Items: |-
+                        =["50013	Equipment in",  
+                         "50026	Accomodation", 
+                         "50028	Cost of Materials", 
+                         "50030	Material/reel Deposits",
+                         "50032 Freight", 
+                         "50034 Survey", 
+                         "50036 Construction Labour Sub-Cont", 
+                         "50038	Cable & Transformer Testing", 
+                         "50039	Compaction Testing",
+                         "50040	Concrete Ready Mix", 
+                         "50041 Concrete Cutting", 
+                         "50044	Directional Drilling Services", 
+                         "50045	Landfill Dumping and Disposal", 
+                         "50046	Fusing and Gas Subcontracts", 
+                         "50047 Ground Thawing",
+                         "50048	Hydrovacing & Dumping", 
+                         "50049	Landscaping Material and Subco", 
+                         "50050	Paving", 
+                         "50051	City ULA & Excavation Permits", 
+                         "50052	Rental Signs",
+                         "50053	Sand, Gravel and Aggregates", 
+                         "50054	Traffic Control", 
+                         "50057	Trucking Services", 
+                         "50058	Equipment Rental",
+                         "50059	Field Consumables", 
+                         "50062	Contingency Cost"]
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =labAcctDropdown.HoverBorderColor
+                    PressedFill: =RGBA(36, 76, 90, 1)
+                    SelectionFill: =RGBA(36, 76, 90, 1)
+                    Size: =10
+                    Width: =153
+                    X: =392
+                    Y: =74
+                    ZIndex: =11
+
+                Label149 As label:
+                    Height: =34
+                    OnSelect: =Select(Parent)
+                    Size: =11
+                    Text: |-
+                        ="Task:"
+                    Width: =45
+                    X: =208
+                    Y: =71
+                    ZIndex: =12
+
+                Label149_1 As label:
+                    Height: =34
+                    OnSelect: =Select(Parent)
+                    Size: =11
+                    Text: |-
+                        ="Acct:"
+                    Width: =45
+                    X: =347
+                    Y: =71
+                    ZIndex: =13
+
+            Label77_8 As label:
+                FocusedBorderColor: =Label77_8.BorderColor
+                HoverBorderColor: =Label77_8.BorderColor
+                HoverColor: =Label77_8.Color
+                HoverFill: =Label77_8.Fill
+                PressedBorderColor: =Label77_8.BorderColor
+                PressedColor: =Label77_8.Color
+                PressedFill: =Label77_8.Fill
+                Size: =11
+                Text: |-
+                    ="Complexity
+                    Factor"
+                Width: =116
+                X: =325
+                Y: =76
+                ZIndex: =9
+
+            Label57_2 As label:
+                BorderThickness: =1
+                Color: =RGBA(0, 18, 107, 1)
+                Fill: =RGBA(241, 244, 249, 1)
+                FocusedBorderColor: =Label57_2.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =46
+                HoverBorderColor: =Label57_2.BorderColor
+                HoverColor: =Label57_2.Color
+                HoverFill: =Label57_2.Fill
+                PressedBorderColor: =Label57_2.BorderColor
+                PressedColor: =Label57_2.Color
+                PressedFill: =Label57_2.Fill
+                Size: =16
+                Text: =" LABOUR UNITS SELECTED FOR THE ESTIMATE"
+                Width: =746
+                X: =598
+                Y: =44
+                ZIndex: =10
+
+            "EstSelectedLabGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dotted
+                BorderThickness: =2
+                DisabledBorderColor: =EstSelectedLabGallery.BorderColor
+                DisabledFill: =EstSelectedLabGallery.Fill
+                Height: =449
+                HoverBorderColor: =EstSelectedLabGallery.BorderColor
+                HoverFill: =EstSelectedLabGallery.Fill
+                Items: |+
+                    =SortByColumns(Search(estLabSecList_Current, estSrcLab.Text, "LabourUnit"), "LabourUnit", SortOrder.Ascending)
+                    
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =EstSelectedLabGallery.BorderColor
+                PressedBorderColor: =EstSelectedLabGallery.BorderColor
+                PressedFill: =EstSelectedLabGallery.Fill
+                ShowNavigation: =true
+                ShowScrollbar: =false
+                TemplatePadding: =0
+                TemplateSize: =82
+                Width: =765
+                X: =579
+                Y: =215
+                ZIndex: =11
+
+                Title1_2 As label:
+                    FocusedBorderColor: =Title1_2.BorderColor
+                    HoverBorderColor: =Title1_2.BorderColor
+                    HoverColor: =Title1_2.Color
+                    HoverFill: =Title1_2.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title1_2.BorderColor
+                    PressedColor: =Title1_2.Color
+                    PressedFill: =Title1_2.Fill
+                    Size: =10
+                    Text: |-
+                        =Concatenate(LookUp(Contractors, ContractorID = ThisItem.ContractorID,ContractorName), " | ", ThisItem.LabourUnit, " | ",
+                             LookUp(LabourUnits, LabourUnit = ThisItem.LabourUnit, Description))
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =332
+                    X: =8
+                    Y: =2
+                    ZIndex: =1
+
+                Subtitle2_2 As label:
+                    FocusedBorderColor: =Subtitle2_2.BorderColor
+                    Height: =38
+                    HoverBorderColor: =Subtitle2_2.BorderColor
+                    HoverColor: =Subtitle2_2.Color
+                    HoverFill: =Subtitle2_2.Fill
+                    OnSelect: =Select(Parent)
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Subtitle2_2.BorderColor
+                    PressedColor: =Subtitle2_2.Color
+                    PressedFill: =Subtitle2_2.Fill
+                    Size: =10
+                    Text: |-
+                        =Text(ThisItem.UnitPrice,"[$-en-US]$ ###,##0.00")
+                    Width: =85
+                    X: =389
+                    Y: =3
+                    ZIndex: =2
+
+                Separator1_2 As rectangle:
+                    DisabledFill: =Separator1_2.Fill
+                    FocusedBorderColor: =Separator1_2.BorderColor
+                    Height: =1
+                    HoverFill: =Separator1_2.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator1_2.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                Icon18_2 As icon.Trash:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Color: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =Icon18_2.Fill
+                    FocusedBorderColor: =Icon18_2.BorderColor
+                    Height: =28
+                    HoverBorderColor: =ColorFade(Icon18_2.BorderColor, 20%)
+                    HoverColor: =ColorFade(Icon18_2.Color, 20%)
+                    HoverFill: =Icon18_2.Fill
+                    Icon: =Icon.Trash
+                    OnSelect: |-
+                        =/*If(G_visible,
+                            Collect(EstContractList, LookUp('[dbo].[LabourUnitsDetails]', LabourUnit = ThisItem.LabourUnit 
+                               And ContractorID  = ThisItem.ContractorID)), false);*/
+                        Remove(estLabSecList_Current, ThisItem);
+                    PressedBorderColor: =ColorFade(Icon18_2.BorderColor, -20%)
+                    PressedColor: =ColorFade(Icon18_2.Color, -20%)
+                    PressedFill: =Icon18_2.Fill
+                    Width: =45
+                    X: =720
+                    Y: =6
+                    ZIndex: =6
+
+                Label83_2 As label:
+                    FocusedBorderColor: =Label83_2.BorderColor
+                    HoverBorderColor: =Label83_2.BorderColor
+                    HoverColor: =Label83_2.Color
+                    HoverFill: =Label83_2.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label83_2.BorderColor
+                    PressedColor: =Label83_2.Color
+                    PressedFill: =Label83_2.Fill
+                    Size: =10
+                    Text: |-
+                        =Text(ThisItem.UnitPrice * ThisItem.ItemCount * ThisItem.complexityFactor,"[$-en-US]$ ###,##0.00")
+                    Width: =78
+                    X: =554
+                    Y: =2
+                    ZIndex: =8
+
+                Label82_2 As label:
+                    FocusedBorderColor: =Label82_2.BorderColor
+                    Height: =47
+                    HoverBorderColor: =Label82_2.BorderColor
+                    HoverColor: =Label82_2.Color
+                    HoverFill: =Label82_2.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label82_2.BorderColor
+                    PressedColor: =Label82_2.Color
+                    PressedFill: =Label82_2.Fill
+                    Size: =10
+                    Text: =ThisItem.ItemCount
+                    Width: =71
+                    X: =462
+                    Y: =3
+                    ZIndex: =9
+
+                Label74 As label:
+                    FocusedBorderColor: =Label74.BorderColor
+                    HoverBorderColor: =Label74.BorderColor
+                    HoverColor: =Label74.Color
+                    HoverFill: =Label74.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label74.BorderColor
+                    PressedColor: =Label74.Color
+                    PressedFill: =Label74.Fill
+                    Size: =10
+                    Text: =LookUp(LabourUnits, LabourUnit = ThisItem.LabourUnit, UoM)
+                    Width: =38
+                    X: =340
+                    Y: =2
+                    ZIndex: =10
+
+                TextInput12 As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: =ThisItem.ItemCount
+                    Format: =TextFormat.Number
+                    Height: =28
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    OnChange: |-
+                        =Patch(estLabSecList_Current, ThisItem,  {ItemCount: Value(TextInput12.Text), totalValue: Value(TextInput20.Text) * Value(TextInput12.Text) * ThisItem.UnitPrice});
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =TextInput12.HoverBorderColor
+                    PressedColor: =TextInput12.Color
+                    PressedFill: =TextInput12.Fill
+                    Size: =11
+                    Width: =78
+                    X: =462
+                    Y: =8
+                    ZIndex: =12
+
+                Label143 As label:
+                    Height: =28
+                    OnSelect: =Select(Parent)
+                    Size: =10
+                    Text: |-
+                        ="CF: "
+                    Width: =41
+                    X: =8
+                    Y: =47
+                    ZIndex: =13
+
+                Label150 As label:
+                    Height: =22
+                    OnSelect: =Select(Parent)
+                    Size: =11
+                    Text: |-
+                        ="Task:"
+                    Width: =57
+                    X: =391
+                    Y: =50
+                    ZIndex: =14
+
+                Label150_1 As label:
+                    Height: =22
+                    OnSelect: =Select(Parent)
+                    Size: =11
+                    Text: |-
+                        ="Acct:"
+                    Width: =57
+                    X: =561
+                    Y: =47
+                    ZIndex: =15
+
+                Dropdown24 As dropdown:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    ChevronBackground: =RGBA(36, 76, 90, 1)
+                    ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                    Default: =ThisItem.Task
+                    Height: =28
+                    HoverBorderColor: =ColorFade(Dropdown24.BorderColor, 15%)
+                    Items: =["M", "C", "D", "P", "X", "Q", "R", "CC", "IS"]
+                    OnChange: |-
+                        =//UpdateIf(estLabSecList_Current,  labTableID = ThisItem.labTableID, {Task: Dropdown24.Selected.Value});
+                        If(Not(IsBlank(ThisItem.labTableID)),
+                            UpdateIf(estLabSecList_Current, labTableID = ThisItem.labTableID, {Task: Dropdown24.Selected.Value}),
+                            Patch(estLabSecList_Current, ThisItem, {Task: Dropdown24.Selected.Value}))
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Dropdown24.HoverBorderColor
+                    PressedFill: =RGBA(36, 76, 90, 1)
+                    SelectionFill: =RGBA(36, 76, 90, 1)
+                    Size: =11
+                    Width: =75
+                    X: =465
+                    Y: =47
+                    ZIndex: =16
+
+                Dropdown25 As dropdown:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    ChevronBackground: =RGBA(36, 76, 90, 1)
+                    ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                    Default: |-
+                        =Switch(ThisItem.AcctCategory,
+                            "50013", "50013	Equipment in",
+                            "50026", "50026	Accomodation",
+                            "50028", "50028	Cost of Materials", 
+                            "50030", "50030	Material/reel Deposits",
+                            "50032", "50032	Freight",
+                            "50034", "50034 Survey",	
+                            "50036", "50036	Construction Labour Sub-Cont", 
+                            "50038", "50038	Cable & Transformer Testing", 
+                            "50039", "50039	Compaction Testing",
+                            "50040", "50040	Concrete Ready Mix",
+                            "50041", "50041 Concrete Cutting",	
+                            "50044", "50044	Directional Drilling Services",
+                            "50045", "50045	Landfill Dumping and Disposal", 
+                            "50046", "50046	Fusing and Gas Subcontracts",
+                        	"50047", "50047 Ground Thawing",
+                            "50048", "50048	Hydrovacing & Dumping",  
+                            "50049", "50049	Landscaping Material and Subco",
+                            "50050", "50050	Paving", 
+                            "50051", "50051	City ULA & Excavation Permits",
+                            "50052", "50052	Rental Signs",
+                            "50053", "50053	Sand, Gravel and Aggregates",  
+                            "50054", "50054	Traffic Control", 
+                            "50057", "50057	Trucking Services", 
+                            "50058", "50058	Equipment Rental",
+                            "50059", "50059	Field Consumables",
+                            "50062", "50062	Contingency Cost"
+                        )
+                    Height: =27
+                    HoverBorderColor: =ColorFade(Dropdown25.BorderColor, 15%)
+                    Items: |-
+                        =["50013	Equipment in",  
+                         "50026	Accomodation", 
+                         "50028	Cost of Materials", 
+                         "50030	Material/reel Deposits",
+                         "50032 Freight", 
+                         "50034 Survey", 
+                         "50036 Construction Labour Sub-Cont", 
+                         "50038	Cable & Transformer Testing", 
+                         "50039	Compaction Testing",
+                         "50040	Concrete Ready Mix", 
+                         "50041 Concrete Cutting", 
+                         "50044	Directional Drilling Services", 
+                         "50045	Landfill Dumping and Disposal", 
+                         "50046	Fusing and Gas Subcontracts", 
+                         "50047 Ground Thawing",
+                         "50048	Hydrovacing & Dumping", 
+                         "50049	Landscaping Material and Subco", 
+                         "50050	Paving", 
+                         "50051	City ULA & Excavation Permits", 
+                         "50052	Rental Signs",
+                         "50053	Sand, Gravel and Aggregates", 
+                         "50054	Traffic Control", 
+                         "50057	Trucking Services", 
+                         "50058	Equipment Rental",
+                         "50059	Field Consumables", 
+                         "50062	Contingency Cost"]
+                    OnChange: |-
+                        =//UpdateIf(estLabSecList_Current,  labTableID = ThisItem.labTableID, {AcctCategory: Left(Dropdown25.Selected.Value,5)});
+                        If(Not(IsBlank(ThisItem.labTableID)),
+                            UpdateIf(estLabSecList_Current, labTableID = ThisItem.labTableID, {AcctCategory: Left(Dropdown25.Selected.Value,5)}),
+                             Patch(estLabSecList_Current, ThisItem, {AcctCategory: Left(Dropdown25.Selected.Value,5)}))
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Dropdown25.HoverBorderColor
+                    PressedFill: =RGBA(36, 76, 90, 1)
+                    SelectionFill: =RGBA(36, 76, 90, 1)
+                    Size: =11
+                    Width: =140
+                    X: =605
+                    Y: =45
+                    ZIndex: =17
+
+                TextInput20 As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: =ThisItem.complexityFactor
+                    Format: =TextFormat.Number
+                    Height: =25
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    OnChange: |-
+                        =Patch(estLabSecList_Current, ThisItem,  {complexityFactor: Value(TextInput20.Text), totalValue: Value(TextInput20.Text) * Value(TextInput12.Text) * ThisItem.UnitPrice});
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =TextInput20.HoverBorderColor
+                    PressedColor: =TextInput20.Color
+                    PressedFill: =TextInput20.Fill
+                    Size: =11
+                    Width: =90
+                    X: =40
+                    Y: =50
+                    ZIndex: =18
+
+            Icon33_2 As icon.Trash:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon33_2.Fill
+                FocusedBorderColor: =Icon33_2.BorderColor
+                Height: =44
+                HoverBorderColor: =ColorFade(Icon33_2.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon33_2.Color, 20%)
+                HoverFill: =Icon33_2.Fill
+                Icon: =Icon.Trash
+                OnSelect: |
+                    =If(NewEstimate,
+                       Remove(ProjectEstLabour, Filter(ProjectEstLabour, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                           And Version = NewEstimateVersion And Type = NewEstimateType));
+                        UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                           And Version = NewEstimateVersion And Type = NewEstimateType, {Labour_Cost: 0.0}),
+                        Remove(ProjectEstLabour, Filter(ProjectEstLabour, ProjectID = EstimatesGallery.Selected.ProjectID And 
+                        Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                        UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                         And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                         {Labour_Cost: 0.0})
+                     );
+                    If(NewEstimate, 
+                         //exisiting lab list for new estimate should be empty
+                         ClearCollect(estLabSecList_Current, Filter(ProjectEstLabour, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                         And Version = NewEstimateVersion And Type = NewEstimateType));
+                        ClearCollect(EstContractList, Filter(LabourUnitsDetails,  ContractorName = NewEstimateContractor));,
+                         //existing lab list for est will may or may not have items
+                         ClearCollect(estLabSecList_Current, Filter(ProjectEstLabour, ProjectID = EstimatesGallery.Selected.ProjectID And 
+                           Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                        ClearCollect(EstContractList, Filter(LabourUnitsDetails,  ContractorName = EstimatesGallery.Selected.Contractor));
+                    );
+                    //Remove labour unit(s) that are already part of the current est lab list
+                    //RemoveIf(EstContractList, LabourUnit in estLabSecList_Current.LabourUnit);
+                PressedBorderColor: =ColorFade(Icon33_2.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon33_2.Color, -20%)
+                PressedFill: =Icon33_2.Fill
+                Width: =40
+                X: =1043
+                Y: =91
+                ZIndex: =12
+
+            Label48_1 As label:
+                Color: =RGBA(168, 0, 0, 1)
+                FocusedBorderColor: =Label48_1.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =38
+                HoverBorderColor: =Label48_1.BorderColor
+                HoverColor: =Label48_1.Color
+                HoverFill: =Label48_1.Fill
+                Italic: =true
+                PressedBorderColor: =Label48_1.BorderColor
+                PressedColor: =Label48_1.Color
+                PressedFill: =Label48_1.Fill
+                Size: =11
+                Text: ="In case you change your contractor please delete ALL items first "
+                Width: =436
+                X: =601
+                Y: =91
+                ZIndex: =13
+
+            estSrcLab As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                FocusedBorderColor: =estSrcLab.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =estSrcLab.HoverBorderColor
+                PressedColor: =estSrcLab.Color
+                PressedFill: =estSrcLab.Fill
+                X: =1012
+                Y: =142
+                ZIndex: =14
+
+            Label61_1 As label:
+                FocusedBorderColor: =Label61_1.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =41
+                HoverBorderColor: =Label61_1.BorderColor
+                HoverColor: =Label61_1.Color
+                HoverFill: =Label61_1.Fill
+                PressedBorderColor: =Label61_1.BorderColor
+                PressedColor: =Label61_1.Color
+                PressedFill: =Label61_1.Fill
+                Text: ="Search selected labour units for the estimate"
+                Width: =395
+                X: =601
+                Y: =143
+                ZIndex: =15
+
+            Icon27_3 As icon.Search:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon27_3.Fill
+                FocusedBorderColor: =Icon27_3.BorderColor
+                Height: =38
+                HoverBorderColor: =ColorFade(Icon27_3.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon27_3.Color, 20%)
+                HoverFill: =Icon27_3.Fill
+                Icon: =Icon.Search
+                PressedBorderColor: =ColorFade(Icon27_3.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon27_3.Color, -20%)
+                PressedFill: =Icon27_3.Fill
+                Width: =46
+                X: =1286
+                Y: =146
+                ZIndex: =16
+
+            Label114 As label:
+                Height: =39
+                Size: =10
+                Text: ="Unit Cost"
+                Width: =70
+                X: =956
+                Y: =184
+                ZIndex: =18
+
+            Label115 As label:
+                Height: =39
+                Size: =10
+                Text: ="Qty"
+                Width: =41
+                X: =1053
+                Y: =182
+                ZIndex: =19
+
+            Label116 As label:
+                Height: =39
+                Size: =10
+                Text: ="Total Cost"
+                Width: =92
+                X: =1130
+                Y: =184
+                ZIndex: =20
+
+    Icon25_2 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledColor: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon25_2.Fill
+        FocusedBorderColor: =Icon25_2.BorderColor
+        HoverBorderColor: =ColorFade(Icon25_2.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =Icon25_2.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |
+            =UpdateContext({saveDisableL:true,  msgWindowL:true, msgWindowOkL:true, msgWindowCancelL:true, procLab:true, 
+            msgToDsiplayL:""});
+            /*msgToDsiplayL:Concatenate("Choose one of the following options, it is recommended to save your work before going back", Char(13), Char(13), "Press Save to save your work, if needed.", Char(13), Char(13), "Press Cancel to stay on this screen.",Char(13), Char(13), "Press Proceed Without Save to go back and ignore the changes you made.")*/
+        PressedBorderColor: =ColorFade(Icon25_2.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon25_2.Color, -20%)
+        PressedFill: =Icon25_2.Fill
+        Tooltip: ="Go Back"
+        X: =1280
+        Y: =12
+        ZIndex: =4
+
+    estLabPopUpWindow As rectangle:
+        BorderStyle: =BorderStyle.Dashed
+        BorderThickness: =2
+        DisabledFill: =estLabPopUpWindow.Fill
+        Fill: =RGBA(241, 244, 249, 0.9)
+        FocusedBorderColor: =estLabPopUpWindow.BorderColor
+        Height: =627
+        HoverFill: =estLabPopUpWindow.Fill
+        PressedFill: =estLabPopUpWindow.Fill
+        Visible: =msgWindowL
+        Width: =1282
+        X: =40
+        Y: =88
+        ZIndex: =8
+
+    estLabMsg As label:
+        Color: =RGBA(168, 0, 0, 1)
+        FocusedBorderColor: =estLabMsg.BorderColor
+        FontWeight: =FontWeight.Bold
+        Height: =243
+        HoverBorderColor: =estLabMsg.BorderColor
+        HoverColor: =estLabMsg.Color
+        HoverFill: =estLabMsg.Fill
+        PressedBorderColor: =estLabMsg.BorderColor
+        PressedColor: =estLabMsg.Color
+        PressedFill: =estLabMsg.Fill
+        Size: =18
+        Text: =Text(msgToDsiplayL)
+        VerticalAlign: =VerticalAlign.Top
+        Visible: =msgWindowL
+        Width: =1198
+        X: =82
+        Y: =199
+        ZIndex: =9
+
+    okSaveDone_1 As button:
+        BorderColor: =ColorFade(okSaveDone_1.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =okSaveDone_1.BorderColor
+        Height: =60
+        HoverBorderColor: =ColorFade(okSaveDone_1.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |
+            =If(NewEstimate,
+               Remove(ProjectEstLabour, Filter(ProjectEstLabour, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType));
+                UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, {Labour_Cost: Value(EstLavSecTotal.Text)}),
+                Remove(ProjectEstLabour, Filter(ProjectEstLabour, ProjectID = EstimatesGallery.Selected.ProjectID And
+                   Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                 And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                 {Labour_Cost: Value(EstLavSecTotal.Text)});
+             );
+            //Collect(ProjectEstLabour, estLabSecList_Current);
+            
+            ForAll(estLabSecList_Current,
+                Patch(ProjectEstLabour, Defaults(ProjectEstLabour),
+                {ProjectID: ThisRecord.ProjectID, Stage: ThisRecord.Stage, Version: ThisRecord.Version, Type: ThisRecord.Type,
+                ContractorID: ThisRecord.ContractorID,LabourUnit: ThisRecord.LabourUnit,UnitPrice: ThisRecord.UnitPrice,
+                ItemCount: ThisRecord.ItemCount,totalValue: ThisRecord.UnitPrice * ThisRecord.ItemCount * ThisRecord.complexityFactor,
+                AcctCategory: ThisRecord.AcctCategory, Task: ThisRecord.Task, complexityFactor: ThisRecord.complexityFactor})
+            );
+            If(IsEmpty(Errors(ProjectEstLabour)),
+                    UpdateContext({msgWindowL:false, msgWindowCancelL:false, msgToDsiplayL:"", msgWindowOkL:false, procLab:false});
+                    Navigate(MainEstimateScreen, ScreenTransition.Fade);,
+                    UpdateContext({msgWindowL:true, msgToDsiplayL:"Changes made to estimate's labour section failed, contact IT", msgWindowCancelL:true})
+            );
+            Reset(estSrcLab);
+            Reset(EstSrcChosenLab);
+        PressedBorderColor: =okSaveDone_1.Fill
+        PressedColor: =okSaveDone_1.Fill
+        PressedFill: =okSaveDone_1.Color
+        Text: ="Save"
+        Visible: = msgWindowOkL
+        X: =276
+        Y: =420
+        ZIndex: =10
+
+    CancelStay_1 As button:
+        BorderColor: =ColorFade(CancelStay_1.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelStay_1.BorderColor
+        Height: =60
+        HoverBorderColor: =ColorFade(CancelStay_1.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({saveDisableL:false,msgWindowL:false, msgWindowCancelL:false, msgToDsiplayL:"", msgWindowOkL:false, procLab:false})
+        PressedBorderColor: =CancelStay_1.Fill
+        PressedColor: =CancelStay_1.Fill
+        PressedFill: =CancelStay_1.Color
+        Text: ="Cancel"
+        Visible: =msgWindowCancelL
+        X: =762
+        Y: =420
+        ZIndex: =11
+
+    SaveLabtoEst As icon.Save:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =SaveLabtoEst.Fill
+        DisplayMode: =If(Not(saveDisableL), DisplayMode.Edit, DisplayMode.Disabled)
+        FocusedBorderColor: =SaveLabtoEst.BorderColor
+        HoverBorderColor: =ColorFade(SaveLabtoEst.BorderColor, 20%)
+        HoverColor: =ColorFade(SaveLabtoEst.Color, 20%)
+        HoverFill: =SaveLabtoEst.Fill
+        Icon: =Icon.Save
+        OnSelect: |-
+            =If(NewEstimate,
+               Remove(ProjectEstLabour, Filter(ProjectEstLabour, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType));
+                    UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, {Labour_Cost: Value(EstLavSecTotal.Text)}),
+                Remove(ProjectEstLabour, Filter(ProjectEstLabour, ProjectID = EstimatesGallery.Selected.ProjectID And
+                   Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, {Labour_Cost: Value(EstLavSecTotal.Text)});
+             );
+            Collect(ProjectEstLabour, estLabSecList_Current);
+            If(IsEmpty(Errors(ProjectEstLabour)),
+                   // UpdateContext({msgWindow:true, msgToDsiplay:"Changes made to estimate's material section were successful!"})
+                    true,
+                    UpdateContext({msgWindowL:true, msgWindowCancelL:true, msgToDsiplayL:"Changes made to estimate's labour section failed, contact IT"})
+            );
+             
+        PressedBorderColor: =ColorFade(SaveLabtoEst.BorderColor, -20%)
+        PressedColor: =ColorFade(SaveLabtoEst.Color, -20%)
+        PressedFill: =SaveLabtoEst.Fill
+        Visible: =false
+        X: =1202
+        Y: =12
+        ZIndex: =12
+
+    proceedLab As button:
+        BorderColor: =ColorFade(proceedLab.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        Height: =60
+        HoverBorderColor: =ColorFade(proceedLab.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({msgWindowL:false, msgWindowCancelL:false, msgToDsiplayL:"", msgWindowOkL:false, procLab:false});
+            Navigate(MainEstimateScreen, ScreenTransition.Fade);
+        PressedBorderColor: =proceedLab.Fill
+        PressedColor: =proceedLab.Fill
+        PressedFill: =proceedLab.Color
+        Text: ="Proceed Without Save"
+        Visible: =procLab
+        X: =519
+        Y: =420
+        ZIndex: =13
+

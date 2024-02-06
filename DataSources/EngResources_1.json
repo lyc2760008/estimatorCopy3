@@ -1,0 +1,25 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2023-07-24T16:27:09.6320000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "eng_id": "eng_id",
+      "EngResource": "EngResource",
+      "LastModifiedBy": "LastModifiedBy",
+      "LastModifiedDate": "LastModifiedDate",
+      "Rate": "Rate",
+      "Task": "Task",
+      "ValidToDate": "ValidToDate"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "EngResources_1",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

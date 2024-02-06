@@ -1,0 +1,9 @@
+[
+  {
+    "AddinConnectorId": "54e1afa6-f85b-4da5-81f1-e119a148f39a",
+    "AddinId": "6d1f157d-95bf-406d-b65d-cfd3240f724e",
+    "Name": "FixMinQtyPrefVendor",
+    "ServiceKind": "AddinWadl",
+    "Type": "ServiceInfo"
+  }
+]

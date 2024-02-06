@@ -1,0 +1,1004 @@
+"AddStructToEst As screen.'phoneLayout_FluidGridWithHeaderPageLayout_ver3.0'":
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =Refresh(StructuresDetails);
+        Refresh(StructuresMaterialDetails);
+        Refresh(StructuresLabourDetails);
+        Refresh(MasterMaterial_PreferredVendor_List);
+        Refresh(VendorSupplies);
+        Refresh(LabourUnitsDetails);
+        UpdateContext({VendorPref: true ,currType:"",currVend:"",SG_visible: true ,msgWindowS: false ,msgToDsiplayS:"",msgWindowCancelS: false ,msgWindowOkS: false ,strucLCost_temp:0,strucMCost_temp:0,saveDisableS: false ,procStruc: false });
+        // Collections I will need 
+        
+        /* old code when only Enmax, modified on aug 19,21 
+        ClearCollect(PrefVendList, Filter('[dbo].[MasterMaterial_PreferredVendor_List]', Archived = false));*/
+        Switch(NewEstimateType,
+            "Enmax",ClearCollect(PrefVendList,Filter(MasterMaterial_PreferredVendor_List,Archived= false  And EnmaxItemNumber<>"NA")),
+            "Fortis Alberta",ClearCollect(PrefVendList,Filter(MasterMaterial_PreferredVendor_List,Archived= false  And FortisItemNumber<>"NA")),
+            "City of Calgary",ClearCollect(PrefVendList,Filter(MasterMaterial_PreferredVendor_List,Archived= false  And CoCItemNumber<>"NA"))
+        );
+        ClearCollect(strLabourList,Filter(StructuresLabourDetails,StrucType=NewEstimateType));// less than 1500 items good if more change logic!! V.IMP
+        ClearCollect(labPrices,LabourUnitsDetails);// less than 1500 items good if more change logic!! V.IMP
+        
+        // building on previous collections to add prices to them ------- removed the default ContractorName = "Primary" And will cuase an issue getting prices because of same labour unit from different contractors.. I will get two prices and only the last price will come in effect
+        ClearCollect(strLabListWithPrices,AddColumns(strLabourList,"UnitPrice",LookUp(labPrices,labPrices[@LabourUnit]=strLabourList[@LabourUnit]).UnitPrice));
+        
+        If(NewEstimate,
+           //existing sturc list for est should be empty
+            ClearCollect(estStrucList_Current,Filter(ProjectEstStructures,ProjectID=NewEstimateProjectID And Stage=NewEstimateStage And
+                         Version=NewEstimateVersion And Type=NewEstimateType));
+             // SG-->Structures to choose structures from
+             ClearCollect(Structures,Filter(StructuresDetails,StrucType=NewEstimateType));
+             If(NewEstimateVendor="Preferred Vendor",
+                        UpdateContext({VendorPref: true ,currType:NewEstimateType,currVend:NewEstimateVendor}),
+                        UpdateContext({VendorPref: false ,currType:NewEstimateType,currVend:NewEstimateVendor})
+            );,
+           //existing mat list for est will may or may not have items
+            ClearCollect(estStrucList_Current,Filter(ProjectEstStructures,ProjectID=EstimatesGallery.Selected.ProjectID And 
+                        Stage=EstimatesGallery.Selected.Stage And Version=EstimatesGallery.Selected.Version And Type=EstimatesGallery.Selected.Type));
+           // SG-->Structures to choose structures from
+            ClearCollect(Structures,Filter(StructuresDetails,StrucType=EstimatesGallery.Selected.Type));
+            If(EstimatesGallery.Selected.MaterialSupplier="Preferred Vendor",
+                UpdateContext({VendorPref: true ,currType:EstimatesGallery.Selected.Type,currVend:EstimatesGallery.Selected.MaterialSupplier}),
+                UpdateContext({VendorPref: false ,currType:EstimatesGallery.Selected.Type,currVend:EstimatesGallery.Selected.MaterialSupplier}))
+            );
+        //Remove structure(s) that are already part of the current est struc listook this out to allow same structure to be added multiple times
+        //RemoveIf(Structures, StrucID in estStrucList_Current.StrucID);
+    Orientation: =If(AddStructToEst.Width < AddStructToEst.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= AddStructToEst.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    RectQuickActionBar4_1 As rectangle:
+        DisabledFill: =RectQuickActionBar4_1.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =RectQuickActionBar4_1.BorderColor
+        Height: =88
+        HoverFill: =RectQuickActionBar4_1.Fill
+        PressedFill: =RectQuickActionBar4_1.Fill
+        Width: =Parent.Width
+        ZIndex: =1
+
+    LblAppName4_1 As label:
+        FocusedBorderColor: =LblAppName4_1.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =88
+        HoverBorderColor: =LblAppName4_1.BorderColor
+        HoverColor: =LblAppName4_1.Color
+        HoverFill: =LblAppName4_1.Fill
+        PressedBorderColor: =LblAppName4_1.BorderColor
+        PressedColor: =LblAppName4_1.Color
+        PressedFill: =LblAppName4_1.Fill
+        Size: =20
+        Text: =" ADD ESTIMATE'S STRUCTURE SECTION"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    Canvas6_1 As fluidGrid.fluidGridWithBlankCard:
+        BorderThickness: =0
+        Height: =680
+        Width: =Parent.Width
+        Y: =RectQuickActionBar4_1.Y + RectQuickActionBar4_1.Height
+        ZIndex: =3
+
+        DataCard6_1 As dataCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            BorderThickness: =0
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =661
+            Width: =Parent.Width
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            "EstStructGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dotted
+                BorderThickness: =2
+                DisabledBorderColor: =EstStructGallery.BorderColor
+                DisabledFill: =EstStructGallery.Fill
+                Height: =561
+                HoverBorderColor: =EstStructGallery.BorderColor
+                HoverFill: =EstStructGallery.Fill
+                Items: |
+                    =SortByColumns(Search(Structures, EstSrchStruct.Text,"StrucID","Description"),"StrucID", SortOrder.Ascending)
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =EstStructGallery.BorderColor
+                PressedBorderColor: =EstStructGallery.BorderColor
+                PressedFill: =EstStructGallery.Fill
+                TemplatePadding: =0
+                TemplateSize: =70
+                Visible: =SG_visible
+                Width: =660
+                X: =6
+                Y: =115
+                ZIndex: =1
+
+                Title8_6 As label:
+                    Color: |-
+                        =If(Value(SG_QTY.Text) > 0,
+                           Color.Green,
+                          Color.Black
+                        )
+                    FocusedBorderColor: =Title8_6.BorderColor
+                    Height: =67
+                    HoverBorderColor: =Title8_6.BorderColor
+                    HoverColor: |-
+                        =If(Value(SG_QTY.Text) > 0,
+                          Color.Green,
+                          Color.Black)
+                    HoverFill: =Title8_6.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title8_6.BorderColor
+                    PressedColor: =Title8_6.Color
+                    PressedFill: =Title8_6.Fill
+                    Size: =11
+                    Text: |+
+                        =Concatenate(ThisItem.StrucID, "|", ThisItem.Description)
+                        
+                    Width: =373
+                    X: =8
+                    Y: =3
+                    ZIndex: =1
+
+                Separator8_6 As rectangle:
+                    DisabledFill: =Separator8_6.Fill
+                    FocusedBorderColor: =Separator8_6.BorderColor
+                    Height: =1
+                    HoverFill: =Separator8_6.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator8_6.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                SG_add As icon.Add:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Color: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =SG_add.Fill
+                    FocusedBorderColor: =SG_add.BorderColor
+                    Height: =36
+                    HoverBorderColor: =ColorFade(SG_add.BorderColor, 20%)
+                    HoverColor: =ColorFade(SG_add.Color, 20%)
+                    HoverFill: =SG_add.Fill
+                    Icon: =Icon.Add
+                    OnSelect: |-
+                        =UpdateContext({showAddStruSpinner: true});
+                        ClearCollect(structL_temp, AddColumns(Filter(strLabListWithPrices, StrucID = ThisItem.StrucID), "TotalPrice", 0, "CFactor", 1));
+                        UpdateIf(structL_temp, true, {TotalPrice :  ItemCount * Value(SG_QTY.Text) * UnitPrice * Value(complexityFactor.Text), 
+                                                      CFactor: Value(complexityFactor.Text)});
+                        UpdateContext({strucLCost_temp: If(CountRows(structL_temp) > 0, Sum(structL_temp, TotalPrice), 0)});                 
+                        //adding struc's materials
+                        ClearCollect(strMaterialList, Filter(StructuresMaterialDetails, StrucID = ThisItem.StrucID And StrucType = currType));
+                        If(VendorPref, // vendor is preferred
+                            /* taking this code out coz Primary item number is no longer entered by user ClearCollect(strMatList_PrefVendList, 
+                                 AddColumns(strMaterialList, 
+                                "Price", LookUp(PrefVendList,  strMaterialList[@ItemNumber] = PrefVendList[@PrimaryItemNumber]).PreferredVendorPrice,
+                                "ValidDate", LookUp(PrefVendList,  strMaterialList[@ItemNumber] = PrefVendList[@PrimaryItemNumber]).ValidToDate,
+                                "GuessPrice", LookUp(PrefVendList, strMaterialList[@ItemNumber] = PrefVendList[@PrimaryItemNumber]).PreferredVendorGPrice)); */
+                          Switch(currType,
+                            "Enmax",ClearCollect(strMatList_PrefVendList, 
+                                 AddColumns(strMaterialList, 
+                                "Price", LookUp(PrefVendList,  strMaterialList[@ItemNumber] = PrefVendList[@EnmaxItemNumber]).PreferredVendorPrice,
+                                "ValidDate", LookUp(PrefVendList,  strMaterialList[@ItemNumber] = PrefVendList[@EnmaxItemNumber]).ValidToDate,
+                                "GuessPrice", LookUp(PrefVendList, strMaterialList[@ItemNumber] = PrefVendList[@EnmaxItemNumber]).PreferredVendorGPrice)),
+                            "Fortis Alberta",ClearCollect(strMatList_PrefVendList, 
+                                 AddColumns(strMaterialList, 
+                                "Price", LookUp(PrefVendList,  strMaterialList[@ItemNumber] = PrefVendList[@FortisItemNumber]).PreferredVendorPrice,
+                                "ValidDate", LookUp(PrefVendList,  strMaterialList[@ItemNumber] = PrefVendList[@FortisItemNumber]).ValidToDate,
+                                "GuessPrice", LookUp(PrefVendList, strMaterialList[@ItemNumber] = PrefVendList[@FortisItemNumber]).PreferredVendorGPrice)),
+                            "City of Calgary",ClearCollect(strMatList_PrefVendList, 
+                                 AddColumns(strMaterialList, 
+                                "Price", LookUp(PrefVendList,  strMaterialList[@ItemNumber] = PrefVendList[@CoCItemNumber]).PreferredVendorPrice,
+                                "ValidDate", LookUp(PrefVendList,  strMaterialList[@ItemNumber] = PrefVendList[@CoCItemNumber]).ValidToDate,
+                                "GuessPrice", LookUp(PrefVendList, strMaterialList[@ItemNumber] = PrefVendList[@CoCItemNumber]).PreferredVendorGPrice))
+                            );
+                          UpdateIf(strMatList_PrefVendList, ValidDate <= Now() And Price <= 0.0, {Price: GuessPrice});
+                          ClearCollect(structM_temp, AddColumns(strMatList_PrefVendList, "TotalPrice", 0)),
+                          // else part when vendor isn't preferred vendor
+                          ClearCollect(vendList, Filter(VendorSupplies, Archive = false And VendorName = currVend And ItemType = currType));
+                          ClearCollect(strMatList_VendList, 
+                                 AddColumns(strMaterialList, 
+                                "Price", LookUp(vendList,  strMaterialList[@ItemNumber] = vendList[@ItemNum] And VendorName = currVend 
+                                       And ItemType = NewEstimateType).Price,
+                                "ValidDate", LookUp(vendList,  strMaterialList[@ItemNumber] = vendList[@ItemNum] And VendorName = currVend 
+                                       And ItemType = NewEstimateType).ValidToDate,
+                                "GuessPrice", LookUp(vendList, strMaterialList[@ItemNumber] = vendList[@ItemNum] And VendorName = currVend
+                                       And ItemType = NewEstimateType).GuessPrice));
+                          UpdateIf(strMatList_VendList, ValidDate <= Now() And Price <= 0.0, {Price: GuessPrice});	
+                          ClearCollect(structM_temp, AddColumns(strMatList_VendList, "TotalPrice", 0));		    
+                        );
+                        UpdateIf(structM_temp, true, {TotalPrice :  ItemCount * Value(SG_QTY.Text) * Price});
+                        UpdateContext({strucMCost_temp: If(CountRows(structM_temp) > 0, Sum(structM_temp, TotalPrice), 0)});
+                        // materials done
+                        If(NewEstimate,
+                           Collect(estStrucList_Current, 
+                        	   {ProjectID:NewEstimateProjectID, Stage: NewEstimateStage, Version: NewEstimateVersion, 
+                        	   Type: NewEstimateType,
+                        	   StrucID: ThisItem.StrucID,
+                        	   Description: ThisItem.Description,
+                        	   StrucType: ThisItem.StrucType,
+                        	   StrQty: Value(SG_QTY.Text),
+                        	   StrMaterialCost: strucMCost_temp,
+                        	   StrLabourCost: strucLCost_temp,
+                               complexityFactor: Value(complexityFactor.Text)});
+                           Patch(ProjectEstStructures, Defaults(ProjectEstStructures), 
+                            {ProjectID:NewEstimateProjectID, Stage: NewEstimateStage, Version: NewEstimateVersion, Type: NewEstimateType,
+                        	   StrucID: ThisItem.StrucID,Description: ThisItem.Description,StrucType: ThisItem.StrucType, StrQty: Value(SG_QTY.Text),
+                        	   StrMaterialCost: strucMCost_temp,StrLabourCost: strucLCost_temp,complexityFactor: Value(complexityFactor.Text)});
+                            UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                               And Version = NewEstimateVersion And Type = NewEstimateType, 
+                               {Struc_L_Cost: If(CountRows(estStrucList_Current) > 0, Sum(estStrucList_Current, StrLabourCost), 0), 
+                            Struc_M_Cost:  If(CountRows(estStrucList_Current) > 0, Sum(estStrucList_Current, StrMaterialCost), 0)});
+                           UpdateContext({strucLCost_temp: 0, strucMCost_temp: 0});,
+                           Collect(estStrucList_Current,
+                        	   {ProjectID:EstimatesGallery.Selected.ProjectID, Stage: EstimatesGallery.Selected.Stage, Version: EstimatesGallery.Selected.Version, 
+                               Type: EstimatesGallery.Selected.Type,
+                        	   StrucID: ThisItem.StrucID,
+                        	   Description: ThisItem.Description,
+                        	   StrucType: ThisItem.StrucType,
+                        	   StrQty: Value(SG_QTY.Text),
+                        	   StrMaterialCost: strucMCost_temp,
+                        	   StrLabourCost: strucLCost_temp,
+                               complexityFactor: Value(complexityFactor.Text)});
+                           Patch(ProjectEstStructures, Defaults(ProjectEstStructures),
+                           {ProjectID:EstimatesGallery.Selected.ProjectID, Stage: EstimatesGallery.Selected.Stage, Version: EstimatesGallery.Selected.Version, Type: EstimatesGallery.Selected.Type,
+                        	   StrucID: ThisItem.StrucID,Description: ThisItem.Description, StrucType: ThisItem.StrucType,StrQty: Value(SG_QTY.Text),
+                        	   StrMaterialCost: strucMCost_temp,StrLabourCost: strucLCost_temp,complexityFactor: Value(complexityFactor.Text)}); 
+                            UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                            And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                            {Struc_L_Cost: If(CountRows(estStrucList_Current) > 0, Sum(estStrucList_Current, StrLabourCost), 0), 
+                            Struc_M_Cost:  If(CountRows(estStrucList_Current) > 0, Sum(estStrucList_Current, StrMaterialCost), 0)});
+                           UpdateContext({strucLCost_temp: 0, strucMCost_temp: 0});
+                        );
+                        Refresh(ProjectEstStructures);
+                        If(NewEstimate,
+                           ClearCollect(estStrucList_Current, Filter(ProjectEstStructures, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                             And Version = NewEstimateVersion And Type = NewEstimateType));,
+                            ClearCollect(estStrucList_Current, Filter(ProjectEstStructures, ProjectID = EstimatesGallery.Selected.ProjectID And 
+                           Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type))
+                        );
+                        Reset(SG_QTY); Reset(complexityFactor);
+                        UpdateContext({showAddStruSpinner: false});
+                        //Remove(Structures, ThisItem);
+                    PressedBorderColor: =ColorFade(SG_add.BorderColor, -20%)
+                    PressedColor: =ColorFade(SG_add.Color, -20%)
+                    PressedFill: =SG_add.Fill
+                    Width: =52
+                    X: =600
+                    Y: =12
+                    ZIndex: =6
+
+                SG_QTY As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: ="0"
+                    FocusedBorderColor: =SG_QTY.BorderColor
+                    Format: =TextFormat.Number
+                    Height: =32
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =SG_QTY.HoverBorderColor
+                    PressedColor: =SG_QTY.Color
+                    PressedFill: =RGBA(255, 255, 255, 1)
+                    Size: =11
+                    Width: =90
+                    X: =496
+                    Y: =16
+                    ZIndex: =7
+
+                complexityFactor As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: ="1"
+                    FocusedBorderColor: =complexityFactor.BorderColor
+                    Format: =TextFormat.Number
+                    Height: =32
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =complexityFactor.HoverBorderColor
+                    PressedColor: =complexityFactor.Color
+                    PressedFill: =complexityFactor.Fill
+                    Size: =11
+                    Width: =82
+                    X: =398
+                    Y: =16
+                    ZIndex: =8
+
+            EstSrchStruct As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                FocusedBorderColor: =EstSrchStruct.BorderColor
+                Height: =32
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =EstSrchStruct.HoverBorderColor
+                PressedColor: =EstSrchStruct.Color
+                PressedFill: =RGBA(255, 255, 255, 1)
+                Size: =10
+                Width: =370
+                X: =19
+                Y: =31
+                ZIndex: =2
+
+            Icon27_1 As icon.Search:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon27_1.Fill
+                FocusedBorderColor: =Icon27_1.BorderColor
+                Height: =32
+                HoverBorderColor: =ColorFade(Icon27_1.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon27_1.Color, 20%)
+                HoverFill: =Icon27_1.Fill
+                Icon: =Icon.Search
+                PressedBorderColor: =ColorFade(Icon27_1.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon27_1.Color, -20%)
+                PressedFill: =Icon27_1.Fill
+                Width: =46
+                X: =343
+                Y: =31
+                ZIndex: =3
+
+            Label56_1 As label:
+                FocusedBorderColor: =Label56_1.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =31
+                HoverBorderColor: =Label56_1.BorderColor
+                HoverColor: =Label56_1.Color
+                HoverFill: =Label56_1.Fill
+                PressedBorderColor: =Label56_1.BorderColor
+                PressedColor: =Label56_1.Color
+                PressedFill: =Label56_1.Fill
+                Text: ="Search structures list"
+                Width: =209
+                X: =19
+                ZIndex: =4
+
+            Label77_1 As label:
+                FocusedBorderColor: =Label77_1.BorderColor
+                Height: =46
+                HoverBorderColor: =Label77_1.BorderColor
+                HoverColor: =Label77_1.Color
+                HoverFill: =Label77_1.Fill
+                PressedBorderColor: =Label77_1.BorderColor
+                PressedColor: =Label77_1.Color
+                PressedFill: =Label77_1.Fill
+                Size: =11
+                Text: ="Quantity"
+                Width: =96
+                X: =498
+                Y: =69
+                ZIndex: =5
+
+            Label77_7 As label:
+                FocusedBorderColor: =Label77_7.BorderColor
+                Height: =46
+                HoverBorderColor: =Label77_7.BorderColor
+                HoverColor: =Label77_7.Color
+                HoverFill: =Label77_7.Fill
+                PressedBorderColor: =Label77_7.BorderColor
+                PressedColor: =Label77_7.Color
+                PressedFill: =Label77_7.Fill
+                Size: =11
+                Text: |-
+                    ="Complexity
+                    Multipler"
+                Width: =90
+                X: =396
+                Y: =69
+                ZIndex: =6
+
+            Label57_1 As label:
+                BorderThickness: =1
+                Color: =RGBA(0, 18, 107, 1)
+                Fill: =RGBA(241, 244, 249, 1)
+                FocusedBorderColor: =Label57_1.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =56
+                HoverBorderColor: =Label57_1.BorderColor
+                HoverColor: =Label57_1.Color
+                HoverFill: =Label57_1.Fill
+                PressedBorderColor: =Label57_1.BorderColor
+                PressedColor: =Label57_1.Color
+                PressedFill: =Label57_1.Fill
+                Size: =16
+                Text: =" STRUCTURES SELECTED FOR THE ESTIMATE"
+                Width: =651
+                X: =713
+                ZIndex: =7
+
+            Icon42 As icon.Trash:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon42.Fill
+                DisplayMode: =If(showAddStruSpinner,DisplayMode.Disabled, DisplayMode.Edit)
+                FocusedBorderColor: =Icon42.BorderColor
+                Height: =63
+                HoverBorderColor: =ColorFade(Icon42.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon42.Color, 20%)
+                HoverFill: =Icon42.Fill
+                Icon: =Icon.Trash
+                OnSelect: |+
+                    =UpdateContext({showDeleteAllPopUp: true });
+                    
+                    
+                    
+                PressedBorderColor: =ColorFade(Icon42.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon42.Color, -20%)
+                PressedFill: =Icon42.Fill
+                Width: =52
+                X: =1231
+                Y: =56
+                ZIndex: =8
+
+            Label48_3 As label:
+                Color: =RGBA(168, 0, 0, 1)
+                FocusedBorderColor: =Label48_3.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =52
+                HoverBorderColor: =Label48_3.BorderColor
+                HoverColor: =Label48_3.Color
+                HoverFill: =Label48_3.Fill
+                Italic: =true
+                PressedBorderColor: =Label48_3.BorderColor
+                PressedColor: =Label48_3.Color
+                PressedFill: =Label48_3.Fill
+                Size: =12
+                Text: ="If you change vendor and/or contractor during an estimate please delete ALL items first"
+                Width: =505
+                X: =726
+                Y: =58
+                ZIndex: =9
+
+            estSrcSelectedStruc As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                FocusedBorderColor: =estSrcSelectedStruc.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =estSrcSelectedStruc.HoverBorderColor
+                PressedColor: =estSrcSelectedStruc.Color
+                PressedFill: =estSrcSelectedStruc.Fill
+                X: =983
+                Y: =122
+                ZIndex: =10
+
+            Label79 As label:
+                FocusedBorderColor: =Label79.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =Label79.BorderColor
+                HoverColor: =Label79.Color
+                HoverFill: =Label79.Fill
+                PressedBorderColor: =Label79.BorderColor
+                PressedColor: =Label79.Color
+                PressedFill: =Label79.Fill
+                Text: ="Search selected structures"
+                Width: =238
+                X: =726
+                Y: =122
+                ZIndex: =11
+
+            Icon53 As icon.Search:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon53.Fill
+                Height: =39
+                HoverBorderColor: =ColorFade(Icon53.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon53.Color, 20%)
+                HoverFill: =Icon53.Fill
+                Icon: =Icon.Search
+                PressedBorderColor: =ColorFade(Icon53.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon53.Color, -20%)
+                PressedFill: =Icon53.Fill
+                Width: =41
+                X: =1261
+                Y: =123
+                ZIndex: =12
+
+            "EstSelectedStrucGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dotted
+                BorderThickness: =2
+                DisabledBorderColor: =EstSelectedStrucGallery.BorderColor
+                DisabledFill: =EstSelectedStrucGallery.Fill
+                Height: =465
+                HoverBorderColor: =EstSelectedStrucGallery.BorderColor
+                HoverFill: =EstSelectedStrucGallery.Fill
+                Items: =SortByColumns(Search(estStrucList_Current, estSrcSelectedStruc.Text,"StrucID","Description"),"StrucID", SortOrder.Ascending)
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =EstSelectedStrucGallery.BorderColor
+                PressedBorderColor: =EstSelectedStrucGallery.BorderColor
+                PressedFill: =EstSelectedStrucGallery.Fill
+                ShowNavigation: =true
+                ShowScrollbar: =false
+                TemplatePadding: =0
+                TemplateSize: =71
+                Width: =633
+                X: =720
+                Y: =211
+                ZIndex: =14
+
+                Title1_1 As label:
+                    FocusedBorderColor: =Title1_1.BorderColor
+                    Height: =38
+                    HoverBorderColor: =Title1_1.BorderColor
+                    HoverColor: =Title1_1.Color
+                    HoverFill: =Title1_1.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title1_1.BorderColor
+                    PressedColor: =Title1_1.Color
+                    PressedFill: =Title1_1.Fill
+                    Size: =10
+                    Text: =Concatenate(ThisItem.StrucID, "|", ThisItem.Description)
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =409
+                    X: =8
+                    Y: =3
+                    ZIndex: =1
+
+                Subtitle2_1 As label:
+                    FocusedBorderColor: =Subtitle2_1.BorderColor
+                    Height: =38
+                    HoverBorderColor: =Subtitle2_1.BorderColor
+                    HoverColor: =Subtitle2_1.Color
+                    HoverFill: =Subtitle2_1.Fill
+                    OnSelect: =Select(Parent)
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Subtitle2_1.BorderColor
+                    PressedColor: =Subtitle2_1.Color
+                    PressedFill: =Subtitle2_1.Fill
+                    Size: =10
+                    Text: =ThisItem.StrQty
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =61
+                    X: =439
+                    Y: =3
+                    ZIndex: =2
+
+                Separator1_1 As rectangle:
+                    DisabledFill: =Separator1_1.Fill
+                    FocusedBorderColor: =Separator1_1.BorderColor
+                    Height: =1
+                    HoverFill: =Separator1_1.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator1_1.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                Icon18_1 As icon.Trash:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Color: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =Icon18_1.Fill
+                    FocusedBorderColor: =Icon18_1.BorderColor
+                    Height: =36
+                    HoverBorderColor: =ColorFade(Icon18_1.BorderColor, 20%)
+                    HoverColor: =ColorFade(Icon18_1.Color, 20%)
+                    HoverFill: =Icon18_1.Fill
+                    Icon: =Icon.Trash
+                    OnSelect: |
+                        =/*If(SG_visible,
+                            Collect(Structures, LookUp('[dbo].[Structures]', StrucID = ThisItem.StrucID 
+                               And ThisItem.Type  = ThisItem.StrucType)), false);*/
+                        UpdateContext({showAddStruSpinner: true});
+                        If(NewEstimate,
+                          UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                               And Version = NewEstimateVersion And Type = NewEstimateType, 
+                               {Struc_L_Cost: Struc_L_Cost - ThisItem.StrLabourCost,
+                               Struc_M_Cost: Struc_M_Cost - ThisItem.StrMaterialCost});,
+                          UpdateIf(Estimates,  ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                               And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                               {Struc_L_Cost: Struc_L_Cost - ThisItem.StrLabourCost,
+                               Struc_M_Cost: Struc_M_Cost - ThisItem.StrMaterialCost })
+                        );
+                        RemoveIf(ProjectEstStructures, ThisItem.strucTableID = strucTableID);       
+                        Remove(estStrucList_Current, ThisItem);
+                        UpdateContext({showAddStruSpinner: false});
+                    PressedBorderColor: =ColorFade(Icon18_1.BorderColor, -20%)
+                    PressedColor: =ColorFade(Icon18_1.Color, -20%)
+                    PressedFill: =Icon18_1.Fill
+                    Width: =33
+                    X: =524
+                    Y: =8
+                    ZIndex: =6
+
+                Icon54 As icon.ChevronRight:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Color: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =Icon54.Fill
+                    Height: =36
+                    HoverBorderColor: =ColorFade(Icon54.BorderColor, 20%)
+                    HoverColor: =ColorFade(Icon54.Color, 20%)
+                    HoverFill: =Icon54.Fill
+                    Icon: =Icon.ChevronRight
+                    OnSelect: |-
+                        =Navigate(EditEstStructureQty, ScreenTransition.Fade, {selectedStruc: ThisItem});
+                    PressedBorderColor: =ColorFade(Icon54.BorderColor, -20%)
+                    PressedColor: =ColorFade(Icon54.Color, -20%)
+                    PressedFill: =Icon54.Fill
+                    Width: =29
+                    X: =590
+                    Y: =8
+                    ZIndex: =7
+
+                Label136 As label:
+                    Height: =30
+                    OnSelect: =Select(Parent)
+                    Size: =10
+                    Text: |-
+                        =Concatenate("CF is: ", Text(ThisItem.complexityFactor))
+                    X: =8
+                    Y: =40
+                    ZIndex: =8
+
+                Label145 As label:
+                    Color: =RGBA(168, 0, 0, 1)
+                    Height: =27
+                    OnSelect: =Select(Parent)
+                    Size: =11
+                    Text: |-
+                        =Concatenate("Record ID: ", Text(ThisItem.strucTableID))
+                    X: =76
+                    Y: =41
+                    ZIndex: =9
+
+            Label117 As label:
+                Height: =36
+                Size: =11
+                Text: ="Quantity"
+                Width: =74
+                X: =1139
+                Y: =175
+                ZIndex: =15
+
+            AddStruSpinner As group:
+                Height: =5
+                Width: =5
+                X: =40
+                Y: =17
+                ZIndex: =19
+
+                Rectangle1_4 As rectangle:
+                    DisabledFill: =Rectangle1_4.Fill
+                    Fill: =RGBA(255,255, 255, 0.85)
+                    Height: =465
+                    HoverFill: =Rectangle1_4.Fill
+                    PressedFill: =Rectangle1_4.Fill
+                    Visible: =showAddStruSpinner
+                    Width: =633
+                    X: =720
+                    Y: =211
+                    ZIndex: =17
+
+                Image1_4 As image:
+                    Height: =94
+                    HoverBorderColor: =ColorFade(Image1_4.BorderColor, 20%)
+                    HoverFill: =ColorFade(Image1_4.Fill, 20%)
+                    Image: ='Pulse-1s-200px'
+                    PressedBorderColor: =ColorFade(Image1_4.BorderColor, -20%)
+                    PressedFill: =ColorFade(Image1_4.Fill, -20%)
+                    Visible: =showAddStruSpinner
+                    Width: =92
+                    X: =1009
+                    Y: =384
+                    ZIndex: =18
+
+            AddStruSpinner_1 As group:
+                Height: =5
+                Width: =5
+                X: =-680
+                Y: =-171
+                ZIndex: =21
+
+                Rectangle1_8 As rectangle:
+                    DisabledFill: =Rectangle1_8.Fill
+                    Fill: =RGBA(255,255, 255, 0.85)
+                    Height: =562
+                    HoverFill: =Rectangle1_8.Fill
+                    PressedFill: =Rectangle1_8.Fill
+                    Visible: =showAddStruSpinner
+                    Width: =660
+                    X: =6
+                    Y: =114
+                    ZIndex: =19
+
+                Image1_8 As image:
+                    Height: =115
+                    HoverBorderColor: =ColorFade(Image1_8.BorderColor, 20%)
+                    HoverFill: =ColorFade(Image1_8.Fill, 20%)
+                    Image: ='Pulse-1s-200px'
+                    PressedBorderColor: =ColorFade(Image1_8.BorderColor, -20%)
+                    PressedFill: =ColorFade(Image1_8.Fill, -20%)
+                    Visible: =showAddStruSpinner
+                    Width: =96
+                    X: =307
+                    Y: =323
+                    ZIndex: =20
+
+    Icon25_1 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledColor: =RGBA(128, 128, 128, 1)
+        DisabledFill: =Icon25_1.Fill
+        DisplayMode: =If(showAddStruSpinner, DisplayMode.Disabled, DisplayMode.Edit)
+        FocusedBorderColor: =Icon25_1.BorderColor
+        HoverBorderColor: =ColorFade(Icon25_1.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =Icon25_1.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =UpdateContext({saveDisableS:true, msgWindowS:true, msgWindowOkS:true, msgWindowCancelS:true, procStruc:true, 
+            msgToDsiplayS:""});
+            //msgToDsiplayS:Concatenate("Choose one of the following options, it is recommended to save your work before going back", Char(13), Char(13), "Press Save to save your work, if needed.", Char(13), Char(13), "Press Cancel to stay on this screen.",Char(13), Char(13), "Press Proceed Without Save to go back and ignore the changes you made.")
+        PressedBorderColor: =ColorFade(Icon25_1.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon25_1.Color, -20%)
+        PressedFill: =Icon25_1.Fill
+        Tooltip: ="Go Back"
+        X: =1280
+        Y: =12
+        ZIndex: =4
+
+    estStucPopUpWindow As rectangle:
+        BorderStyle: =BorderStyle.Dashed
+        BorderThickness: =2
+        DisabledFill: =estStucPopUpWindow.Fill
+        Fill: =RGBA(241, 244, 249, 0.9)
+        FocusedBorderColor: =estStucPopUpWindow.BorderColor
+        Height: =654
+        HoverFill: =estStucPopUpWindow.Fill
+        PressedFill: =estStucPopUpWindow.Fill
+        Visible: =msgWindowS
+        Width: =1311
+        X: =40
+        Y: =100
+        ZIndex: =5
+
+    estStrucMsg As label:
+        Color: =RGBA(168, 0, 0, 1)
+        FocusedBorderColor: =estStrucMsg.BorderColor
+        FontWeight: =FontWeight.Bold
+        Height: =112
+        HoverBorderColor: =estStrucMsg.BorderColor
+        HoverColor: =estStrucMsg.Color
+        HoverFill: =estStrucMsg.Fill
+        PressedBorderColor: =estStrucMsg.BorderColor
+        PressedColor: =estStrucMsg.Color
+        PressedFill: =estStrucMsg.Fill
+        Size: =18
+        Text: =Text(msgToDsiplayS)
+        VerticalAlign: =VerticalAlign.Top
+        Visible: =msgWindowS
+        Width: =1198
+        X: =69
+        Y: =126
+        ZIndex: =6
+
+    okSaveDone_2 As button:
+        BorderColor: =ColorFade(okSaveDone_2.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =okSaveDone_2.BorderColor
+        Height: =60
+        HoverBorderColor: =ColorFade(okSaveDone_2.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =If(NewEstimate,
+               Remove(ProjectEstStructures, Filter(ProjectEstStructures, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType));
+                    UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, 
+                   {Struc_L_Cost: If(CountRows(estStrucList_Current) > 0, Sum(estStrucList_Current, StrLabourCost), 0), 
+                Struc_M_Cost:  If(CountRows(estStrucList_Current) > 0, Sum(estStrucList_Current, StrMaterialCost), 0)}),
+                Remove(ProjectEstStructures, Filter(ProjectEstStructures, ProjectID = EstimatesGallery.Selected.ProjectID And
+                   Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                {Struc_L_Cost: If(CountRows(estStrucList_Current) > 0, Sum(estStrucList_Current, StrLabourCost), 0), 
+                Struc_M_Cost:  If(CountRows(estStrucList_Current) > 0, Sum(estStrucList_Current, StrMaterialCost), 0)});
+             );
+            Collect(ProjectEstStructures, estStrucList_Current);
+            ForAll(estStrucList_Current, Patch(ProjectEstStructures, Defaults(ProjectEstStructures), 
+               {ProjectID: ThisRecord.ProjectID, Stage:ThisRecord.Stage, Version:ThisRecord.Version, Type: ThisRecord.Type,
+               StrucID: ThisRecord.StrucID, Description: ThisRecord.Description, StrucType: ThisRecord.StrucType,
+               StrQty: ThisRecord.StrQty, StrMaterialCost: ThisRecord.StrMaterialCost, StrLabourCost: ThisRecord.StrLabourCost,
+               complexityFactor: ThisRecord.complexityFactor
+               }));
+            If(IsEmpty(Errors(ProjectEstStructures)),
+                    UpdateContext({msgWindowS:false, msgWindowCancelS:false, msgToDsiplayS:"", msgWindowOkS:false, procStruc:false});
+                    Navigate(MainEstimateScreen, ScreenTransition.Fade);,
+                    UpdateContext({msgWindowS:true, msgToDsiplayS:"Changes made to estimate's structure section failed, contact IT", msgWindowCancelS:true})
+            );
+            Reset(estSrcSelectedStruc);
+            Reset(EstSrchStruct);
+            UpdateContext({msgWindowS:false, msgWindowCancelS:false, msgToDsiplayS:"", msgWindowOkS:false, procStruc:false});
+            Navigate(MainEstimateScreen, ScreenTransition.Fade);
+        PressedBorderColor: =okSaveDone_2.Fill
+        PressedColor: =okSaveDone_2.Fill
+        PressedFill: =okSaveDone_2.Color
+        Text: ="Save Changes"
+        Visible: = msgWindowOkS
+        X: =330
+        Y: =384
+        ZIndex: =7
+
+    CancelStay_2 As button:
+        BorderColor: =ColorFade(CancelStay_2.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelStay_2.BorderColor
+        Height: =60
+        HoverBorderColor: =ColorFade(CancelStay_2.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({saveDisableS:false, msgWindowS:false, msgWindowCancelS:false, msgToDsiplayS:"", msgWindowOkS:false, procStruc:false})
+        PressedBorderColor: =CancelStay_2.Fill
+        PressedColor: =CancelStay_2.Fill
+        PressedFill: =CancelStay_2.Color
+        Text: ="Cancel & Stay on this Screen"
+        Visible: =msgWindowCancelS
+        X: =804
+        Y: =384
+        ZIndex: =8
+
+    SaveStrucToEst As icon.Save:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =SaveStrucToEst.Fill
+        DisplayMode: =If(Not(saveDisableS), DisplayMode.Edit, DisplayMode.View)
+        FocusedBorderColor: =SaveStrucToEst.BorderColor
+        HoverBorderColor: =ColorFade(SaveStrucToEst.BorderColor, 20%)
+        HoverColor: =ColorFade(SaveStrucToEst.Color, 20%)
+        HoverFill: =SaveStrucToEst.Fill
+        Icon: =Icon.Save
+        OnSelect: |-
+            =If(NewEstimate,
+               Remove(ProjectEstStructures, Filter(ProjectEstStructures, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType));
+                    UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, 
+                   {Struc_L_Cost: If(CountRows(estStrucList_Current) > 0, Sum(estStrucList_Current, StrLabourCost), 0), 
+                Struc_M_Cost:  If(CountRows(estStrucList_Current) > 0, Sum(estStrucList_Current, StrMaterialCost), 0)}),
+                Remove(ProjectEstStructures, Filter(ProjectEstStructures, ProjectID = EstimatesGallery.Selected.ProjectID And
+                   Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                {Struc_L_Cost: If(CountRows(estStrucList_Current) > 0, Sum(estStrucList_Current, StrLabourCost), 0), 
+                Struc_M_Cost:  If(CountRows(estStrucList_Current) > 0, Sum(estStrucList_Current, StrMaterialCost), 0)});
+             );
+            Collect(ProjectEstStructures, estStrucList_Current);
+            If(IsEmpty(Errors(ProjectEstStructures)),
+                   // UpdateContext({msgWindow:true, msgToDsiplay:"Changes made to estimate's material section were successful!"})
+                    true,
+                    UpdateContext({msgWindowS:true, msgWindowCancelS:true, msgToDsiplayS:"Changes made to estimate's structure section failed, contact IT"})
+            );
+        PressedBorderColor: =ColorFade(SaveStrucToEst.BorderColor, -20%)
+        PressedColor: =ColorFade(SaveStrucToEst.Color, -20%)
+        PressedFill: =SaveStrucToEst.Fill
+        Visible: =false
+        X: =1216
+        Y: =12
+        ZIndex: =9
+
+    proceedStruc As button:
+        BorderColor: =ColorFade(proceedStruc.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        Height: =60
+        HoverBorderColor: =ColorFade(proceedStruc.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({msgWindowS:false, msgWindowCancelS:false, msgToDsiplayS:"", msgWindowOkS:false, procStruc:false});
+            Navigate(MainEstimateScreen, ScreenTransition.Fade);
+        PressedBorderColor: =proceedStruc.Fill
+        PressedColor: =proceedStruc.Fill
+        PressedFill: =proceedStruc.Color
+        Text: ="Proceed Without Save"
+        Visible: =procStruc
+        X: =578
+        Y: =384
+        ZIndex: =10
+
+    deletAllPopUpWindow As rectangle:
+        BorderStyle: =BorderStyle.Dashed
+        BorderThickness: =2
+        DisabledFill: =deletAllPopUpWindow.Fill
+        Fill: =RGBA(241, 244, 249, 0.9)
+        FocusedBorderColor: =deletAllPopUpWindow.BorderColor
+        Height: =742
+        HoverFill: =deletAllPopUpWindow.Fill
+        PressedFill: =deletAllPopUpWindow.Fill
+        Visible: |-
+            =showDeleteAllPopUp
+            
+            /*
+            
+            */
+        Width: =1337
+        X: =14
+        Y: =12
+        ZIndex: =11
+
+    okDelete As button:
+        BorderColor: =ColorFade(okDelete.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =okDelete.BorderColor
+        Height: =60
+        HoverBorderColor: =ColorFade(okDelete.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({showDeleteAllPopUp: false, showAddStruSpinner: true});
+            
+            If(NewEstimate,   
+                Remove(ProjectEstStructures, Filter(ProjectEstStructures, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType));
+                   UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, 
+                   {Struc_L_Cost: 0, Struc_M_Cost:  0}),
+                Remove(ProjectEstStructures, Filter(ProjectEstStructures, ProjectID = EstimatesGallery.Selected.ProjectID And 
+                Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                {Struc_L_Cost:  0,  Struc_M_Cost: 0}));
+            If(NewEstimate,
+               //existing sturc list for est should be empty
+                ClearCollect(estStrucList_Current,Filter(ProjectEstStructures,ProjectID=NewEstimateProjectID And Stage=NewEstimateStage And
+                             Version=NewEstimateVersion And Type=NewEstimateType));
+                 // SG-->Structures to choose structures from
+                 ClearCollect(Structures,Filter(StructuresDetails,StrucType=NewEstimateType));
+                 If(NewEstimateVendor="Preferred Vendor",
+                            UpdateContext({VendorPref: true ,currType:NewEstimateType,currVend:NewEstimateVendor}),
+                            UpdateContext({VendorPref: false ,currType:NewEstimateType,currVend:NewEstimateVendor})
+                );,
+               //existing mat list for est will may or may not have items
+                ClearCollect(estStrucList_Current,Filter(ProjectEstStructures,ProjectID=EstimatesGallery.Selected.ProjectID And 
+                            Stage=EstimatesGallery.Selected.Stage And Version=EstimatesGallery.Selected.Version And Type=EstimatesGallery.Selected.Type));
+               // SG-->Structures to choose structures from
+                ClearCollect(Structures,Filter(StructuresDetails,StrucType=EstimatesGallery.Selected.Type));
+                If(EstimatesGallery.Selected.MaterialSupplier="Preferred Vendor",
+                    UpdateContext({VendorPref: true ,currType:EstimatesGallery.Selected.Type,currVend:EstimatesGallery.Selected.MaterialSupplier}),
+                    UpdateContext({VendorPref: false ,currType:EstimatesGallery.Selected.Type,currVend:EstimatesGallery.Selected.MaterialSupplier}))
+                );
+            
+                UpdateContext({showDeleteAllPopUp: false, showAddStruSpinner: false});
+        PressedBorderColor: =okDelete.Fill
+        PressedColor: =okDelete.Fill
+        PressedFill: =okDelete.Color
+        Text: ="Yes, delete all"
+        Visible: =showDeleteAllPopUp
+        X: =463
+        Y: =384
+        ZIndex: =12
+
+    CancelDelete As button:
+        BorderColor: =ColorFade(CancelDelete.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelDelete.BorderColor
+        Height: =60
+        HoverBorderColor: =ColorFade(CancelDelete.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({showDeleteAllPopUp: false})
+        PressedBorderColor: =CancelDelete.Fill
+        PressedColor: =CancelDelete.Fill
+        PressedFill: =CancelDelete.Color
+        Text: ="Cancel"
+        Visible: =showDeleteAllPopUp
+        X: =702
+        Y: =384
+        ZIndex: =13
+
+    Label163 As label:
+        Color: =RGBA(246, 88, 16, 1)
+        FontWeight: =FontWeight.Bold
+        Height: =150
+        Size: =25
+        Text: ="Do you want to delete all structures in this estimate?"
+        Visible: =showDeleteAllPopUp
+        Width: =917
+        X: =224
+        Y: =234
+        ZIndex: =14
+

@@ -1,0 +1,284 @@
+ArchiveMaterialsMainScreen As screen:
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =Refresh(MasterMaterial_PreferredVendor_List);
+        ClearCollect(MaterialTypeList3, {Result: "All"});
+        Collect(MaterialTypeList3, ForAll(Distinct(MasterMaterial_PreferredVendor_List, VendCategory), {Result: ThisRecord.Value}));
+        Reset(SearchArchiveMat);
+    Orientation: =If(ArchiveMaterialsMainScreen.Width < ArchiveMaterialsMainScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= ArchiveMaterialsMainScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    "ArchiveMasterList As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+        DisabledBorderColor: =ArchiveMasterList.BorderColor
+        DisabledFill: =ArchiveMasterList.Fill
+        Height: =526
+        HoverBorderColor: =ArchiveMasterList.BorderColor
+        HoverFill: =ArchiveMasterList.Fill
+        Items: |-
+            =If(ArchiveMatDropdown.Selected.Result = "All", 
+                SortByColumns(Search(Filter(MasterMaterial_PreferredVendor_List, Archived = true), SearchArchiveMat.Text, "EnmaxItemNumber","FortisItemNumber","CoCItemNumber"), "PrimaryItemNumber", SortOrder.Descending), 
+                SortByColumns(Search(Filter(MasterMaterial_PreferredVendor_List, VendCategory = ArchiveMatDropdown.Selected.Result And Archived = true), SearchArchiveMat.Text, "EnmaxItemNumber","FortisItemNumber","CoCItemNumber"), "PrimaryItemNumber", SortOrder.Descending)
+            )
+            
+            
+            /*
+            ----Original code----
+            If(ArchiveMatDropdown.Selected.Result = "All", 
+                SortByColumns(Search(Filter(MasterMaterial_PreferredVendor_List, Archived = true), SearchArchiveMat.Text, "PrimaryItemNumber","EnmaxItemNumber","FortisItemNumber","EnmaxDescritption","FortisDescription", "PreferredVendorName", "PreferredVendDescr"), "PrimaryItemNumber", Descending), 
+                SortByColumns(Search(Filter(MasterMaterial_PreferredVendor_List, VendCategory = ArchiveMatDropdown.Selected.Result And Archived = true), SearchArchiveMat.Text, "PrimaryItemNumber","EnmaxItemNumber","FortisItemNumber", "EnmaxDescritption","FortisDescription", "PreferredVendorName", "PreferredVendDescr"), "PrimaryItemNumber", Descending)
+            )
+            ----Original code complete----
+            
+            
+            ----Code from Vera's MatMasterTable of MaterialsMainScreen----
+            If(Dropdown5.Selected.Result="All",
+                    SortByColumns(Search(Filter(MasterMaterial_PreferredVendor_List,Archived= false ),SearchMat.Text,"EnmaxItemNumber","FortisItemNumber","CoCItemNumber"),"PrimaryItemNumber",Ascending),
+                    SortByColumns(Search(Filter(MasterMaterial_PreferredVendor_List,VendCategory=Dropdown5.Selected.Result And Archived= false ),SearchMat.Text,"EnmaxItemNumber","FortisItemNumber","CoCItemNumber"),"PrimaryItemNumber",Ascending)
+            )
+            ----Code from Vera's MatMasterTable of MaterialsMainScreen complete----
+            */
+        Layout: =Layout.Vertical
+        LoadingSpinnerColor: =ArchiveMasterList.BorderColor
+        PressedBorderColor: =ArchiveMasterList.BorderColor
+        PressedFill: =ArchiveMasterList.Fill
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =150
+        Width: =1349
+        X: =8
+        Y: =240
+        ZIndex: =2
+
+        Title8_1 As label:
+            FocusedBorderColor: =Title8_1.BorderColor
+            Height: =50
+            HoverBorderColor: =Title8_1.BorderColor
+            HoverColor: =Title8_1.Color
+            HoverFill: =Title8_1.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Title8_1.BorderColor
+            PressedColor: =Title8_1.Color
+            PressedFill: =Title8_1.Fill
+            Size: =18
+            Text: =Concatenate(ThisItem.PrimaryItemNumber, " | ", ThisItem.PreferredVendDescr)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =1102
+            X: =18
+            Y: =8
+            ZIndex: =1
+
+        Body3_1 As label:
+            FocusedBorderColor: =Body3_1.BorderColor
+            Height: =83
+            HoverBorderColor: =Body3_1.BorderColor
+            HoverColor: =Body3_1.Color
+            HoverFill: =Body3_1.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Body3_1.BorderColor
+            PressedColor: =Body3_1.Color
+            PressedFill: =Body3_1.Fill
+            Text: |-
+                =Concatenate(ThisItem.EnmaxItemNumber, " - ", ThisItem.EnmaxDescritption, Char(10), ThisItem.FortisItemNumber, " - ", ThisItem.FortisDescription,
+                 Char(10), ThisItem.CoCItemNumber, " - ", ThisItem.CoCDescription)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =1102
+            X: =18
+            Y: =67
+            ZIndex: =3
+
+        Separator8_1 As rectangle:
+            DisabledFill: =Separator8_1.Fill
+            Fill: =RGBA(36, 76, 90, 1)
+            FocusedBorderColor: =Separator8_1.BorderColor
+            Height: =1
+            HoverFill: =Separator8_1.Fill
+            OnSelect: =Select(Parent)
+            PressedFill: =Separator8_1.Fill
+            Width: =1332
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =5
+
+        Icon30 As icon.ChevronRight:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Color: =RGBA(36, 76, 90, 1)
+            DisabledFill: =Icon30.Fill
+            FocusedBorderColor: =Icon30.BorderColor
+            Height: =51
+            HoverBorderColor: =ColorFade(Icon30.BorderColor, 20%)
+            HoverColor: =ColorFade(Icon30.Color, 40%)
+            HoverFill: =Icon30.Fill
+            Icon: =Icon.ChevronRight
+            OnSelect: =Navigate(EditArchivedMaterialItem, ScreenTransition.Fade);
+            PressedBorderColor: =ColorFade(Icon30.BorderColor, -20%)
+            PressedColor: =ColorFade(Icon30.Color, -20%)
+            PressedFill: =Icon30.Fill
+            Width: =50
+            X: =1282
+            Y: =44
+            ZIndex: =10
+
+    ArchiveMatDropdown As dropdown:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        ChevronBackground: =RGBA(36, 76, 90, 1)
+        ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        FocusedBorderColor: =ArchiveMatDropdown.BorderColor
+        HoverBorderColor: =ColorFade(ArchiveMatDropdown.BorderColor, 15%)
+        Items: =MaterialTypeList3.Result
+        PressedBorderColor: =ArchiveMatDropdown.HoverBorderColor
+        PressedFill: =RGBA(36, 76, 90, 1)
+        SelectionFill: =RGBA(36, 76, 90, 1)
+        X: =393
+        Y: =105
+        ZIndex: =3
+
+    Label16_2 As label:
+        FocusedBorderColor: =Label16_2.BorderColor
+        FontWeight: =FontWeight.Semibold
+        HoverBorderColor: =Label16_2.BorderColor
+        HoverColor: =Label16_2.Color
+        HoverFill: =Label16_2.Fill
+        PressedBorderColor: =Label16_2.BorderColor
+        PressedColor: =Label16_2.Color
+        PressedFill: =Label16_2.Fill
+        Size: =14
+        Text: ="Choose a category for material item(s)"
+        Width: =396
+        X: =16
+        Y: =105
+        ZIndex: =4
+
+    SearchArchiveMat As text:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Default: =""
+        FocusedBorderColor: =SearchArchiveMat.BorderColor
+        HoverBorderColor: =RGBA(36, 76, 90, 1)
+        PressedBorderColor: =SearchArchiveMat.HoverBorderColor
+        PressedColor: =SearchArchiveMat.Color
+        PressedFill: =
+        Tooltip: ="Search master material list"
+        Width: =507
+        X: =239
+        Y: =161
+        ZIndex: =5
+
+    Label18_2 As label:
+        FocusedBorderColor: =Label18_2.BorderColor
+        FontWeight: =FontWeight.Semibold
+        HoverBorderColor: =Label18_2.BorderColor
+        HoverColor: =Label18_2.Color
+        HoverFill: =Label18_2.Fill
+        PressedBorderColor: =Label18_2.BorderColor
+        PressedColor: =Label18_2.Color
+        PressedFill: =Label18_2.Fill
+        Size: =14
+        Text: ="Search material table"
+        Width: =216
+        X: =16
+        Y: =161
+        ZIndex: =6
+
+    Icon15_2 As icon.Search:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Color: =RGBA(36, 76, 90, 1)
+        DisabledFill: =Icon15_2.Fill
+        FocusedBorderColor: =Icon15_2.BorderColor
+        Height: =30
+        HoverBorderColor: =ColorFade(Icon15_2.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon15_2.Color, 20%)
+        HoverFill: =Icon15_2.Fill
+        Icon: =Icon.Search
+        PressedBorderColor: =ColorFade(Icon15_2.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon15_2.Color, -20%)
+        PressedFill: =Icon15_2.Fill
+        Width: =34
+        X: =703
+        Y: =166
+        ZIndex: =7
+
+    RectQuickActionBar2_3 As rectangle:
+        DisabledFill: =RectQuickActionBar2_3.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =RectQuickActionBar2_3.BorderColor
+        Height: =88
+        HoverFill: =RectQuickActionBar2_3.Fill
+        PressedFill: =RectQuickActionBar2_3.Fill
+        Width: =Parent.Width
+        ZIndex: =8
+
+    LblAppName2_3 As label:
+        FocusedBorderColor: =LblAppName2_3.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =88
+        HoverBorderColor: =LblAppName2_3.BorderColor
+        HoverColor: =LblAppName2_3.Color
+        HoverFill: =LblAppName2_3.Fill
+        PressedBorderColor: =LblAppName2_3.BorderColor
+        PressedColor: =LblAppName2_3.Color
+        PressedFill: =LblAppName2_3.Fill
+        Size: =26
+        Text: =" ARCHIVED MASTER MATERIAL LIST"
+        Width: =Parent.Width
+        ZIndex: =9
+
+    Icon28 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon28.Fill
+        FocusedBorderColor: =Icon28.BorderColor
+        HoverBorderColor: =ColorFade(Icon28.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =Icon28.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: =Reset(SearchArchiveMat);Reset(SearchMat);Navigate(MaterialsMainScreen,ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(Icon28.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon28.Color, -20%)
+        PressedFill: =Icon28.Fill
+        Tooltip: ="Go back"
+        X: =1281
+        Y: =12
+        ZIndex: =10
+
+    Icon29 As icon.Reload:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon29.Fill
+        FocusedBorderColor: =Icon29.BorderColor
+        HoverBorderColor: =ColorFade(Icon29.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =Icon29.Fill
+        Icon: =Icon.Reload
+        OnSelect: =Refresh(MasterMaterial_PreferredVendor_List);
+        PressedBorderColor: =ColorFade(Icon29.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon29.Color, -20%)
+        PressedFill: =Icon29.Fill
+        Tooltip: ="Refresh archived master material list"
+        X: =1217
+        Y: =12
+        ZIndex: =11
+
+    Label43 As label:
+        Align: =Align.Center
+        FocusedBorderColor: =Label43.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =62
+        HoverBorderColor: =Label43.BorderColor
+        HoverColor: =Label43.Color
+        HoverFill: =Label43.Fill
+        PressedBorderColor: =Label43.BorderColor
+        PressedColor: =Label43.Color
+        PressedFill: =Label43.Fill
+        Size: =14
+        Text: ="No items are archived"
+        Visible: =If(CountRows(ArchiveMasterList.AllItems) >=1, false, true)
+        Width: =488
+        X: =793
+        Y: =104
+        ZIndex: =12
+

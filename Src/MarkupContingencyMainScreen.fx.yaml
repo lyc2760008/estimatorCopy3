@@ -1,0 +1,626 @@
+MarkupContingencyMainScreen As screen:
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =UpdateContext({visible: false, editable: false, editIcon:true, showMarkUpAdminSpinner: false});
+        Refresh(MarkUp_ContingencyTable);
+        ClearCollect(MarkupList, MarkUp_ContingencyTable);
+        ResetForm(MarkupForm);
+    Orientation: =If(MarkupContingencyMainScreen.Width < MarkupContingencyMainScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= MarkupContingencyMainScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    ScreenLabel_6 As label:
+        Color: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =ScreenLabel_6.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =82
+        HoverBorderColor: =ScreenLabel_6.BorderColor
+        HoverColor: =ScreenLabel_6.Color
+        HoverFill: =ScreenLabel_6.Fill
+        PressedBorderColor: =ScreenLabel_6.BorderColor
+        PressedColor: =ScreenLabel_6.Color
+        PressedFill: =ScreenLabel_6.Fill
+        Size: =26
+        Text: ="  MARKUP CONTROLS MAIN SCREEN"
+        Width: =1364
+        ZIndex: =1
+
+    "MarkupGallery As gallery.'BrowseLayout_Vertical_TwoTextVariant_ver4.0'":
+        DisabledBorderColor: =MarkupGallery.BorderColor
+        DisabledFill: =MarkupGallery.Fill
+        Height: =438
+        HoverBorderColor: =MarkupGallery.BorderColor
+        HoverFill: =MarkupGallery.Fill
+        Items: =MarkupList
+        Layout: =Layout.Vertical
+        LoadingSpinnerColor: =MarkupGallery.BorderColor
+        PressedBorderColor: =MarkupGallery.BorderColor
+        PressedFill: =MarkupGallery.Fill
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =59
+        Width: =1366
+        Y: =132
+        ZIndex: =1
+
+        Title4_3 As label:
+            FocusedBorderColor: =Title4_3.BorderColor
+            Height: =37
+            HoverBorderColor: =Title4_3.BorderColor
+            HoverColor: =Title4_3.Color
+            HoverFill: =Title4_3.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Title4_3.BorderColor
+            PressedColor: =Title4_3.Color
+            PressedFill: =Title4_3.Fill
+            Text: =ThisItem.task_con_markup
+            VerticalAlign: =VerticalAlign.Top
+            Width: =945
+            X: =32
+            Y: =11
+            ZIndex: =1
+
+        Separator4_3 As rectangle:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            DisabledFill: =Separator4_3.Fill
+            Fill: =RGBA(36, 76, 90, 1)
+            FocusedBorderColor: =Separator4_3.BorderColor
+            Height: =1
+            HoverFill: =Separator4_3.Fill
+            OnSelect: =Select(Parent)
+            PressedFill: =Separator4_3.Fill
+            Width: =Parent.TemplateWidth
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =4
+
+        contingencyInput As text:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Default: =Text(ThisItem.contingeny * 100, "[$-en-US] 0.00 %")
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            FocusedBorderColor: =contingencyInput.BorderColor
+            FontWeight: =FontWeight.Semibold
+            Format: =TextFormat.Number
+            Height: =37
+            HoverBorderColor: =RGBA(36, 76, 90, 1)
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =contingencyInput.HoverBorderColor
+            PressedColor: =contingencyInput.Color
+            PressedFill: =contingencyInput.Fill
+            Size: =14
+            Width: =118
+            X: =1029
+            Y: =8
+            ZIndex: =5
+
+        markupId_label As label:
+            FocusedBorderColor: =markupId_label.BorderColor
+            HoverBorderColor: =markupId_label.BorderColor
+            HoverColor: =markupId_label.Color
+            HoverFill: =markupId_label.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =markupId_label.BorderColor
+            PressedColor: =markupId_label.Color
+            PressedFill: =markupId_label.Fill
+            Text: =ThisItem.id_con_markup
+            Visible: =false
+            X: =872
+            Y: =8
+            ZIndex: =6
+
+        markupInput As text:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Default: =Text(ThisItem.markup * 100, "[$-en-US] 0.00 %")
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            FocusedBorderColor: =markupInput.BorderColor
+            FontWeight: =FontWeight.Semibold
+            Height: =37
+            HoverBorderColor: =RGBA(36, 76, 90, 1)
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =markupInput.HoverBorderColor
+            PressedColor: =markupInput.Color
+            PressedFill: =markupInput.Fill
+            Size: =14
+            Width: =142
+            X: =1199
+            Y: =8
+            ZIndex: =7
+
+    refreshIcon_3 As icon.Reload:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =refreshIcon_3.Fill
+        FocusedBorderColor: =refreshIcon_3.BorderColor
+        HoverBorderColor: =ColorFade(refreshIcon_3.BorderColor, 20%)
+        HoverColor: =ColorFade(refreshIcon_3.Color, 20%)
+        HoverFill: =refreshIcon_3.Fill
+        Icon: =Icon.Reload
+        OnSelect: |-
+            =Refresh(MarkUp_ContingencyTable);
+            ClearCollect(MarkupList, MarkUp_ContingencyTable);
+        PressedBorderColor: =ColorFade(refreshIcon_3.BorderColor, -20%)
+        PressedColor: =ColorFade(refreshIcon_3.Color, -20%)
+        PressedFill: =refreshIcon_3.Fill
+        Tooltip: ="Refresh list"
+        X: =1145
+        Y: =9
+        ZIndex: =3
+
+    SubmitMarkupForm As button:
+        BorderColor: =ColorFade(SubmitMarkupForm.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =SubmitMarkupForm.BorderColor
+        HoverBorderColor: =ColorFade(SubmitMarkupForm.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =SubmitForm(MarkupForm); 
+            ResetForm(MarkupForm);
+            UpdateContext({visible:false});
+            Refresh(MarkUp_ContingencyTable);
+            ClearCollect(MarkupList, MarkUp_ContingencyTable);
+        PressedBorderColor: =SubmitMarkupForm.Fill
+        PressedColor: =SubmitMarkupForm.Fill
+        PressedFill: =SubmitMarkupForm.Color
+        Text: ="Submit"
+        Visible: =visible
+        X: =1177
+        Y: =630
+        ZIndex: =4
+
+    backIcon_3 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =backIcon_3.Fill
+        FocusedBorderColor: =backIcon_3.BorderColor
+        HoverBorderColor: =ColorFade(backIcon_3.BorderColor, 20%)
+        HoverColor: =ColorFade(backIcon_3.Color, 20%)
+        HoverFill: =backIcon_3.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: =Navigate(MainScreen,ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(backIcon_3.BorderColor, -20%)
+        PressedColor: =ColorFade(backIcon_3.Color, -20%)
+        PressedFill: =backIcon_3.Fill
+        Tooltip: ="Go back to previous screen"
+        X: =1289
+        Y: =9
+        ZIndex: =5
+
+    CancelMarkupForm As button:
+        BorderColor: =ColorFade(CancelMarkupForm.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelMarkupForm.BorderColor
+        HoverBorderColor: =ColorFade(CancelMarkupForm.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |
+            =ResetForm(MarkupForm);
+            UpdateContext({visible:false})
+        PressedBorderColor: =CancelMarkupForm.Fill
+        PressedColor: =CancelMarkupForm.Fill
+        PressedFill: =CancelMarkupForm.Color
+        Text: ="Cancel"
+        Visible: =visible
+        X: =1177
+        Y: =705
+        ZIndex: =6
+
+    addIcon_3 As icon.Add:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =addIcon_3.Fill
+        FocusedBorderColor: =addIcon_3.BorderColor
+        HoverBorderColor: =ColorFade(addIcon_3.BorderColor, 20%)
+        HoverColor: =ColorFade(addIcon_3.Color, 20%)
+        HoverFill: =addIcon_3.Fill
+        Icon: =Icon.Add
+        OnSelect: |-
+            =UpdateContext({visible: true});
+            NewForm(MarkupForm);
+        PressedBorderColor: =ColorFade(addIcon_3.BorderColor, -20%)
+        PressedColor: =ColorFade(addIcon_3.Color, -20%)
+        PressedFill: =addIcon_3.Fill
+        Tooltip: ="Add a new item"
+        X: =1225
+        Y: =9
+        ZIndex: =7
+
+    MarkupForm As form:
+        AcceptsFocus: =false
+        DataSource: =MarkUp_ContingencyTable
+        Height: =138
+        Visible: =visible
+        Width: =1116
+        Y: =630
+        ZIndex: =8
+
+        task_con_markup_DataCard1 As typedDataCard.textualEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="task_con_markup"
+            Default: =ThisItem.task_con_markup
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Item"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            MaxLength: =DataSourceInfo(MarkUp_ContingencyTable, DataSourceInfo.MaxLength, "task_con_markup")
+            Required: =true
+            Update: =DataCardValue23.Text
+            Width: =372
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey23 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =DataCardKey23.BorderColor
+                Height: =34
+                HoverBorderColor: =DataCardKey23.BorderColor
+                HoverColor: =DataCardKey23.Color
+                HoverFill: =DataCardKey23.Fill
+                PressedBorderColor: =DataCardKey23.BorderColor
+                PressedColor: =DataCardKey23.Color
+                PressedFill: =DataCardKey23.Fill
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue23 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                FocusedBorderColor: =DataCardValue23.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                HoverFill: =RGBA(255, 255, 255, 1)
+                MaxLength: =Parent.MaxLength
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue23.HoverBorderColor
+                PressedColor: =DataCardValue23.Color
+                PressedFill: =DataCardValue23.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey23.Y + DataCardKey23.Height + 5
+                ZIndex: =2
+
+            ErrorMessage23 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =ErrorMessage23.BorderColor
+                Height: =10
+                HoverBorderColor: =ErrorMessage23.BorderColor
+                HoverColor: =ErrorMessage23.Color
+                HoverFill: =ErrorMessage23.Fill
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                PressedBorderColor: =ErrorMessage23.BorderColor
+                PressedColor: =ErrorMessage23.Color
+                PressedFill: =ErrorMessage23.Fill
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue23.Y + DataCardValue23.Height
+                ZIndex: =3
+
+            StarVisible23 As label:
+                Align: =Align.Center
+                FocusedBorderColor: =StarVisible23.BorderColor
+                Height: =DataCardKey23.Height
+                HoverBorderColor: =StarVisible23.BorderColor
+                HoverColor: =StarVisible23.Color
+                HoverFill: =StarVisible23.Fill
+                PressedBorderColor: =StarVisible23.BorderColor
+                PressedColor: =StarVisible23.Color
+                PressedFill: =StarVisible23.Fill
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey23.Y
+                ZIndex: =4
+
+        contingeny_DataCard1 As typedDataCard.numberEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="contingeny"
+            Default: =ThisItem.contingeny
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Contingeny %"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            Required: =false
+            Update: =Value(DataCardValue24.Text)
+            Width: =372
+            X: =1
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey24 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =DataCardKey24.BorderColor
+                Height: =34
+                HoverBorderColor: =DataCardKey24.BorderColor
+                HoverColor: =DataCardKey24.Color
+                HoverFill: =DataCardKey24.Fill
+                PressedBorderColor: =DataCardKey24.BorderColor
+                PressedColor: =DataCardKey24.Color
+                PressedFill: =DataCardKey24.Fill
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue24 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                FocusedBorderColor: =DataCardValue24.BorderColor
+                Format: =TextFormat.Number
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue24.HoverBorderColor
+                PressedColor: =DataCardValue24.Color
+                PressedFill: =DataCardValue24.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey24.Y + DataCardKey24.Height + 5
+                ZIndex: =2
+
+            ErrorMessage24 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =ErrorMessage24.BorderColor
+                Height: =10
+                HoverBorderColor: =ErrorMessage24.BorderColor
+                HoverColor: =ErrorMessage24.Color
+                HoverFill: =ErrorMessage24.Fill
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                PressedBorderColor: =ErrorMessage24.BorderColor
+                PressedColor: =ErrorMessage24.Color
+                PressedFill: =ErrorMessage24.Fill
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue24.Y + DataCardValue24.Height
+                ZIndex: =3
+
+            StarVisible24 As label:
+                Align: =Align.Center
+                FocusedBorderColor: =StarVisible24.BorderColor
+                Height: =DataCardKey24.Height
+                HoverBorderColor: =StarVisible24.BorderColor
+                HoverColor: =StarVisible24.Color
+                HoverFill: =StarVisible24.Fill
+                PressedBorderColor: =StarVisible24.BorderColor
+                PressedColor: =StarVisible24.Color
+                PressedFill: =StarVisible24.Fill
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey24.Y
+                ZIndex: =4
+
+        markup_DataCard1 As typedDataCard.numberEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="markup"
+            Default: =ThisItem.markup
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Markup %"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            Required: =false
+            Update: =Value(DataCardValue25.Text)
+            Width: =372
+            X: =2
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey25 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =DataCardKey25.BorderColor
+                Height: =34
+                HoverBorderColor: =DataCardKey25.BorderColor
+                HoverColor: =DataCardKey25.Color
+                HoverFill: =DataCardKey25.Fill
+                PressedBorderColor: =DataCardKey25.BorderColor
+                PressedColor: =DataCardKey25.Color
+                PressedFill: =DataCardKey25.Fill
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue25 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                FocusedBorderColor: =DataCardValue25.BorderColor
+                Format: =TextFormat.Number
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue25.HoverBorderColor
+                PressedColor: =DataCardValue25.Color
+                PressedFill: =DataCardValue25.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey25.Y + DataCardKey25.Height + 5
+                ZIndex: =2
+
+            ErrorMessage25 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =ErrorMessage25.BorderColor
+                Height: =10
+                HoverBorderColor: =ErrorMessage25.BorderColor
+                HoverColor: =ErrorMessage25.Color
+                HoverFill: =ErrorMessage25.Fill
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                PressedBorderColor: =ErrorMessage25.BorderColor
+                PressedColor: =ErrorMessage25.Color
+                PressedFill: =ErrorMessage25.Fill
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue25.Y + DataCardValue25.Height
+                ZIndex: =3
+
+            StarVisible25 As label:
+                Align: =Align.Center
+                FocusedBorderColor: =StarVisible25.BorderColor
+                Height: =DataCardKey25.Height
+                HoverBorderColor: =StarVisible25.BorderColor
+                HoverColor: =StarVisible25.Color
+                HoverFill: =StarVisible25.Fill
+                PressedBorderColor: =StarVisible25.BorderColor
+                PressedColor: =StarVisible25.Color
+                PressedFill: =StarVisible25.Fill
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey25.Y
+                ZIndex: =4
+
+    saveIcon_3 As icon.Check:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =saveIcon_3.Fill
+        FocusedBorderColor: =saveIcon_3.BorderColor
+        HoverBorderColor: =ColorFade(saveIcon_3.BorderColor, 20%)
+        HoverColor: =ColorFade(saveIcon_3.Color, 20%)
+        HoverFill: =saveIcon_3.Fill
+        Icon: =Icon.Check
+        OnSelect: |-
+            =UpdateContext({showMarkUpAdminSpinner: true});
+            ForAll(MarkupGallery.AllItems,
+                  Patch(MarkUp_ContingencyTable, 
+                        LookUp(MarkupList, id_con_markup = Value(markupId_label.Text)),
+                        {contingeny:Value(contingencyInput.Text)},
+                        {markup: Value(markupInput.Text)}
+                  )
+            );
+            Refresh(MarkUp_ContingencyTable);
+            ClearCollect(MarkupList, MarkUp_ContingencyTable);
+            UpdateContext({editable:false, editIcon:true, showMarkUpAdminSpinner: false});
+        PressedBorderColor: =ColorFade(saveIcon_3.BorderColor, -20%)
+        PressedColor: =ColorFade(saveIcon_3.Color, -20%)
+        PressedFill: =saveIcon_3.Fill
+        Tooltip: ="Save changes"
+        Visible: =editable
+        X: =986
+        Y: =9
+        ZIndex: =10
+
+    Icon4_2 As icon.Edit:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon4_2.Fill
+        FocusedBorderColor: =Icon4_2.BorderColor
+        HoverBorderColor: =ColorFade(Icon4_2.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon4_2.Color, 20%)
+        HoverFill: =Icon4_2.Fill
+        Icon: =Icon.Edit
+        OnSelect: |-
+            =UpdateContext({editable:true, editIcon:false});
+        PressedBorderColor: =ColorFade(Icon4_2.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon4_2.Color, -20%)
+        PressedFill: =Icon4_2.Fill
+        Visible: =editIcon
+        X: =1065
+        Y: =9
+        ZIndex: =11
+
+    Label4 As label:
+        FocusedBorderColor: =Label4.BorderColor
+        FontWeight: =FontWeight.Bold
+        HoverBorderColor: =Label4.BorderColor
+        HoverColor: =Label4.Color
+        HoverFill: =Label4.Fill
+        PressedBorderColor: =Label4.BorderColor
+        PressedColor: =Label4.Color
+        PressedFill: =Label4.Fill
+        Size: =14
+        Text: ="Contingency"
+        X: =1027
+        Y: =97
+        ZIndex: =12
+
+    Label5 As label:
+        FocusedBorderColor: =Label5.BorderColor
+        FontWeight: =FontWeight.Bold
+        HoverBorderColor: =Label5.BorderColor
+        HoverColor: =Label5.Color
+        HoverFill: =Label5.Fill
+        PressedBorderColor: =Label5.BorderColor
+        PressedColor: =Label5.Color
+        PressedFill: =Label5.Fill
+        Size: =14
+        Text: ="Markup"
+        X: =1200
+        Y: =97
+        ZIndex: =13
+
+    MarkUpAdminSpinner As group:
+        Height: =5
+        Width: =5
+        X: =40
+        Y: =-48
+        ZIndex: =16
+
+        Rectangle1_14 As rectangle:
+            DisabledFill: =Rectangle1_14.Fill
+            Fill: =RGBA(255,255, 255, 0.85)
+            Height: =768
+            HoverFill: =Rectangle1_14.Fill
+            PressedFill: =Rectangle1_14.Fill
+            Visible: =showMarkUpAdminSpinner
+            Width: =1366
+            ZIndex: =14
+
+        Image1_14 As image:
+            Height: =156
+            HoverBorderColor: =ColorFade(Image1_14.BorderColor, 20%)
+            HoverFill: =ColorFade(Image1_14.Fill, 20%)
+            Image: ='Pulse-1s-200px'
+            PressedBorderColor: =ColorFade(Image1_14.BorderColor, -20%)
+            PressedFill: =ColorFade(Image1_14.Fill, -20%)
+            Visible: =showMarkUpAdminSpinner
+            Width: =199
+            X: =623
+            Y: =285
+            ZIndex: =15
+

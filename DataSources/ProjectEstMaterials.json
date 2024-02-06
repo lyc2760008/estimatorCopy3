@@ -1,0 +1,32 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2022-04-26T20:48:40.5090000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "AcctCategory": "AcctCategory",
+      "descr": "descr",
+      "itemNumber": "itemNumber",
+      "newPrice_afterIncrement": "newPrice_afterIncrement",
+      "newQtyToAdd_afterIncrment": "newQtyToAdd_afterIncrment",
+      "price": "price",
+      "priceCal_afterMinQty": "priceCal_afterMinQty",
+      "ProjectID": "ProjectID",
+      "qty": "qty",
+      "Stage": "Stage",
+      "tableID": "tableID",
+      "Task": "Task",
+      "Type": "Type",
+      "Version": "Version"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "ProjectEstMaterials",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

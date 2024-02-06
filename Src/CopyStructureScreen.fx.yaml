@@ -1,0 +1,291 @@
+"CopyStructureScreen As screen.'phoneLayout_FluidGridWithHeaderPageLayout_ver3.0'":
+    Fill: =RGBA(255, 255, 255, 1) 
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =Refresh(StructuresDetails);
+        Refresh(StructuresMaterialDetails);
+        Refresh(StructuresLabourDetails);
+        
+        ClearCollect(newStrucLabList,Filter(StructuresLabourDetails, StrucID = toCopyStrucID And StrucType = toCopyStrucType));
+        ClearCollect(newStrucMatList,Filter(StructuresMaterialDetails, StrucID = toCopyStrucID And StrucType = toCopyStrucType));
+        
+        UpdateContext({goAhead:false, showCopyStrucSpinner: false}); 
+    Orientation: =If(CopyStructureScreen.Width < CopyStructureScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= CopyStructureScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    MainScreenTitleBar_2 As rectangle:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        DisabledFill: =MainScreenTitleBar_2.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =MainScreenTitleBar_2.BorderColor
+        Height: =88
+        HoverFill: =MainScreenTitleBar_2.Fill
+        PressedFill: =MainScreenTitleBar_2.Fill
+        Width: =Parent.Width
+        ZIndex: =1
+
+    MainScreenTitle_2 As label:
+        Align: =Align.Center
+        FocusedBorderColor: =MainScreenTitle_2.BorderColor
+        Font: =Font.'Lato Light'
+        Height: =88
+        HoverBorderColor: =MainScreenTitle_2.BorderColor
+        HoverColor: =MainScreenTitle_2.Color
+        HoverFill: =MainScreenTitle_2.Fill
+        PressedBorderColor: =MainScreenTitle_2.BorderColor
+        PressedColor: =MainScreenTitle_2.Color
+        PressedFill: =MainScreenTitle_2.Fill
+        Size: =30
+        Text: ="COPY STRUCTURE SCREEN"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    Canvas1_2 As fluidGrid.fluidGridWithBlankCard:
+        BorderThickness: =0
+        Height: =Parent.Height - Canvas1_2.Y
+        Width: =Parent.Width
+        Y: =MainScreenTitleBar_2.Y + MainScreenTitleBar_2.Height
+        ZIndex: =3
+
+        DataCard1_2 As dataCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            BorderThickness: =0
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(255, 255, 255, 1)
+            Height: =621
+            Width: =Parent.Width
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            Label138_1 As label:
+                Text: |-
+                    =Concatenate("Structure ID: ", toCopyStrucID)
+                Width: =345
+                X: =39
+                Y: =15
+                ZIndex: =2
+
+            Label141_1 As label:
+                Text: |-
+                    =Concatenate("Structure Type: ", toCopyStrucType)
+                Width: =302
+                X: =39
+                Y: =55
+                ZIndex: =5
+
+            Label137_3 As label:
+                FontWeight: =FontWeight.Semibold
+                Height: =88
+                Size: =18
+                Text: ="New Structure to be created"
+                Width: =431
+                X: =39
+                Y: =112
+                ZIndex: =8
+
+            newStrucID As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                DisplayMode: =If(Not(goAhead), DisplayMode.Edit, DisplayMode.Disabled)
+                Height: =38
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =newStrucID.HoverBorderColor
+                PressedColor: =newStrucID.Color
+                PressedFill: =newStrucID.Fill
+                Width: =395
+                X: =200
+                Y: =200
+                ZIndex: =12
+
+            ValidateStrucID As button:
+                BorderColor: =ColorFade(ValidateStrucID.Fill, -15%)
+                DisplayMode: =If(Not(goAhead), DisplayMode.Edit, DisplayMode.Disabled)
+                Fill: =RGBA(36, 76, 90, 1)
+                Height: =64
+                HoverBorderColor: =ColorFade(ValidateStrucID.BorderColor, 20%)
+                HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                OnSelect: |-
+                    =If(Trim(newStrucID.Text) = "",UpdateContext({errMsg:"Structure ID can't be empty."}),
+                        If(IsBlank(LookUp(StructuresDetails, StrucID = Trim(newStrucID.Text) And  StrucType = Trim(toCopyStrucType))), 
+                            UpdateContext({errMsg: "Go ahead and create a copy", goAhead: true}), 
+                            UpdateContext({errMsg: "A structure already exists under provided structureID, please change it.", goAhead: false})
+                        )
+                    )
+                PressedBorderColor: =ValidateStrucID.Fill
+                PressedColor: =ValidateStrucID.Fill
+                PressedFill: =ValidateStrucID.Color
+                Text: ="Validate New Structure ID"
+                Width: =186
+                X: =700
+                Y: =338
+                ZIndex: =13
+
+            Label144_1 As label:
+                Color: =RGBA(168, 0, 0, 1)
+                FontWeight: =FontWeight.Semibold
+                Height: =65
+                Size: =16
+                Text: =errMsg
+                VerticalAlign: =VerticalAlign.Top
+                Width: =568
+                X: =700
+                Y: =421
+                ZIndex: =14
+
+            copyStruc As button:
+                BorderColor: =ColorFade(copyStruc.Fill, -15%)
+                DisplayMode: =If(goAhead, DisplayMode.Edit, DisplayMode.Disabled)
+                Fill: =RGBA(36, 76, 90, 1)
+                Height: =64
+                HoverBorderColor: =ColorFade(copyStruc.BorderColor, 20%)
+                HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                OnSelect: |-
+                    =UpdateContext({showCopyStrucSpinner:true, errMsg: "", goAhead:false});
+                    Patch(StructuresDetails, Defaults(StructuresDetails), 
+                                            {StrucID: Trim(newStrucID.Text), Description: Trim(newStrucDescr.Text),
+                                            StrucType: toCopyStrucType, CreatedBy: User().FullName, LastModifiedBy: User().FullName,
+                                            CreatedDate: Today(), LastModifiedDate: Today(),
+                                            Notes:Concatenate(User().FullName, " at ", Now(), " " ,Trim(newStrucNotes.Text), Char(10), toCopyNotes)});
+                    UpdateIf(newStrucLabList, true, {LastModifiedBy:User().FullName, LastModifiedDate:Today(), StrucID:Trim(newStrucID.Text)});
+                    UpdateIf(newStrucMatList, true, {LastModifiedBy:User().FullName, LastModifiedDate:Today(), StrucID:Trim(newStrucID.Text)});
+                    Collect(StructuresMaterialDetails, newStrucMatList);
+                    Collect(StructuresLabourDetails, newStrucLabList);
+                    UpdateContext({showCopyStrucSpinner: false});
+                    Navigate(StructuresMainScreen, ScreenTransition.Fade);
+                PressedBorderColor: =copyStruc.Fill
+                PressedColor: =copyStruc.Fill
+                PressedFill: =copyStruc.Color
+                Text: ="Create copy"
+                Width: =174
+                X: =946
+                Y: =338
+                ZIndex: =15
+
+            Label138_2 As label:
+                Text: |-
+                    ="New Structure ID: "
+                Width: =161
+                X: =39
+                Y: =198
+                ZIndex: =17
+
+            Label138_3 As label:
+                Text: |-
+                    =Concatenate("New Structure Type: ", toCopyStrucType)
+                Width: =391
+                X: =39
+                Y: =252
+                ZIndex: =18
+
+            newStrucDescr As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                DisplayMode: =If(Not(goAhead), DisplayMode.Edit, DisplayMode.Disabled)
+                Height: =38
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =newStrucDescr.HoverBorderColor
+                PressedColor: =newStrucDescr.Color
+                PressedFill: =newStrucDescr.Fill
+                Width: =395
+                X: =200
+                Y: =321
+                ZIndex: =19
+
+            Label138_4 As label:
+                Text: |-
+                    ="New Structure Description: "
+                Width: =161
+                X: =39
+                Y: =319
+                ZIndex: =20
+
+            newStrucNotes As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: ="" 
+                DisplayMode: =If(Not(goAhead), DisplayMode.Edit, DisplayMode.Disabled)
+                Height: =102
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                Mode: =TextMode.MultiLine
+                PressedBorderColor: =newStrucNotes.HoverBorderColor
+                PressedColor: =newStrucNotes.Color
+                PressedFill: =newStrucNotes.Fill
+                Width: =395
+                X: =200
+                Y: =402
+                ZIndex: =21
+
+            Label138_5 As label:
+                Text: |-
+                    ="New Structure Notes: "
+                Width: =161
+                X: =39
+                Y: =400
+                ZIndex: =22
+
+    GoBackToStructureMainScreen As icon.ChevronLeft:
+        BorderColor: =RGBA(255, 255, 255, 1)
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =GoBackToStructureMainScreen.Fill
+        FocusedBorderColor: =Color.White
+        HoverBorderColor: =ColorFade(GoBackToStructureMainScreen.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =GoBackToStructureMainScreen.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =Reset(newStrucID);Reset(newStrucDescr); Reset(newStrucNotes);
+            UpdateContext({errMsg:"", goAhead:false});
+            Navigate(StructuresMainScreen,ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(GoBackToStructureMainScreen.BorderColor, -20%)
+        PressedColor: =ColorFade(GoBackToStructureMainScreen.Color, -20%)
+        PressedFill: =GoBackToStructureMainScreen.Fill
+        Tooltip: ="Go Back"
+        X: =1302
+        Y: =12
+        ZIndex: =4
+
+    PECLogo_5 As image:
+        BorderColor: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(255, 255, 255, 1)
+        FocusedBorderColor: =PECLogo_5.BorderColor
+        Height: =88
+        HoverBorderColor: =ColorFade(PECLogo_5.BorderColor, 20%)
+        HoverFill: =ColorFade(PECLogo_5.Fill, 20%)
+        Image: =PRI_Logo_RGB_TM_201222
+        PressedBorderColor: =ColorFade(PECLogo_5.BorderColor, -20%)
+        PressedFill: =ColorFade(PECLogo_5.Fill, -20%)
+        Width: =168
+        ZIndex: =8
+
+    CopyStrucSpinner As group:
+        Height: =5
+        Width: =5
+        X: =40
+        Y: =-48
+        ZIndex: =11
+
+        Rectangle1_19 As rectangle:
+            DisabledFill: =Rectangle1_19.Fill
+            Fill: =RGBA(255,255, 255, 0.85)
+            Height: =768
+            HoverFill: =Rectangle1_19.Fill
+            PressedFill: =Rectangle1_19.Fill
+            Visible: =showCopyStrucSpinner
+            Width: =1366
+            ZIndex: =9
+
+        Image1_19 As image:
+            Height: =156
+            HoverBorderColor: =ColorFade(Image1_19.BorderColor, 20%)
+            HoverFill: =ColorFade(Image1_19.Fill, 20%)
+            Image: ='Pulse-1s-200px'
+            PressedBorderColor: =ColorFade(Image1_19.BorderColor, -20%)
+            PressedFill: =ColorFade(Image1_19.Fill, -20%)
+            Visible: =showCopyStrucSpinner
+            Width: =199
+            X: =623
+            Y: =285
+            ZIndex: =10
+

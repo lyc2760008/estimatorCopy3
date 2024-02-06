@@ -1,0 +1,25 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2022-03-29T18:53:27.9820000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "itemType": "itemType",
+      "LabourCost": "LabourCost",
+      "MaterialCost": "MaterialCost",
+      "permit_item": "permit_item",
+      "UoM": "UoM",
+      "Vendor": "Vendor",
+      "xcav_id": "xcav_id"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "Permits",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

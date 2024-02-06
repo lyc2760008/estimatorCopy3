@@ -1,0 +1,35 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2022-03-29T18:53:27.9820000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "AcctCategory": "AcctCategory",
+      "itemtype": "itemtype",
+      "labourCost": "labourCost",
+      "labourCost_total": "labourCost_total",
+      "materialCost": "materialCost",
+      "materialCost_total": "materialCost_total",
+      "permitItem": "permitItem",
+      "permitTableID": "permitTableID",
+      "ProjectID": "ProjectID",
+      "qty": "qty",
+      "Stage": "Stage",
+      "Task": "Task",
+      "Type": "Type",
+      "uom": "uom",
+      "vendor": "vendor",
+      "Version": "Version",
+      "xcavID": "xcavID"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "ProjectEstPermits",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

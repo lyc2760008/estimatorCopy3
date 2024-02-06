@@ -1,0 +1,23 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2023-12-21T18:39:38.3470000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "ATCO_descrip": "ATCO_descrip",
+      "ATCO_id": "ATCO_id",
+      "ATCO_notes": "ATCO_notes",
+      "ATCO_price": "ATCO_price",
+      "ATCO_uom": "ATCO_uom"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "ATCO_Table",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

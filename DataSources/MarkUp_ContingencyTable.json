@@ -1,0 +1,22 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2022-03-29T18:53:27.9820000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "contingeny": "contingeny",
+      "id_con_markup": "id_con_markup",
+      "markup": "markup",
+      "task_con_markup": "task_con_markup"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "MarkUp_ContingencyTable",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

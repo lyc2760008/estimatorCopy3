@@ -1,0 +1,23 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2022-03-29T18:53:27.9820000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "id": "id",
+      "itemDescription": "itemDescription",
+      "itemType": "itemType",
+      "UoM": "UoM",
+      "Vendor": "Vendor"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "ExtraCostItems_1",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

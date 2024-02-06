@@ -1,0 +1,259 @@
+"SrchMatinStrucScreen As screen.'phoneLayout_FluidGridWithHeaderPageLayout_ver3.0'":
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |
+        =false
+    Orientation: =If(SrchMatinStrucScreen.Width < SrchMatinStrucScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= SrchMatinStrucScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    RectQuickActionBar9 As rectangle:
+        DisabledFill: =RectQuickActionBar9.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =RectQuickActionBar9.BorderColor
+        Height: =88
+        HoverFill: =RectQuickActionBar9.Fill
+        PressedFill: =RectQuickActionBar9.Fill
+        Width: =Parent.Width
+        ZIndex: =1
+
+    LblAppName9 As label:
+        FocusedBorderColor: =LblAppName9.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =88
+        HoverBorderColor: =LblAppName9.BorderColor
+        HoverColor: =LblAppName9.Color
+        HoverFill: =LblAppName9.Fill
+        PressedBorderColor: =LblAppName9.BorderColor
+        PressedColor: =LblAppName9.Color
+        PressedFill: =LblAppName9.Fill
+        Size: =22
+        Text: ="  SEARCH A MATERIAL IN STRUCTURES"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    Canvas9 As fluidGrid.fluidGridWithBlankCard:
+        BorderThickness: =0
+        Height: =Parent.Height - Canvas9.Y
+        Width: =Parent.Width
+        Y: =RectQuickActionBar9.Y + RectQuickActionBar9.Height
+        ZIndex: =3
+
+        DataCard16 As dataCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            BorderThickness: =0
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =Parent.Height - 100
+            Width: =Parent.Width
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            DataTable1 As dataGrid:
+                HeadingFill: =RGBA(36, 76, 90, 1)
+                Height: =399
+                Items: =SortByColumns(srchMatStrucList, "StrucID", SortOrder.Ascending) 
+                Width: =1215
+                X: =80
+                Y: =133
+                ZIndex: =1
+
+                ItemNumber As customControl.dataColumn:
+                    AutoWidth: =true
+                    DisplayName: |-
+                        ="Item #"
+                    FieldName: ="ItemNumber"
+                    Height: =0
+                    IsHyperlink: =false
+                    Order: =2
+                    Required: =false
+                    TitleProperty: =""
+                    Type: ="s"
+                    VariantName: ="textualViewCard"
+                    Width: =212
+                    X: =0
+                    Y: =0
+                    ZIndex: =1
+
+                ItemCount As customControl.dataColumn:
+                    AutoWidth: =false
+                    DisplayName: ="Item Count"
+                    FieldName: ="ItemCount"
+                    Height: =0
+                    IsHyperlink: =false
+                    Order: =3
+                    Required: =false
+                    TitleProperty: =""
+                    Type: ="n"
+                    VariantName: ="textualViewCard"
+                    Width: =104
+                    X: =0
+                    Y: =0
+                    ZIndex: =2
+
+                StrucDescript As customControl.dataColumn:
+                    AutoWidth: =false
+                    DisplayName: ="Structure Description"
+                    FieldName: ="StrucDescript"
+                    Height: =0
+                    IsHyperlink: =false
+                    Order: =1
+                    Required: =false
+                    TitleProperty: =""
+                    Type: ="s"
+                    VariantName: ="textualViewCard"
+                    Width: =463
+                    X: =602
+                    Y: =0
+                    ZIndex: =3
+
+                StrucID As customControl.dataColumn:
+                    AutoWidth: =true
+                    DisplayName: ="Struc ID"
+                    FieldName: ="StrucID"
+                    Height: =302
+                    IsHyperlink: =false
+                    Order: =0
+                    Required: =false
+                    TitleProperty: =""
+                    Type: ="s"
+                    VariantName: ="textualViewCard"
+                    Width: =212
+                    X: =0
+                    Y: =95
+                    ZIndex: =4
+
+                descript As customControl.dataColumn:
+                    AutoWidth: =true
+                    DisplayName: ="Item Description"
+                    FieldName: ="descript"
+                    Height: =0
+                    IsHyperlink: =false
+                    Order: =4
+                    Required: =false
+                    TitleProperty: =""
+                    Type: ="s"
+                    VariantName: ="textualViewCard"
+                    Width: =212
+                    X: =0
+                    Y: =0
+                    ZIndex: =5
+
+            TextInput5 As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                FocusedBorderColor: =TextInput5.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =TextInput5.HoverBorderColor
+                PressedColor: =TextInput5.Color
+                PressedFill: =TextInput5.Fill
+                X: =248
+                Y: =36
+                ZIndex: =2
+
+            Label92 As label:
+                FocusedBorderColor: =Label92.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =38
+                HoverBorderColor: =Label92.BorderColor
+                HoverColor: =Label92.Color
+                HoverFill: =Label92.Fill
+                PressedBorderColor: =Label92.BorderColor
+                PressedColor: =Label92.Color
+                PressedFill: =Label92.Fill
+                Text: |-
+                    ="Search by Item Number:"
+                Width: =232
+                X: =16
+                Y: =38
+                ZIndex: =3
+
+            Button11 As button:
+                BorderColor: =ColorFade(Button11.Fill, -15%)
+                Fill: =RGBA(36, 76, 90, 1)
+                FocusedBorderColor: =Button11.BorderColor
+                HoverBorderColor: =ColorFade(Button11.BorderColor, 20%)
+                HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                OnSelect: |
+                    =ClearCollect(srchMatStrucList, Search(Filter(StructuresMaterialDetails, StrucType = NewEstimateType), TextInput5.Text, "ItemNumber"));
+                    //ClearCollect(srchMatStrucListWithDes, AddColumns(srchMatStrucList, 
+                      //       "Descrption", LookUp('[dbo].[Structures]', StrucID = srchMatStrucList[@StrucID]).Description));
+                PressedBorderColor: =Button11.Fill
+                PressedColor: =Button11.Fill
+                PressedFill: =Button11.Color
+                Text: ="Search"
+                X: =607
+                Y: =38
+                ZIndex: =4
+
+            Button12_2 As button:
+                BorderColor: =ColorFade(Button12_2.Fill, -15%)
+                Fill: =RGBA(36, 76, 90, 1)
+                FocusedBorderColor: =Button12_2.BorderColor
+                HoverBorderColor: =ColorFade(Button12_2.BorderColor, 20%)
+                HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                OnSelect: |-
+                    =Launch(
+                        Concatenate(
+                            "https://pecintranetsrv.primaryeng.com/EstimateSearchedStructure.php?",
+                            "StrucType=",
+                            NewEstimateType,
+                            "&ItemNumber=",
+                            TextInput5.Text
+                        )
+                    );
+                PressedBorderColor: =Button12_2.Fill
+                PressedColor: =Button12_2.Fill
+                PressedFill: =Button12_2.Color
+                Text: ="Download"
+                X: =790
+                Y: =38
+                ZIndex: =5
+
+    Icon48 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon48.Fill
+        FocusedBorderColor: =Icon48.BorderColor
+        HoverBorderColor: =ColorFade(Icon48.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon48.Color, 20%)
+        HoverFill: =Icon48.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =Clear(srchMatStrucList);
+            Reset(TextInput5);
+            Navigate(MainScreen, ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(Icon48.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon48.Color, -20%)
+        PressedFill: =Icon48.Fill
+        X: =1288
+        Y: =12
+        ZIndex: =4
+
+    Label93 As label:
+        FocusedBorderColor: =Label93.BorderColor
+        HoverBorderColor: =Label93.BorderColor
+        HoverColor: =Label93.Color
+        HoverFill: =Label93.Fill
+        PressedBorderColor: =Label93.BorderColor
+        PressedColor: =Label93.Color
+        PressedFill: =Label93.Fill
+        Text: =Text(CountRows(srchMatStrucList))
+        X: =1128
+        Y: =136
+        ZIndex: =5
+
+    Label94 As label:
+        FocusedBorderColor: =Label94.BorderColor
+        HoverBorderColor: =Label94.BorderColor
+        HoverColor: =Label94.Color
+        HoverFill: =Label94.Fill
+        PressedBorderColor: =Label94.BorderColor
+        PressedColor: =Label94.Color
+        PressedFill: =Label94.Fill
+        Text: |-
+            ="Total Structures :"
+        X: =961
+        Y: =136
+        ZIndex: =6
+

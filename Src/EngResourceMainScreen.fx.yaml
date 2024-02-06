@@ -1,0 +1,669 @@
+EngResourceMainScreen As screen:
+    Fill: =RGBA(255, 255, 255, 1) 
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =Collect(AllLabUnits, {Image: CityofCalgary.Image});
+        UpdateContext({editable:false, editIcon:true});
+    Orientation: =If(EngResourceMainScreen.Width < EngResourceMainScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= EngResourceMainScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    ScreenLabel_3 As label:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Color: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =ScreenLabel_3.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =82
+        HoverBorderColor: =ScreenLabel_3.BorderColor
+        HoverColor: =ScreenLabel_3.Color
+        HoverFill: =ScreenLabel_3.Fill
+        PressedBorderColor: =ScreenLabel_3.BorderColor
+        PressedColor: =ScreenLabel_3.Color
+        PressedFill: =ScreenLabel_3.Fill
+        Size: =26
+        Text: ="  ENGINEERING RESOURCES SCREEN"
+        Width: =1364
+        ZIndex: =1
+
+    "EngRsGallery As gallery.'BrowseLayout_Vertical_TwoTextVariant_ver4.0'":
+        BorderColor: =RGBA(36, 76, 90, 1)
+        DisabledBorderColor: =EngRsGallery.BorderColor
+        DisabledFill: =EngRsGallery.Fill
+        Height: =574
+        HoverBorderColor: =EngRsGallery.BorderColor
+        HoverFill: =EngRsGallery.Fill
+        Items: =SortByColumns(EngResrcList, "EngResource")
+        Layout: =Layout.Vertical
+        LoadingSpinnerColor: =EngRsGallery.BorderColor
+        PressedBorderColor: =EngRsGallery.BorderColor
+        PressedFill: =EngRsGallery.Fill
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =56
+        Width: =1366
+        Y: =82
+        ZIndex: =1
+
+        Title4 As label:
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            FocusedBorderColor: =Title4.BorderColor
+            Height: =38
+            HoverBorderColor: =Title4.BorderColor
+            HoverColor: =Title4.Color
+            HoverFill: =Title4.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Title4.BorderColor
+            PressedColor: =Title4.Color
+            PressedFill: =Title4.Fill
+            Text: =ThisItem.EngResource
+            VerticalAlign: =VerticalAlign.Top
+            Visible: =false
+            Width: =565
+            X: =30
+            Y: =13
+            ZIndex: =1
+
+        Separator4 As rectangle:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            DisabledFill: =Separator4.Fill
+            Fill: =RGBA(36, 76, 90, 1)
+            FocusedBorderColor: =Separator4.BorderColor
+            Height: =1
+            HoverFill: =Separator4.Fill
+            OnSelect: =Select(Parent)
+            PressedFill: =Separator4.Fill
+            Width: =Parent.TemplateWidth
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =4
+
+        rateInput As text:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Default: |-
+                =Text(ThisItem.Rate,  "[$-en-US]$ #,###.00" )
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            FocusedBorderColor: =rateInput.BorderColor
+            FontWeight: =FontWeight.Semibold
+            Format: =TextFormat.Number
+            Height: =35
+            HoverFill: =RGBA(255, 255, 255, 1)
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =rateInput.HoverBorderColor
+            PressedColor: =rateInput.Color
+            PressedFill: =rateInput.Fill
+            Size: =14
+            Width: =118
+            X: =662
+            Y: =10
+            ZIndex: =5
+
+        EngResLabel As label:
+            FocusedBorderColor: =EngResLabel.BorderColor
+            HoverBorderColor: =EngResLabel.BorderColor
+            HoverColor: =EngResLabel.Color
+            HoverFill: =EngResLabel.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =EngResLabel.BorderColor
+            PressedColor: =EngResLabel.Color
+            PressedFill: =EngResLabel.Fill
+            Text: =ThisItem.eng_id
+            Visible: =false
+            Width: =84
+            X: =498
+            Y: =9
+            ZIndex: =6
+
+        nameInput As text:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Default: =ThisItem.EngResource
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)
+            FontWeight: =FontWeight.Semibold
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =nameInput.HoverBorderColor
+            PressedColor: =nameInput.Color
+            PressedFill: =nameInput.Fill
+            Size: =15
+            Width: =553
+            X: =15
+            Y: =8
+            ZIndex: =7
+
+        validToDate As datepicker:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            DefaultDate: =ThisItem.ValidToDate
+            DisplayMode: =If(editable, DisplayMode.Edit, DisplayMode.View)    
+            IconBackground: =RGBA(36,76,90, 1)
+            OnSelect: =Select(Parent)
+            PaddingTop: =5
+            Width: =194
+            X: =981
+            Y: =9
+            ZIndex: =8
+
+        Label164 As label:
+            OnSelect: =Select(Parent)
+            Text: =ThisItem.Task
+            Width: =68
+            X: =1298
+            Y: =10
+            ZIndex: =9
+
+        Label165 As label:
+            OnSelect: =Select(Parent)
+            Text: |-
+                ="Valid Date: "
+            Width: =114
+            X: =863
+            Y: =11
+            ZIndex: =10
+
+    refreshIcon As icon.Reload:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =refreshIcon.Fill
+        FocusedBorderColor: =refreshIcon.BorderColor
+        HoverBorderColor: =ColorFade(refreshIcon.BorderColor, 20%)
+        HoverColor: =ColorFade(refreshIcon.Color, 20%)
+        HoverFill: =refreshIcon.Fill
+        Icon: =Icon.Reload
+        OnSelect: |-
+            =Refresh(EngResources_1);
+            ClearCollect(EngResrcList, EngResources_1);
+        PressedBorderColor: =ColorFade(refreshIcon.BorderColor, -20%)
+        PressedColor: =ColorFade(refreshIcon.Color, -20%)
+        PressedFill: =refreshIcon.Fill
+        Tooltip: ="Refresh list"
+        X: =1145
+        Y: =9
+        ZIndex: =3
+
+    SubmitEngRsrcButton As button:
+        BorderColor: =ColorFade(SubmitEngRsrcButton.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =SubmitEngRsrcButton.BorderColor
+        Height: =35
+        HoverBorderColor: =ColorFade(SubmitEngRsrcButton.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =SubmitForm(EngResrcForm); 
+            ResetForm(EngResrcForm);
+            UpdateContext({visible:false});
+            Refresh(EngResources_1);
+            ClearCollect(EngResrcList, EngResources_1);
+        PressedBorderColor: =SubmitEngRsrcButton.Fill
+        PressedColor: =SubmitEngRsrcButton.Fill
+        PressedFill: =SubmitEngRsrcButton.Color
+        Size: =13
+        Text: ="Submit"
+        Visible: =visible
+        Width: =110
+        X: =1082
+        Y: =712
+        ZIndex: =4
+
+    backIcon As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =backIcon.Fill
+        FocusedBorderColor: =backIcon.BorderColor
+        HoverBorderColor: =ColorFade(backIcon.BorderColor, 20%)
+        HoverColor: =ColorFade(backIcon.Color, 20%)
+        HoverFill: =backIcon.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: =Navigate(MainScreen,ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(backIcon.BorderColor, -20%)
+        PressedColor: =ColorFade(backIcon.Color, -20%)
+        PressedFill: =backIcon.Fill
+        Tooltip: ="Go back to previous screen"
+        X: =1289
+        Y: =9
+        ZIndex: =5
+
+    CancelEngRsrcSubmission As button:
+        BorderColor: =ColorFade(CancelEngRsrcSubmission.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelEngRsrcSubmission.BorderColor
+        Height: =35
+        HoverBorderColor: =ColorFade(CancelEngRsrcSubmission.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |
+            =ResetForm(EngResrcForm);
+            UpdateContext({visible:false})
+        PressedBorderColor: =CancelEngRsrcSubmission.Fill
+        PressedColor: =CancelEngRsrcSubmission.Fill
+        PressedFill: =CancelEngRsrcSubmission.Color
+        Size: =13
+        Text: ="Cancel"
+        Visible: =visible
+        Width: =110
+        X: =1225
+        Y: =712
+        ZIndex: =6
+
+    addIcon As icon.Add:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =addIcon.Fill
+        FocusedBorderColor: =addIcon.BorderColor
+        HoverBorderColor: =ColorFade(addIcon.BorderColor, 20%)
+        HoverColor: =ColorFade(addIcon.Color, 20%)
+        HoverFill: =addIcon.Fill
+        Icon: =Icon.Add
+        OnSelect: |-
+            =UpdateContext({visible: true});
+            NewForm(EngResrcForm);
+        PressedBorderColor: =ColorFade(addIcon.BorderColor, -20%)
+        PressedColor: =ColorFade(addIcon.Color, -20%)
+        PressedFill: =addIcon.Fill
+        Tooltip: ="Add a new item"
+        X: =1225
+        Y: =9
+        ZIndex: =7
+
+    EngResrcForm As form:
+        AcceptsFocus: =false
+        DataSource: =EngResources_1
+        Height: =106
+        NumberOfColumns: =4
+        SnapToColumns: =false
+        Visible: =visible
+        Width: =1078
+        Y: =656
+        ZIndex: =8
+
+        EngResource_DataCard2 As typedDataCard.textualEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="EngResource"
+            Default: =ThisItem.EngResource
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Engineering Resource"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            MaxLength: =DataSourceInfo(EngResources_1, DataSourceInfo.MaxLength, "EngResource")
+            Required: =true
+            Update: =DataCardValue17.Text
+            Width: =500
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey17 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =DataCardKey17.BorderColor
+                Height: =34
+                HoverBorderColor: =DataCardKey17.BorderColor
+                HoverColor: =DataCardKey17.Color
+                HoverFill: =DataCardKey17.Fill
+                PressedBorderColor: =DataCardKey17.BorderColor
+                PressedColor: =DataCardKey17.Color
+                PressedFill: =DataCardKey17.Fill
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue17 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                FocusedBorderColor: =DataCardValue17.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                MaxLength: =Parent.MaxLength
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue17.HoverBorderColor
+                PressedColor: =DataCardValue17.Color
+                PressedFill: =DataCardValue17.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Size: =12
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey17.Y + DataCardKey17.Height + 5
+                ZIndex: =2
+
+            ErrorMessage15 As label:
+                FocusedBorderColor: =ErrorMessage15.BorderColor
+                Height: =15
+                HoverBorderColor: =ErrorMessage15.BorderColor
+                HoverColor: =ErrorMessage15.Color
+                HoverFill: =ErrorMessage15.Fill
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                PressedBorderColor: =ErrorMessage15.BorderColor
+                PressedColor: =ErrorMessage15.Color
+                PressedFill: =ErrorMessage15.Fill
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue17.Y + DataCardValue17.Height
+                ZIndex: =3
+
+            StarVisible15 As label:
+                Align: =Align.Center
+                FocusedBorderColor: =StarVisible15.BorderColor
+                Height: =DataCardKey17.Height
+                HoverBorderColor: =StarVisible15.BorderColor
+                HoverColor: =StarVisible15.Color
+                HoverFill: =StarVisible15.Fill
+                PressedBorderColor: =StarVisible15.BorderColor
+                PressedColor: =StarVisible15.Color
+                PressedFill: =StarVisible15.Fill
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey17.Y
+                ZIndex: =4
+
+        Rate_DataCard2 As typedDataCard.numberEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="Rate"
+            Default: =ThisItem.Rate
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Rate"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            Required: =true
+            Update: =Value(DataCardValue18.Text)
+            Width: =180
+            X: =1
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey18 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =DataCardKey18.BorderColor
+                Height: =34
+                HoverBorderColor: =DataCardKey18.BorderColor
+                HoverColor: =DataCardKey18.Color
+                HoverFill: =DataCardKey18.Fill
+                PressedBorderColor: =DataCardKey18.BorderColor
+                PressedColor: =DataCardKey18.Color
+                PressedFill: =DataCardKey18.Fill
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue18 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                FocusedBorderColor: =DataCardValue18.BorderColor
+                Format: =TextFormat.Number
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue18.HoverBorderColor
+                PressedColor: =DataCardValue18.Color
+                PressedFill: =DataCardValue18.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey18.Y + DataCardKey18.Height + 5
+                ZIndex: =2
+
+            ErrorMessage16 As label:
+                FocusedBorderColor: =ErrorMessage16.BorderColor
+                Height: =15
+                HoverBorderColor: =ErrorMessage16.BorderColor
+                HoverColor: =ErrorMessage16.Color
+                HoverFill: =ErrorMessage16.Fill
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                PressedBorderColor: =ErrorMessage16.BorderColor
+                PressedColor: =ErrorMessage16.Color
+                PressedFill: =ErrorMessage16.Fill
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue18.Y + DataCardValue18.Height
+                ZIndex: =3
+
+            StarVisible16 As label:
+                Align: =Align.Center
+                FocusedBorderColor: =StarVisible16.BorderColor
+                Height: =DataCardKey18.Height
+                HoverBorderColor: =StarVisible16.BorderColor
+                HoverColor: =StarVisible16.Color
+                HoverFill: =StarVisible16.Fill
+                PressedBorderColor: =StarVisible16.BorderColor
+                PressedColor: =StarVisible16.Color
+                PressedFill: =StarVisible16.Fill
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey18.Y
+                ZIndex: =4
+
+        ValidToDate_DataCard7 As typedDataCard.dateEditCard:
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="ValidToDate"
+            Default: =ThisItem.ValidToDate
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: =DataSourceInfo([@EngResources_1],DataSourceInfo.DisplayName,"ValidToDate")
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            Required: =true
+            Update: =DataCardValue154.SelectedDate
+            Width: =220
+            X: =2
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey156 As label:
+                AutoHeight: =true
+                Height: =34
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue154 As datepicker:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                DefaultDate: =Parent.Default
+                DisplayMode: =Parent.DisplayMode
+                EndYear: =Year(Today())+100
+                IsEditable: =true
+                PaddingBottom: =0
+                PaddingLeft: =If(Self.DisplayMode = DisplayMode.Edit, 5, 0)
+                StartYear: =1899
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey156.Y + DataCardKey156.Height + 5
+                ZIndex: =2
+
+            ErrorMessage156 As label:
+                AutoHeight: =true
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue154.Y + DataCardValue154.Height
+                ZIndex: =3
+
+            StarVisible156 As label:
+                Align: =Align.Center
+                Height: =DataCardKey156.Height
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey156.Y
+                ZIndex: =4
+
+        Task_DataCard2 As typedDataCard.textualEditCard:
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="Task"
+            Default: =ThisItem.Task
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: =DataSourceInfo([@EngResources_1],DataSourceInfo.DisplayName,"Task")
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            MaxLength: =DataSourceInfo([@EngResources_1], DataSourceInfo.MaxLength, "Task")
+            Required: =true
+            Update: =Dropdown27.Selected.Value
+            Width: =150
+            X: =3
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey163 As label:
+                AutoHeight: =true
+                Height: =34
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            ErrorMessage163 As label:
+                AutoHeight: =true
+                Height: =10
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =Dropdown27.Y + Dropdown27.Height
+                ZIndex: =3
+
+            StarVisible163 As label:
+                Align: =Align.Center
+                Height: =DataCardKey163.Height
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey163.Y
+                ZIndex: =4
+
+            Dropdown27 As dropdown:
+                HoverBorderColor: =ColorFade(Dropdown27.BorderColor, 15%)
+                Items: =["P","D"]
+                PressedBorderColor: =Dropdown27.HoverBorderColor
+                Width: =80
+                X: =30
+                Y: =49
+                ZIndex: =5
+
+    saveIcon As icon.Check:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =saveIcon.Fill
+        FocusedBorderColor: =saveIcon.BorderColor
+        HoverBorderColor: =ColorFade(saveIcon.BorderColor, 20%)
+        HoverColor: =ColorFade(saveIcon.Color, 20%)
+        HoverFill: =saveIcon.Fill
+        Icon: =Icon.Check
+        OnSelect: |-
+            =UpdateContext({showEngAdminSpinner: true});
+            ForAll(Filter(EngRsGallery.AllItems,Rate >= 0.0),
+                  Patch(EngResources_1, 
+                        LookUp(EngResrcList, eng_id = Value(EngResLabel.Text)),
+                        {
+                            Rate:Value(rateInput.Text),
+                            EngResource:nameInput.Text,
+                            ValidToDate:validToDate.SelectedDate,
+                            LastModifiedBy:User().FullName,
+                            LastModifiedDate: Today()
+                        }
+                  )
+            ); 
+            Refresh(EngResources_1);
+            ClearCollect(EngResrcList, EngResources_1);
+            UpdateContext({editable:false, editIcon:true, showEngAdminSpinner : false});
+        PressedBorderColor: =ColorFade(saveIcon.BorderColor, -20%)
+        PressedColor: =ColorFade(saveIcon.Color, -20%)
+        PressedFill: =saveIcon.Fill
+        Tooltip: ="Save changes"
+        Visible: =editable
+        X: =986
+        Y: =9
+        ZIndex: =10
+
+    Icon4 As icon.Edit:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon4.Fill
+        FocusedBorderColor: =Icon4.BorderColor
+        HoverBorderColor: =ColorFade(Icon4.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon4.Color, 20%)
+        HoverFill: =Icon4.Fill
+        Icon: =Icon.Edit
+        OnSelect: |-
+            =UpdateContext({editable:true, editIcon:false});
+        PressedBorderColor: =ColorFade(Icon4.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon4.Color, -20%)
+        PressedFill: =Icon4.Fill
+        Visible: =editIcon 
+        X: =1065
+        Y: =9
+        ZIndex: =11
+
+    EngAdminSpinner As group:
+        Height: =5
+        Width: =5
+        X: =40
+        Y: =-48
+        ZIndex: =14
+
+        Rectangle1_15 As rectangle:
+            DisabledFill: =Rectangle1_15.Fill
+            Fill: =RGBA(255,255, 255, 0.85)
+            Height: =768
+            HoverFill: =Rectangle1_15.Fill
+            PressedFill: =Rectangle1_15.Fill
+            Visible: =showEngAdminSpinner
+            Width: =1366
+            ZIndex: =12
+
+        Image1_15 As image:
+            Height: =156
+            HoverBorderColor: =ColorFade(Image1_15.BorderColor, 20%)
+            HoverFill: =ColorFade(Image1_15.Fill, 20%)
+            Image: ='Pulse-1s-200px'
+            PressedBorderColor: =ColorFade(Image1_15.BorderColor, -20%)
+            PressedFill: =ColorFade(Image1_15.Fill, -20%)
+            Visible: =showEngAdminSpinner
+            Width: =199
+            X: =623
+            Y: =285
+            ZIndex: =13
+

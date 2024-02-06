@@ -1,0 +1,332 @@
+AddVendorScreen As screen:
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =UpdateContext({visible: false, newVendor:false});
+        Refresh(Vendors);
+        ClearCollect(VendorList, Filter(Vendors, VendorID > 1));
+        ResetForm(VendorForm);
+    Orientation: =If(AddVendorScreen.Width < AddVendorScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= AddVendorScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    "VendorsGallery As gallery.'BrowseLayout_Vertical_TwoTextVariant_ver4.0'":
+        DisabledBorderColor: =VendorsGallery.BorderColor
+        DisabledFill: =VendorsGallery.Fill
+        Height: =579
+        HoverBorderColor: =VendorsGallery.BorderColor
+        HoverFill: =VendorsGallery.Fill
+        Items: =SortByColumns(VendorList, "VendorName")
+        Layout: =Layout.Vertical
+        LoadingSpinnerColor: =VendorsGallery.BorderColor
+        PressedBorderColor: =VendorsGallery.BorderColor
+        PressedFill: =VendorsGallery.Fill
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =49
+        Width: =1364
+        Y: =82
+        ZIndex: =1
+
+        Title2 As label:
+            FocusedBorderColor: =Title2.BorderColor
+            Height: =Title2.Size * 1.8
+            HoverBorderColor: =Title2.BorderColor
+            HoverColor: =Title2.Color
+            HoverFill: =Title2.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Title2.BorderColor
+            PressedColor: =Title2.Color
+            PressedFill: =Title2.Fill
+            Text: =Concatenate( " ", ThisItem.VendorName)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =Parent.TemplateWidth - 104
+            X: =13
+            Y: =7
+            ZIndex: =1
+
+        Subtitle1 As label:
+            FocusedBorderColor: =Subtitle1.BorderColor
+            Height: =Subtitle1.Size * 1.8
+            HoverBorderColor: =Subtitle1.BorderColor
+            HoverColor: =Subtitle1.Color
+            HoverFill: =Subtitle1.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Subtitle1.BorderColor
+            PressedColor: =Subtitle1.Color
+            PressedFill: =Subtitle1.Fill
+            Text: =ThisItem.VendorName
+            VerticalAlign: =VerticalAlign.Top
+            Visible: =false
+            Width: =Parent.TemplateWidth - 104
+            X: =32
+            Y: =Title2.Y + Title2.Height + 4
+            ZIndex: =2
+
+        NextArrow2 As icon.ChevronRight:
+            AccessibleLabel: =NextArrow2.Tooltip
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Color: =RGBA(36, 76, 90, 1)
+            DisabledFill: =NextArrow2.Fill
+            FocusedBorderColor: =NextArrow2.BorderColor
+            FocusedBorderThickness: =0
+            Height: =60
+            HoverBorderColor: =ColorFade(NextArrow2.BorderColor, 20%)
+            HoverColor: =ColorFade(NextArrow2.Color, 40%)
+            HoverFill: =NextArrow2.Fill
+            Icon: =Icon.ChevronRight
+            OnSelect: |-
+                =UpdateContext({newVendor:false,visible:true});
+            PaddingBottom: =10
+            PaddingLeft: =10
+            PaddingRight: =10
+            PaddingTop: =10
+            PressedBorderColor: =ColorFade(NextArrow2.BorderColor, -20%)
+            PressedColor: =ColorFade(NextArrow2.Color, -20%)
+            PressedFill: =NextArrow2.Fill
+            TabIndex: =0
+            Tooltip: ="Edit Vendor Name"
+            Width: =60
+            X: =Parent.TemplateWidth - NextArrow2.Width - 5
+            Y: =(Parent.TemplateHeight / 2) - (NextArrow2.Height / 2)
+            ZIndex: =3
+
+        Separator2 As rectangle:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            DisabledFill: =Separator2.Fill
+            Fill: =RGBA(36, 76, 90, 1)
+            FocusedBorderColor: =Separator2.BorderColor
+            Height: =1
+            HoverFill: =Separator2.Fill
+            OnSelect: =Select(Parent)
+            PressedFill: =Separator2.Fill
+            Width: =Parent.TemplateWidth
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =4
+
+    ScreenLabel As label:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Color: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =ScreenLabel.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =82
+        HoverBorderColor: =ScreenLabel.BorderColor
+        HoverColor: =ScreenLabel.Color
+        HoverFill: =ScreenLabel.Fill
+        PressedBorderColor: =ScreenLabel.BorderColor
+        PressedColor: =ScreenLabel.Color
+        PressedFill: =ScreenLabel.Fill
+        Size: =26
+        Text: ="  VENDOR SCREEN"
+        Width: =1364
+        ZIndex: =2
+
+    VendorForm As form:
+        AcceptsFocus: =false
+        DataSource: =Vendors
+        Height: =107
+        Item: =VendorsGallery.Selected
+        SnapToColumns: =false
+        Visible: =visible
+        Width: =562
+        Y: =661
+        ZIndex: =3
+
+        VendorName_DataCard1 As typedDataCard.textualEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="VendorName"
+            Default: =ThisItem.VendorName
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Vendor Name"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =50
+            MaxLength: =DataSourceInfo(Vendors, DataSourceInfo.MaxLength, "VendorName")
+            Required: =true
+            Update: =DataCardValue12.Text
+            Width: =322
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey12 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =DataCardKey12.BorderColor
+                Height: =34
+                HoverBorderColor: =DataCardKey12.BorderColor
+                HoverColor: =DataCardKey12.Color
+                HoverFill: =DataCardKey12.Fill
+                PressedBorderColor: =DataCardKey12.BorderColor
+                PressedColor: =DataCardKey12.Color
+                PressedFill: =DataCardKey12.Fill
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue12 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Color: =RGBA(36, 76, 90, 1)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                FocusedBorderColor: =DataCardValue12.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                MaxLength: =Parent.MaxLength
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue12.HoverBorderColor
+                PressedColor: =DataCardValue12.Color
+                PressedFill: =DataCardValue12.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =284
+                X: =28
+                Y: =48
+                ZIndex: =2
+
+            ErrorMessage12 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =ErrorMessage12.BorderColor
+                Height: =10
+                HoverBorderColor: =ErrorMessage12.BorderColor
+                HoverColor: =ErrorMessage12.Color
+                HoverFill: =ErrorMessage12.Fill
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                PressedBorderColor: =ErrorMessage12.BorderColor
+                PressedColor: =ErrorMessage12.Color
+                PressedFill: =ErrorMessage12.Fill
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardValue12.Y + DataCardValue12.Height
+                ZIndex: =3
+
+            StarVisible12 As label:
+                Align: =Align.Center
+                FocusedBorderColor: =StarVisible12.BorderColor
+                Height: =DataCardKey12.Height
+                HoverBorderColor: =StarVisible12.BorderColor
+                HoverColor: =StarVisible12.Color
+                HoverFill: =StarVisible12.Fill
+                PressedBorderColor: =StarVisible12.BorderColor
+                PressedColor: =StarVisible12.Color
+                PressedFill: =StarVisible12.Fill
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey12.Y
+                ZIndex: =4
+
+    Icon1 As icon.Reload:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon1.Fill
+        FocusedBorderColor: =Icon1.BorderColor
+        HoverBorderColor: =ColorFade(Icon1.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon1.Color, 20%)
+        HoverFill: =Icon1.Fill
+        Icon: =Icon.Reload
+        OnSelect: =Refresh(Vendors);
+        PressedBorderColor: =ColorFade(Icon1.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon1.Color, -20%)
+        PressedFill: =Icon1.Fill
+        Tooltip: ="Refresh list"
+        X: =1132
+        Y: =9
+        ZIndex: =4
+
+    Icon2 As icon.Add:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon2.Fill
+        FocusedBorderColor: =Icon2.BorderColor
+        HoverBorderColor: =ColorFade(Icon2.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon2.Color, 20%)
+        HoverFill: =Icon2.Fill
+        Icon: =Icon.Add
+        OnSelect: |-
+            =UpdateContext({visible: true, newVendor:true});
+            NewForm(VendorForm);
+        PressedBorderColor: =ColorFade(Icon2.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon2.Color, -20%)
+        PressedFill: =Icon2.Fill
+        Tooltip: ="Add a new vendor"
+        X: =1213
+        Y: =9
+        ZIndex: =5
+
+    SubmitVendorFormButton As button:
+        BorderColor: =ColorFade(SubmitVendorFormButton.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =SubmitVendorFormButton.BorderColor
+        HoverBorderColor: =ColorFade(SubmitVendorFormButton.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =SubmitForm(VendorForm); 
+            ResetForm(VendorForm);
+            UpdateContext({visible: false, newVendor:false});
+            Refresh(Vendors);
+            ClearCollect(VendorList, Filter(Vendors, VendorID > 1));
+        PressedBorderColor: =SubmitVendorFormButton.Fill
+        PressedColor: =SubmitVendorFormButton.Fill
+        PressedFill: =SubmitVendorFormButton.Color
+        Text: ="Submit"
+        Visible: =visible
+        X: =335
+        Y: =704
+        ZIndex: =6
+
+    Icon3 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon3.Fill
+        FocusedBorderColor: =Icon3.BorderColor
+        HoverBorderColor: =ColorFade(Icon3.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon3.Color, 20%)
+        HoverFill: =Icon3.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =Navigate(MainScreen,ScreenTransition.Fade);
+            UpdateContext({visible: false}); 
+        PressedBorderColor: =ColorFade(Icon3.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon3.Color, -20%)
+        PressedFill: =Icon3.Fill
+        Tooltip: ="Go back to main screen"
+        X: =1289
+        Y: =9
+        ZIndex: =7
+
+    CancelVendorFormSubmission As button:
+        BorderColor: =ColorFade(CancelVendorFormSubmission.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelVendorFormSubmission.BorderColor
+        HoverBorderColor: =ColorFade(CancelVendorFormSubmission.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |
+            =ResetForm(VendorForm);
+            UpdateContext({visible: false, newVendor:false}); 
+        PressedBorderColor: =CancelVendorFormSubmission.Fill
+        PressedColor: =CancelVendorFormSubmission.Fill
+        PressedFill: =CancelVendorFormSubmission.Color
+        Text: ="Cancel"
+        Visible: =visible
+        X: =523
+        Y: =704
+        ZIndex: =8
+

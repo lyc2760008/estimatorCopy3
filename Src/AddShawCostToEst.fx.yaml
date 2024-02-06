@@ -1,0 +1,756 @@
+"AddShawCostToEst As screen.'phoneLayout_FluidGridWithHeaderPageLayout_ver3.0'":
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =Refresh(Shaw_Table);
+        ClearCollect(ShawList, Shaw_Table);
+        UpdateContext({GShaw_visible:true, msgWindowShaw:false, msgToDsiplayShaw:"", msgWindowCancelShaw:false, msgWindowOkShaw:false, saveDisableShaw:false, procShaw:false});
+        If(NewEstimate, 
+             //exisiting shaw list for new estimate should be empty
+             ClearCollect(estShawSecList_Current, Filter(ProjectEstShawCosts, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+             And Version = NewEstimateVersion And Type = NewEstimateType));,
+             //existing shaw list for est will may or may not have items
+             ClearCollect(estShawSecList_Current, Filter(ProjectEstShawCosts, ProjectID = EstimatesGallery.Selected.ProjectID And 
+               Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+        );
+        //Remove shaw item(s) that are already part of the current est shaw list
+        RemoveIf(ShawList, shaw_id in estShawSecList_Current.shaw_id);
+    Orientation: =If(AddShawCostToEst.Width < AddShawCostToEst.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= AddShawCostToEst.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    RectQuickActionBar8_4 As rectangle:
+        DisabledFill: =RectQuickActionBar8_4.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =RectQuickActionBar8_4.BorderColor
+        Height: =88
+        HoverFill: =RectQuickActionBar8_4.Fill
+        PressedFill: =RectQuickActionBar8_4.Fill
+        Width: =Parent.Width
+        ZIndex: =1
+
+    LblAppName8_4 As label:
+        FocusedBorderColor: =LblAppName8_4.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =88
+        HoverBorderColor: =LblAppName8_4.BorderColor
+        HoverColor: =LblAppName8_4.Color
+        HoverFill: =LblAppName8_4.Fill
+        PressedBorderColor: =LblAppName8_4.BorderColor
+        PressedColor: =LblAppName8_4.Color
+        PressedFill: =LblAppName8_4.Fill
+        Size: =20
+        Text: =" ADD ESTIMATES' SHAW COST SECTION"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    Canvas2_5 As fluidGrid.fluidGridWithBlankCard:
+        BorderThickness: =0
+        Height: =Parent.Height - Canvas2_5.Y
+        Width: =Parent.Width
+        Y: =RectQuickActionBar8_4.Y + RectQuickActionBar8_4.Height
+        ZIndex: =3
+
+        DataCard13_4 As dataCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            BorderThickness: =0
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =679
+            Width: =Parent.Width
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            Label53_7 As label:
+                FocusedBorderColor: =Label53_7.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =Label53_7.BorderColor
+                HoverColor: =Label53_7.Color
+                HoverFill: =Label53_7.Fill
+                PressedBorderColor: =Label53_7.BorderColor
+                PressedColor: =Label53_7.Color
+                PressedFill: =Label53_7.Fill
+                Size: =14
+                Text: |-
+                    ="Total Shaw Cost :"
+                Width: =168
+                X: =933
+                Y: =7
+                ZIndex: =1
+
+            "EstShawGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dotted
+                BorderThickness: =2
+                DisabledBorderColor: =EstShawGallery.BorderColor
+                DisabledFill: =EstShawGallery.Fill
+                HoverBorderColor: =EstShawGallery.BorderColor
+                HoverFill: =EstShawGallery.Fill
+                Items: =SortByColumns(Search(ShawList, EstSrcShaw.Text,"shaw_descrip"), "shaw_descrip", SortOrder.Ascending)
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =EstShawGallery.BorderColor
+                PressedBorderColor: =EstShawGallery.BorderColor
+                PressedFill: =EstShawGallery.Fill
+                TemplatePadding: =0
+                TemplateSize: =74
+                Visible: =GShaw_visible
+                Width: =594
+                X: =8
+                Y: =101
+                ZIndex: =1
+
+                Title13_4 As label:
+                    Color: |-
+                        =If(Value(estShawQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    FocusedBorderColor: =Title13_4.BorderColor
+                    Height: =29
+                    HoverBorderColor: =Title13_4.BorderColor
+                    HoverColor: |-
+                        =If(Value(estShawQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    HoverFill: =Title13_4.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title13_4.BorderColor
+                    PressedColor: =Title13_4.Color
+                    PressedFill: =Title13_4.Fill
+                    Size: =11
+                    Text: =ThisItem.shaw_descrip
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =462
+                    X: =9
+                    Y: =8
+                    ZIndex: =1
+
+                Separator13_4 As rectangle:
+                    DisabledFill: =Separator13_4.Fill
+                    FocusedBorderColor: =Separator13_4.BorderColor
+                    Height: =1
+                    HoverFill: =Separator13_4.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator13_4.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                estShawRate As text:
+                    Color: |-
+                        =If(Value(estShawQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    Default: |-
+                        =Text(ThisItem.shaw_fee,"[$-en-US]$ ###,##0.00")
+                    DisplayMode: =DisplayMode.View
+                    FocusedBorderColor: =estShawRate.BorderColor
+                    Height: =31
+                    HoverColor: |-
+                        =If(Value(estShawQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =estShawRate.HoverBorderColor
+                    PressedColor: =estShawRate.Color
+                    PressedFill: =estShawRate.Fill
+                    Size: =10
+                    Width: =144
+                    X: =8
+                    Y: =37
+                    ZIndex: =6
+
+                estShawQty As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: ="0"
+                    FocusedBorderColor: =estShawQty.BorderColor
+                    Format: =TextFormat.Number
+                    Height: =35
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    HoverFill: =RGBA(255, 255, 255, 1)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =estShawQty.HoverBorderColor
+                    PressedColor: =estShawQty.Color
+                    PressedFill: =estShawQty.Fill
+                    Size: =10
+                    Width: =64
+                    X: =471
+                    Y: =8
+                    ZIndex: =8
+
+                shaw_add As icon.Add:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Color: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =shaw_add.Fill
+                    FocusedBorderColor: =shaw_add.BorderColor
+                    Height: =35
+                    HoverBorderColor: =ColorFade(shaw_add.BorderColor, 20%)
+                    HoverColor: =ColorFade(shaw_add.Color, 20%)
+                    HoverFill: =shaw_add.Fill
+                    Icon: =Icon.Add
+                    OnSelect: |-
+                        =If(NewEstimate,
+                           Collect(estShawSecList_Current,
+                            {ProjectID:NewEstimateProjectID, Stage: NewEstimateStage, Version: NewEstimateVersion, 
+                            Type: NewEstimateType,
+                            shaw_id: ThisItem.shaw_id,
+                            shaw_item: ThisItem.shaw_descrip,
+                            shaw_rate: ThisItem.shaw_fee,
+                            itemCount: Value(estShawQty.Text),
+                            totalAmount: Value(estShawQty.Text) * ThisItem.shaw_fee
+                            }
+                           ),
+                         Collect(estShawSecList_Current,
+                            {ProjectID:EstimatesGallery.Selected.ProjectID, Stage: EstimatesGallery.Selected.Stage, Version: EstimatesGallery.Selected.Version, 
+                            Type: EstimatesGallery.Selected.Type,
+                            shaw_id: ThisItem.shaw_id,
+                            shaw_item: ThisItem.shaw_descrip,
+                            shaw_rate: ThisItem.shaw_fee,
+                            itemCount: Value(estShawQty.Text),
+                            totalAmount: Value(estShawQty.Text) * ThisItem.shaw_fee}
+                           )
+                        );
+                        Remove(ShawList, ThisItem);
+                    PressedBorderColor: =ColorFade(shaw_add.BorderColor, -20%)
+                    PressedColor: =ColorFade(shaw_add.Color, -20%)
+                    PressedFill: =shaw_add.Fill
+                    Width: =45
+                    X: =538
+                    Y: =8
+                    ZIndex: =9
+
+            EstSrcShaw As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                FocusedBorderColor: =EstSrcShaw.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =EstSrcShaw.HoverBorderColor
+                PressedColor: =EstSrcShaw.Color
+                PressedFill: =RGBA(255, 255, 255, 1)
+                Width: =304
+                X: =25
+                Y: =43
+                ZIndex: =2
+
+            Label56_10 As label:
+                FocusedBorderColor: =Label56_10.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =44
+                HoverBorderColor: =Label56_10.BorderColor
+                HoverColor: =Label56_10.Color
+                HoverFill: =Label56_10.Fill
+                PressedBorderColor: =Label56_10.BorderColor
+                PressedColor: =Label56_10.Color
+                PressedFill: =Label56_10.Fill
+                Text: ="Search Shaw items"
+                Width: =304
+                X: =25
+                ZIndex: =3
+
+            estShawSecTotalCost As label:
+                FocusedBorderColor: =estShawSecTotalCost.BorderColor
+                Height: =46
+                HoverBorderColor: =estShawSecTotalCost.BorderColor
+                HoverColor: =estShawSecTotalCost.Color
+                HoverFill: =estShawSecTotalCost.Fill
+                PressedBorderColor: =estShawSecTotalCost.BorderColor
+                PressedColor: =estShawSecTotalCost.Color
+                PressedFill: =estShawSecTotalCost.Fill
+                Text: |-
+                    =If(CountRows (estShawSecList_Current.shaw_item) > 0,  Text(Sum(estShawSecList_Current, totalAmount ),"[$-en-US]$ ###,##0.00"), 0)
+                Width: =208
+                X: =1135
+                Y: =6
+                ZIndex: =4
+
+            Icon47_4 As icon.Search:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon47_4.Fill
+                FocusedBorderColor: =Icon47_4.BorderColor
+                Height: =44
+                HoverBorderColor: =ColorFade(Icon47_4.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon47_4.Color, 20%)
+                HoverFill: =Icon47_4.Fill
+                Icon: =Icon.Search
+                PressedBorderColor: =ColorFade(Icon47_4.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon47_4.Color, -20%)
+                PressedFill: =Icon47_4.Fill
+                Width: =36
+                X: =293
+                Y: =39
+                ZIndex: =7
+
+            Label77_15 As label:
+                FocusedBorderColor: =Label77_15.BorderColor
+                HoverBorderColor: =Label77_15.BorderColor
+                HoverColor: =Label77_15.Color
+                HoverFill: =Label77_15.Fill
+                PressedBorderColor: =Label77_15.BorderColor
+                PressedColor: =Label77_15.Color
+                PressedFill: =Label77_15.Fill
+                Size: =11
+                Text: ="Qty"
+                Width: =84
+                X: =476
+                Y: =61
+                ZIndex: =8
+
+            Label57_7 As label:
+                BorderThickness: =1
+                Color: =RGBA(0, 18, 107, 1)
+                Fill: =RGBA(241, 244, 249, 1)
+                FocusedBorderColor: =Label57_7.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =56
+                HoverBorderColor: =Label57_7.BorderColor
+                HoverColor: =Label57_7.Color
+                HoverFill: =Label57_7.Fill
+                PressedBorderColor: =Label57_7.BorderColor
+                PressedColor: =Label57_7.Color
+                PressedFill: =Label57_7.Fill
+                Size: =16
+                Text: =" Shaw ITEMS SELECTED FOR THE ESTIMATE"
+                Width: =663
+                X: =684
+                Y: =52
+                ZIndex: =9
+
+            Label48_13 As label:
+                Color: =RGBA(168, 0, 0, 1)
+                FocusedBorderColor: =Label48_13.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =34
+                HoverBorderColor: =Label48_13.BorderColor
+                HoverColor: =Label48_13.Color
+                HoverFill: =Label48_13.Fill
+                Italic: =true
+                PressedBorderColor: =Label48_13.BorderColor
+                PressedColor: =Label48_13.Color
+                PressedFill: =Label48_13.Fill
+                Text: ="In case you want to delete ALL selected items "
+                Width: =370
+                X: =685
+                Y: =106
+                ZIndex: =11
+
+            Icon33_7 As icon.Trash:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon33_7.Fill
+                FocusedBorderColor: =Icon33_7.BorderColor
+                Height: =39
+                HoverBorderColor: =ColorFade(Icon33_7.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon33_7.Color, 20%)
+                HoverFill: =Icon33_7.Fill
+                Icon: =Icon.Trash
+                OnSelect: |
+                    =If(NewEstimate,
+                       Remove(ProjectEstShawCosts, Filter(ProjectEstShawCosts, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                           And Version = NewEstimateVersion And Type = NewEstimateType));,
+                        Remove(ProjectEstShawCosts, Filter(ProjectEstShawCosts, ProjectID = EstimatesGallery.Selected.ProjectID And 
+                        Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                     );
+                    Refresh(Shaw_Table);
+                    ClearCollect(ShawList, Shaw_Table);
+                    UpdateContext({GShaw_visible:true, msgWindowShaw:false, msgToDsiplayShaw:"", msgWindowCancelShaw:false, msgWindowOkShaw:false, saveDisableShaw:false});
+                    If(NewEstimate, 
+                         //exisiting epc list for new estimate should be empty
+                         ClearCollect(estShawSecList_Current, Filter(ProjectEstShawCosts, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                         And Version = NewEstimateVersion And Type = NewEstimateType));,
+                         //existing epc list for est will may or may not have items
+                         ClearCollect(estShawSecList_Current, Filter(ProjectEstShawCosts, ProjectID = EstimatesGallery.Selected.ProjectID And 
+                           Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                    );
+                    //Remove epc item(s) that are already part of the current est epc list
+                    RemoveIf(ShawList, shaw_id in estShawSecList_Current.shaw_id);
+                PressedBorderColor: =ColorFade(Icon33_7.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon33_7.Color, -20%)
+                PressedFill: =Icon33_7.Fill
+                Width: =62
+                X: =1064
+                Y: =110
+                ZIndex: =12
+
+            estSrcSelectedShaw As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                FocusedBorderColor: =estSrcSelectedShaw.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =estSrcSelectedShaw.HoverBorderColor
+                PressedColor: =estSrcSelectedShaw.Color
+                PressedFill: =estSrcSelectedShaw.Fill
+                X: =935
+                Y: =164
+                ZIndex: =13
+
+            Label85_4 As label:
+                FocusedBorderColor: =Label85_4.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =Label85_4.BorderColor
+                HoverColor: =Label85_4.Color
+                HoverFill: =Label85_4.Fill
+                PressedBorderColor: =Label85_4.BorderColor
+                PressedColor: =Label85_4.Color
+                PressedFill: =Label85_4.Fill
+                Text: ="Search selected shaw items"
+                Width: =274
+                X: =685
+                Y: =152
+                ZIndex: =14
+
+            Icon49_4 As icon.Search:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon49_4.Fill
+                FocusedBorderColor: =Icon49_4.BorderColor
+                Height: =40
+                HoverBorderColor: =ColorFade(Icon49_4.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon49_4.Color, 20%)
+                HoverFill: =Icon49_4.Fill
+                Icon: =Icon.Search
+                PressedBorderColor: =ColorFade(Icon49_4.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon49_4.Color, -20%)
+                PressedFill: =Icon49_4.Fill
+                Width: =40
+                X: =1215
+                Y: =164
+                ZIndex: =15
+
+            "EstSelectedShawGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dotted
+                BorderThickness: =2
+                DisabledBorderColor: =EstSelectedShawGallery.BorderColor
+                DisabledFill: =EstSelectedShawGallery.Fill
+                Height: =431
+                HoverBorderColor: =EstSelectedShawGallery.BorderColor
+                HoverFill: =EstSelectedShawGallery.Fill
+                Items: |+
+                    =SortByColumns(Search(estShawSecList_Current, estSrcSelectedShaw.Text, "shaw_item"), "shaw_item", SortOrder.Ascending)
+                    
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =EstSelectedShawGallery.BorderColor
+                PressedBorderColor: =EstSelectedShawGallery.BorderColor
+                PressedFill: =EstSelectedShawGallery.Fill
+                ShowNavigation: =true
+                ShowScrollbar: =false
+                TemplatePadding: =0
+                TemplateSize: =57
+                Width: =729
+                X: =620
+                Y: =245
+                ZIndex: =16
+
+                Title1_7 As label:
+                    FocusedBorderColor: =Title1_7.BorderColor
+                    Height: =54
+                    HoverBorderColor: =Title1_7.BorderColor
+                    HoverColor: =Title1_7.Color
+                    HoverFill: =Title1_7.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title1_7.BorderColor
+                    PressedColor: =Title1_7.Color
+                    PressedFill: =Title1_7.Fill
+                    Size: =10
+                    Text: =ThisItem.shaw_item
+                    Width: =350
+                    X: =16
+                    Y: =3
+                    ZIndex: =1
+
+                Separator1_7 As rectangle:
+                    DisabledFill: =Separator1_7.Fill
+                    FocusedBorderColor: =Separator1_7.BorderColor
+                    Height: =1
+                    HoverFill: =Separator1_7.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator1_7.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                Icon18_7 As icon.Trash:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Color: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =Icon18_7.Fill
+                    FocusedBorderColor: =Icon18_7.BorderColor
+                    Height: =30
+                    HoverBorderColor: =ColorFade(Icon18_7.BorderColor, 20%)
+                    HoverColor: =ColorFade(Icon18_7.Color, 20%)
+                    HoverFill: =Icon18_7.Fill
+                    Icon: =Icon.Trash
+                    OnSelect: |-
+                        =If(GShaw_visible,
+                            Collect(ShawList, LookUp(Shaw_Table, shaw_id = ThisItem.shaw_id)), false);
+                        Remove(estShawSecList_Current, ThisItem);
+                    PressedBorderColor: =ColorFade(Icon18_7.BorderColor, -20%)
+                    PressedColor: =ColorFade(Icon18_7.Color, -20%)
+                    PressedFill: =Icon18_7.Fill
+                    Width: =33
+                    X: =692
+                    Y: =16
+                    ZIndex: =6
+
+                Label83_7 As label:
+                    FocusedBorderColor: =Label83_7.BorderColor
+                    Height: =39
+                    HoverBorderColor: =Label83_7.BorderColor
+                    HoverColor: =Label83_7.Color
+                    HoverFill: =Label83_7.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label83_7.BorderColor
+                    PressedColor: =Label83_7.Color
+                    PressedFill: =Label83_7.Fill
+                    Size: =10
+                    Text: |-
+                        =Text(TextInput9_3.Text * ThisItem.shaw_rate,"[$-en-US]$ ###,##0.00")
+                    Width: =91
+                    X: =545
+                    Y: =15
+                    ZIndex: =8
+
+                Label86_4 As label:
+                    FocusedBorderColor: =Label86_4.BorderColor
+                    Height: =30
+                    HoverBorderColor: =Label86_4.BorderColor
+                    HoverColor: =Label86_4.Color
+                    HoverFill: =Label86_4.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label86_4.BorderColor
+                    PressedColor: =Label86_4.Color
+                    PressedFill: =Label86_4.Fill
+                    Size: =10
+                    Text: |-
+                        =Text(ThisItem.shaw_rate,"[$-en-US]$ ###,##0.00")
+                    Width: =93
+                    X: =432
+                    Y: =16
+                    ZIndex: =9
+
+                TextInput9_3 As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: =ThisItem.itemCount
+                    Format: =TextFormat.Number
+                    Height: =34
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    HoverFill: =RGBA(255, 255, 255, 1)
+                    OnChange: |-
+                        =Patch(estShawSecList_Current, ThisItem, 
+                            {itemCount: Value(TextInput9_3.Text), 
+                            totalAmount: Value(TextInput9_3.Text) * ThisItem.shaw_rate})
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =TextInput9_3.HoverBorderColor
+                    PressedColor: =TextInput9_3.Color
+                    PressedFill: =TextInput9_3.Fill
+                    Size: =11
+                    Width: =52
+                    X: =374
+                    Y: =15
+                    ZIndex: =11
+
+            Label77_16 As label:
+                FocusedBorderColor: =Label77_16.BorderColor
+                Height: =36
+                HoverBorderColor: =Label77_16.BorderColor
+                HoverColor: =Label77_16.Color
+                HoverFill: =Label77_16.Fill
+                PressedBorderColor: =Label77_16.BorderColor
+                PressedColor: =Label77_16.Color
+                PressedFill: =Label77_16.Fill
+                Size: =11
+                Text: ="Qty"
+                Width: =71
+                X: =995
+                Y: =209
+                ZIndex: =17
+
+            Label77_17 As label:
+                FocusedBorderColor: =Label77_17.BorderColor
+                Height: =36
+                HoverBorderColor: =Label77_17.BorderColor
+                HoverColor: =Label77_17.Color
+                HoverFill: =Label77_17.Fill
+                PressedBorderColor: =Label77_17.BorderColor
+                PressedColor: =Label77_17.Color
+                PressedFill: =Label77_17.Fill
+                Size: =11
+                Text: ="Rate"
+                Width: =71
+                X: =1073
+                Y: =209
+                ZIndex: =19
+
+    Icon45_4 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon45_4.Fill
+        FocusedBorderColor: =Icon45_4.BorderColor
+        HoverBorderColor: =ColorFade(Icon45_4.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon45_4.Color, 20%)
+        HoverFill: =Icon45_4.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =UpdateContext({saveDisableShaw:true,  msgWindowShaw:true, msgWindowOkShaw:true, msgWindowCancelShaw:true, procShaw:true, 
+            msgToDsiplayShaw:""});
+            /*msgToDsiplayShaw:Concatenate("Choose one of the following options, it is recommended to save your work before going back", Char(13), Char(13), "Press Save to save your work, if needed.", Char(13), Char(13), "Press Cancel to stay on this screen.",
+            Char(13), Char(13), "Press Proceed Without Save to go back and ignore the changes you made.")*/
+        PressedBorderColor: =ColorFade(Icon45_4.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon45_4.Color, -20%)
+        PressedFill: =Icon45_4.Fill
+        Tooltip: ="Go back"
+        X: =1280
+        Y: =12
+        ZIndex: =4
+
+    SaveShawToEst As icon.Save:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =SaveShawToEst.Fill
+        DisplayMode: =If(Not(saveDisableShaw), DisplayMode.Edit, DisplayMode.Disabled)
+        FocusedBorderColor: =SaveShawToEst.BorderColor
+        HoverBorderColor: =ColorFade(SaveShawToEst.BorderColor, 20%)
+        HoverColor: =ColorFade(SaveShawToEst.Color, 20%)
+        HoverFill: =SaveShawToEst.Fill
+        Icon: =Icon.Save
+        OnSelect: |-
+            =If(NewEstimate,
+               Remove(ProjectEstShawCosts, 
+                  Filter(ProjectEstShawCosts, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType));
+                UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, 
+                   {shaw_cost_total: Value(estShawSecTotalCost.Text)}),
+                Remove(ProjectEstShawCosts, 
+                  Filter(ProjectEstShawCosts, ProjectID = EstimatesGallery.Selected.ProjectID And
+                   Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And 
+                   Type = EstimatesGallery.Selected.Type));
+                UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And 
+                   Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And 
+                   Type = EstimatesGallery.Selected.Type, 
+                {shaw_cost_total: Value(estShawSecTotalCost.Text)});
+             );
+            Collect(ProjectEstShawCosts, estShawSecList_Current);
+            If(IsEmpty(Errors(ProjectEstShawCosts)),
+                   // UpdateContext({msgWindow:true, msgToDsiplay:"Changes made to estimate's material section were successful!"})
+                    true,
+                    UpdateContext({msgWindowShaw:true, msgWindowCancelShaw:true, msgToDsiplayShaw:"Changes made to estimate's Shaw Cost section failed, contact IT"})
+            );
+        PressedBorderColor: =ColorFade(SaveShawToEst.BorderColor, -20%)
+        PressedColor: =ColorFade(SaveShawToEst.Color, -20%)
+        PressedFill: =SaveShawToEst.Fill
+        Tooltip: ="Save changes"
+        Visible: =false
+        X: =1195
+        Y: =12
+        ZIndex: =5
+
+    estShawPopUpWindow As rectangle:
+        BorderStyle: =BorderStyle.Dashed
+        BorderThickness: =2
+        DisabledFill: =estShawPopUpWindow.Fill
+        Fill: =RGBA(241, 244, 249, 0.9)
+        FocusedBorderColor: =estShawPopUpWindow.BorderColor
+        Height: =768
+        HoverFill: =estShawPopUpWindow.Fill
+        PressedFill: =estShawPopUpWindow.Fill
+        Visible: =msgWindowShaw
+        Width: =1326
+        X: =18
+        ZIndex: =6
+
+    estShawMsg As label:
+        Color: =RGBA(168, 0, 0, 1)
+        FocusedBorderColor: =estShawMsg.BorderColor
+        FontWeight: =FontWeight.Bold
+        Height: =237
+        HoverBorderColor: =estShawMsg.BorderColor
+        HoverColor: =estShawMsg.Color
+        HoverFill: =estShawMsg.Fill
+        PressedBorderColor: =estShawMsg.BorderColor
+        PressedColor: =estShawMsg.Color
+        PressedFill: =estShawMsg.Fill
+        Size: =18
+        Text: =Text(msgToDsiplayShaw)
+        VerticalAlign: =VerticalAlign.Top
+        Visible: =msgWindowShaw
+        Width: =1198
+        X: =82
+        Y: =208
+        ZIndex: =7
+
+    okSaveDone_7 As button:
+        BorderColor: =ColorFade(okSaveDone_7.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =okSaveDone_7.BorderColor
+        Height: =60
+        HoverBorderColor: =ColorFade(okSaveDone_7.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =If(NewEstimate,
+               Remove(ProjectEstShawCosts, Filter(ProjectEstShawCosts, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType));
+                UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, 
+                   {shaw_cost_total: Value(estShawSecTotalCost.Text)}),
+                Remove(ProjectEstShawCosts, Filter(ProjectEstShawCosts, ProjectID = EstimatesGallery.Selected.ProjectID And
+                   Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                 And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                 {shaw_cost_total: Value(estShawSecTotalCost.Text)});
+             );
+            Collect(ProjectEstShawCosts, estShawSecList_Current);
+            If(IsEmpty(Errors(ProjectEstShawCosts)),
+                    UpdateContext({GShaw_visible:false, msgWindowShaw:false, msgWindowCancelShaw:false, msgToDsiplayShaw:"", msgWindowOkShaw:false, procShaw:false});
+                    Navigate(MainEstimateScreen, ScreenTransition.Fade);,
+                    UpdateContext({msgWindowShaw:true, msgToDsiplayShaw:"Changes made to estimate's Shaw Cost section failed, contact IT", msgWindowCancelShaw:true})
+            );
+            Reset(estSrcSelectedShaw);
+            Reset(EstSrcShaw);
+        PressedBorderColor: =okSaveDone_7.Fill
+        PressedColor: =okSaveDone_7.Fill
+        PressedFill: =okSaveDone_7.Color
+        Text: ="Save"
+        Visible: = msgWindowOkShaw
+        X: =322
+        Y: =485
+        ZIndex: =8
+
+    CancelStayShaw As button:
+        BorderColor: =ColorFade(CancelStayShaw.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelStayShaw.BorderColor
+        Height: =60
+        HoverBorderColor: =ColorFade(CancelStayShaw.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({saveDisableShaw:false,msgWindowShaw:false, msgWindowCancelShaw:false, msgToDsiplayShaw:"", msgWindowOkShaw:false, procShaw:false})
+        PressedBorderColor: =CancelStayShaw.Fill
+        PressedColor: =CancelStayShaw.Fill
+        PressedFill: =CancelStayShaw.Color
+        Text: ="Cancel"
+        Visible: =msgWindowCancelShaw
+        X: =727
+        Y: =485
+        ZIndex: =9
+
+    proceedShaw As button:
+        BorderColor: =ColorFade(proceedShaw.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        Height: =60
+        HoverBorderColor: =ColorFade(proceedShaw.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({GShaw_visible:false, msgWindowShaw:false, msgWindowCancelShaw:false, msgToDsiplayShaw:"", msgWindowOkShaw:false, procShaw:false});
+            Navigate(MainEstimateScreen, ScreenTransition.Fade);
+        PressedBorderColor: =proceedShaw.Fill
+        PressedColor: =proceedShaw.Fill
+        PressedFill: =proceedShaw.Color
+        Text: ="Proceed Without Save"
+        Visible: =procShaw
+        X: =524
+        Y: =485
+        ZIndex: =10
+

@@ -1,0 +1,407 @@
+"EditEstStructureQty As screen.'phoneLayout_FluidGridWithHeaderPageLayout_ver3.0'":
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |+
+        =UpdateContext({strucPrefVednor: true, strucCurrType:"", StrucCurrVend:"", CalculatedBtnClicked: false });
+        UpdateContext({showSpinnerEditStruc: false });
+        If(NewEstimate, 
+          ClearCollect(selectedStrucMatList, Filter(StructuresMaterialDetails, StrucID = selectedStruc.StrucID And StrucType = NewEstimateType));
+          ClearCollect(selectedStrucLabList, Filter(StructuresLabourDetails, StrucID = selectedStruc.StrucID And StrucType = NewEstimateType));
+           If(NewEstimateVendor = "Preferred Vendor", UpdateContext({strucPrefVednor:true, strucCurrType: NewEstimateType, StrucCurrVend:NewEstimateVendor}), 
+                                            UpdateContext({strucPrefVednor: false, strucCurrType: NewEstimateType, StrucCurrVend:NewEstimateVendor}));
+          Set(estTotalStruc_LabCost, LookUp(Estimates, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+               And Version = NewEstimateVersion And Type = NewEstimateType).Struc_L_Cost);
+          Set(estTotalStruc_MatCost, LookUp(Estimates, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+               And Version = NewEstimateVersion And Type = NewEstimateType).Struc_M_Cost);,
+          ClearCollect(selectedStrucMatList, Filter(StructuresMaterialDetails, StrucID = selectedStruc.StrucID And 
+                       StrucType = EstimatesGallery.Selected.Type));
+          ClearCollect(selectedStrucLabList, Filter(StructuresLabourDetails, StrucID = selectedStruc.StrucID And 
+                      StrucType = EstimatesGallery.Selected.Type));
+          If(EstimatesGallery.Selected.MaterialSupplier = "Preferred Vendor", 
+                UpdateContext({strucPrefVednor:true, strucCurrType:EstimatesGallery.Selected.Type, StrucCurrVend:EstimatesGallery.Selected.MaterialSupplier}), 
+                UpdateContext({strucPrefVednor:false, strucCurrType:EstimatesGallery.Selected.Type, StrucCurrVend:EstimatesGallery.Selected.MaterialSupplier})),
+         Set(estTotalStruc_LabCost, LookUp(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+               And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type).Struc_L_Cost);
+         Set(estTotalStruc_MatCost, LookUp(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+               And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type).Struc_M_Cost);
+        
+        );
+        // collections I will need to do labour updates properly ------------------- removed from labPrices_edit_Struc: ContractorName = "Primary" And
+        // will cuase an issue getting prices because of same labour unit from different contractors.. I will get two prices and only the last price will come in effect
+        ClearCollect(labPrices_edit_Struc, LabourUnitsDetails);// less than 1000 items good if more change logic!! V.IMP
+        // building on previous collections to add labour prices
+        ClearCollect(strLabListWithPrices_editStruc,  
+              AddColumns(selectedStrucLabList,
+              "UnitPrice", LookUp(labPrices_edit_Struc, labPrices_edit_Struc[@LabourUnit] = selectedStrucLabList[@LabourUnit]).UnitPrice));
+        // pref vendor list
+        //old code enmax only aug19,21 modified 
+        //ClearCollect(prefVendList_editStruc, Filter('[dbo].[MasterMaterial_PreferredVendor_List]', Archived = false));
+        Switch(NewEstimateType,
+            "Enmax", ClearCollect(prefVendList_editStruc, Filter(MasterMaterial_PreferredVendor_List, 
+                             Archived = false And EnmaxItemNumber <> "NA")),
+            "Fortis Alberta", ClearCollect(prefVendList_editStruc, Filter(MasterMaterial_PreferredVendor_List, 
+                             Archived = false And FortisItemNumber <> "NA")),
+            "City of Calgary", ClearCollect(prefVendList_editStruc, Filter(MasterMaterial_PreferredVendor_List, 
+                              Archived = false And CoCItemNumber <> "NA"))
+        );
+        ClearCollect(vendList_editStruct, Filter(VendorSupplies, Archive = false And VendorName = StrucCurrVend And ItemType = strucCurrType));
+        
+    Width: =Max(App.Width, App.DesignWidth)
+
+    RectQuickActionBar11 As rectangle:
+        Fill: =RGBA(36, 76, 90, 1)
+        Height: =88
+        Width: =Parent.Width
+        ZIndex: =1
+
+    LblAppName11 As label:
+        FontWeight: =FontWeight.Semibold
+        Height: =88
+        OnSelect: =Back();
+        Size: =20
+        Text: =" EDIT A STRUCTURE'S QUANTITY"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    Canvas11 As fluidGrid.fluidGridWithBlankCard:
+        BorderThickness: =0
+        Height: =Parent.Height - Self.Y
+        Width: =Parent.Width
+        Y: =RectQuickActionBar11.Y + RectQuickActionBar11.Height
+        ZIndex: =3
+
+        DataCard7 As dataCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            BorderThickness: =0
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =Parent.Height - 100
+            Width: =Parent.Width
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            Label120 As label:
+                Color: =RGBA(0, 18, 107, 1)
+                FontWeight: =FontWeight.Semibold
+                Height: =45
+                Text: =Concatenate(selectedStruc.StrucID, " - ", selectedStruc.Description)
+                Width: =658
+                X: =20
+                Y: =24
+                ZIndex: =1
+
+            Label129 As label:
+                Height: =34
+                Text: |-
+                    =Concatenate("Current Material Cost: ", Text(selectedStruc.StrMaterialCost, "[$-en-US]$ ###,##0.00"))
+                Width: =317
+                X: =20
+                Y: =69
+                ZIndex: =2
+
+            Label129_1 As label:
+                Height: =34
+                Text: |-
+                    =Concatenate("Current Labour Cost: ", Text(selectedStruc.StrLabourCost, "[$-en-US]$ ###,##0.00"))
+                Width: =317
+                X: =20
+                Y: =114
+                ZIndex: =3
+
+            Label129_2 As label:
+                Height: =34
+                Text: |-
+                    =Concatenate("Current Complexity Factor: ", Text(selectedStruc.complexityFactor, "[$-en-US] 0.00"))
+                Width: =317
+                X: =20
+                Y: =156
+                ZIndex: =4
+
+            Label129_3 As label:
+                Height: =34
+                Text: |-
+                    =Concatenate("Current Quantity: ", Text(selectedStruc.StrQty, "[$-en-US] ###,##0.00"))
+                Width: =317
+                X: =20
+                Y: =204
+                ZIndex: =5
+
+            Label132 As label:
+                Height: =37
+                Text: |-
+                    ="Enter New Qauntity:"
+                Width: =257
+                X: =386
+                Y: =201
+                ZIndex: =6
+
+            Label132_1 As label:
+                Height: =37
+                Text: |-
+                    ="Enter New Complexity Factor:"
+                Width: =257
+                X: =386
+                Y: =148
+                ZIndex: =7
+
+            newCompFact As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: ="1"
+                Format: =TextFormat.Number
+                Height: =34
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =newCompFact.HoverBorderColor
+                PressedColor: =newCompFact.Color
+                PressedFill: =newCompFact.Fill
+                Width: =75
+                X: =643
+                Y: =148
+                ZIndex: =8
+
+            newStrucQty As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: ="1"
+                Format: =TextFormat.Number
+                Height: =34
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =newStrucQty.HoverBorderColor
+                PressedColor: =newStrucQty.Color
+                PressedFill: =newStrucQty.Fill
+                Width: =75
+                X: =650
+                Y: =200
+                ZIndex: =9
+
+            Label129_4 As label:
+                Height: =34
+                Text: |-
+                    ="New Material Cost: "
+                Width: =317
+                X: =822
+                Y: =69
+                ZIndex: =10
+
+            Label129_5 As label:
+                Height: =34
+                Text: |-
+                    ="New Labour Cost: "
+                Width: =317
+                X: =822
+                Y: =114
+                ZIndex: =11
+
+            Button19 As button:
+                BorderColor: =ColorFade(Button19.Fill, -15%)
+                Fill: =RGBA(36, 76, 90, 1)
+                Height: =75
+                HoverBorderColor: =ColorFade(Button19.BorderColor, 20%)
+                HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                OnSelect: |-
+                    =//labour updates
+                    ClearCollect(structL_temp2, AddColumns(strLabListWithPrices_editStruc, "TotalPrice", 0, "CFactor", 1));
+                    UpdateIf(structL_temp2, true, {TotalPrice :  ItemCount * Value(newStrucQty.Text) * UnitPrice * Value(newCompFact.Text), 
+                                                  CFactor: Value(newCompFact.Text)});
+                    UpdateContext({strucLCost_temp2: If(CountRows(structL_temp2) > 0, Sum(structL_temp2, TotalPrice), 0)}); 
+                    // adding struc's materials
+                    If(strucPrefVednor, // vendor is preferred
+                     /* taking this code out coz Primary item number is no longer entered by user  ClearCollect(strMatList_PrefVendList_editStruc, 
+                             AddColumns(selectedStrucMatList, 
+                            "Price", LookUp(prefVendList_editStruc,selectedStrucMatList[@ItemNumber] = prefVendList_editStruc[@PrimaryItemNumber]).PreferredVendorPrice,
+                            "ValidDate", LookUp(prefVendList_editStruc,  selectedStrucMatList[@ItemNumber] = prefVendList_editStruc[@PrimaryItemNumber]).ValidToDate,
+                            "GuessPrice", LookUp(prefVendList_editStruc, selectedStrucMatList[@ItemNumber] = prefVendList_editStruc[@PrimaryItemNumber]).PreferredVendorGPrice))*/
+                      Switch(strucCurrType,
+                        "Enmax",ClearCollect(strMatList_PrefVendList_editStruc, 
+                             AddColumns(selectedStrucMatList, 
+                            "Price", LookUp(prefVendList_editStruc,  selectedStrucMatList[@ItemNumber] = prefVendList_editStruc[@EnmaxItemNumber]).PreferredVendorPrice,
+                            "ValidDate", LookUp(prefVendList_editStruc,  selectedStrucMatList[@ItemNumber] = prefVendList_editStruc[@EnmaxItemNumber]).ValidToDate,
+                            "GuessPrice", LookUp(prefVendList_editStruc, selectedStrucMatList[@ItemNumber] = prefVendList_editStruc[@EnmaxItemNumber]).PreferredVendorGPrice)),
+                        "Fortis Alberta",ClearCollect(strMatList_PrefVendList_editStruc, 
+                             AddColumns(selectedStrucMatList, 
+                            "Price", LookUp(prefVendList_editStruc,  selectedStrucMatList[@ItemNumber] = prefVendList_editStruc[@FortisItemNumber]).PreferredVendorPrice,
+                            "ValidDate", LookUp(prefVendList_editStruc,  selectedStrucMatList[@ItemNumber] = prefVendList_editStruc[@FortisItemNumber]).ValidToDate,
+                            "GuessPrice", LookUp(prefVendList_editStruc, selectedStrucMatList[@ItemNumber] = prefVendList_editStruc[@FortisItemNumber]).PreferredVendorGPrice)),
+                        "City of Calgary",ClearCollect(strMatList_PrefVendList_editStruc, 
+                             AddColumns(selectedStrucMatList, 
+                            "Price", LookUp(prefVendList_editStruc,  selectedStrucMatList[@ItemNumber] = prefVendList_editStruc[@CoCItemNumber]).PreferredVendorPrice,
+                            "ValidDate", LookUp(prefVendList_editStruc,  selectedStrucMatList[@ItemNumber] = prefVendList_editStruc[@CoCItemNumber]).ValidToDate,
+                            "GuessPrice", LookUp(prefVendList_editStruc, selectedStrucMatList[@ItemNumber] = prefVendList_editStruc[@CoCItemNumber]).PreferredVendorGPrice))
+                        );
+                      UpdateIf(strMatList_PrefVendList_editStruc, ValidDate <= Now() And Price <= 0.0, {Price: GuessPrice});
+                      ClearCollect(structM_temp2, AddColumns(strMatList_PrefVendList_editStruc, "TotalPrice", 0)),
+                      ClearCollect(strMatList_VendList_editStruc, 
+                             AddColumns(selectedStrucMatList, 
+                            "Price", LookUp(vendList_editStruct,  selectedStrucMatList[@ItemNumber] = vendList_editStruct[@ItemNum] And VendorName = StrucCurrVend 
+                                   And ItemType = strucCurrType).Price,
+                            "ValidDate", LookUp(vendList_editStruct,  selectedStrucMatList[@ItemNumber] = vendList_editStruct[@ItemNum] And VendorName = StrucCurrVend 
+                                   And ItemType = strucCurrType).ValidToDate,
+                            "GuessPrice", LookUp(vendList_editStruct, selectedStrucMatList[@ItemNumber] = vendList_editStruct[@ItemNum] And VendorName = StrucCurrVend
+                                   And ItemType = strucCurrType).GuessPrice));
+                      UpdateIf(strMatList_VendList_editStruc, ValidDate <= Now() And Price <= 0.0, {Price: GuessPrice});	
+                      ClearCollect(structM_temp2, AddColumns(strMatList_VendList_editStruc, "TotalPrice", 0));		    
+                    );
+                    UpdateIf(structM_temp2, true, {TotalPrice :  ItemCount * Value(newStrucQty.Text) * Price});
+                    UpdateContext({strucMCost_temp2: If(CountRows(structM_temp2) > 0, Sum(structM_temp2, TotalPrice), 0), CalculatedBtnClicked: true});
+                PressedBorderColor: =Button19.Fill
+                PressedColor: =Button19.Fill
+                PressedFill: =Button19.Color
+                Text: ="Calculate New Cost without Saving"
+                Width: =269
+                X: =530
+                Y: =269
+                ZIndex: =14
+
+            strucMatNewCost As text:
+                Default: |-
+                    =Text(strucMCost_temp2, "[$-en-US]$ ###,##0.00")
+                DisplayMode: =DisplayMode.View
+                Format: =TextFormat.Number
+                HoverFill: =RGBA(255, 255, 255, 1)
+                PressedBorderColor: =strucMatNewCost.HoverBorderColor
+                PressedColor: =strucMatNewCost.Color
+                PressedFill: =strucMatNewCost.Fill
+                X: =993
+                Y: =63
+                ZIndex: =15
+
+            strucLabNewCost As text:
+                Default: |-
+                    =Text(strucLCost_temp2, "[$-en-US]$ ###,##0.00")
+                DisplayMode: =DisplayMode.View
+                Format: =TextFormat.Number
+                HoverFill: =RGBA(255, 255, 255, 1)
+                PressedBorderColor: =strucLabNewCost.HoverBorderColor
+                PressedColor: =strucLabNewCost.Color
+                PressedFill: =strucLabNewCost.Fill
+                X: =993
+                Y: =114
+                ZIndex: =16
+
+            Label134 As label:
+                Color: =RGBA(118, 0, 0, 1)
+                FontWeight: =FontWeight.Bold
+                Height: =44
+                Text: ="Press calculate button only to see how change in quantity/complexity factory effects structure's cost."
+                Width: =1206
+                X: =44
+                Y: =376
+                ZIndex: =19
+
+            Label134_1 As label:
+                Color: =RGBA(118, 0, 0, 1)
+                FontWeight: =FontWeight.Bold
+                Height: =56
+                Text: ="Press save icon to send your changes to the database. Once save is pressed you will be navigated back to structure's screen"
+                Width: =1095
+                X: =44
+                Y: =465
+                ZIndex: =20
+
+            Label134_2 As label:
+                Color: =RGBA(118, 0, 0, 1)
+                FontWeight: =FontWeight.Bold
+                Height: =44
+                Text: ="Once the calculate button is clicked, the save icon will be available."
+                Width: =1206
+                X: =44
+                Y: =425
+                ZIndex: =21
+
+    Icon25_3 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledColor: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon25_3.Fill
+        FocusedBorderColor: =Icon25_3.BorderColor
+        HoverBorderColor: =ColorFade(Icon25_3.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =Icon25_3.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =Set(estTotalStruc_LabCost, 0); Set(estTotalStruc_MatCost, 0);
+            Clear(structM_temp2); Clear(structL_temp2);
+            UpdateContext({strucLCost_temp2: 0, strucMCost_temp2: 0, CalculatedBtnClicked: false });
+            Reset(newStrucQty); Reset(newCompFact); Reset(strucLabNewCost); Reset(strucMatNewCost);
+            Back();
+        PressedBorderColor: =ColorFade(Icon25_3.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon25_3.Color, -20%)
+        PressedFill: =Icon25_3.Fill
+        Tooltip: ="Go Back"
+        X: =1287
+        Y: =12
+        ZIndex: =4
+
+    Icon55 As icon.Save:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledColor: =RGBA(130, 141, 158, 1)
+        DisabledFill: =Icon55.Fill
+        DisplayMode: =If(CalculatedBtnClicked, DisplayMode.Edit, DisplayMode.Disabled)
+        HoverBorderColor: =ColorFade(Icon55.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon55.Color, 20%)
+        HoverFill: =Icon55.Fill
+        Icon: =Icon.Save
+        OnSelect: |+
+            =UpdateContext({showSpinnerEditStruc: true });
+            If(NewEstimate,
+              UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, 
+                   {Struc_L_Cost: (estTotalStruc_LabCost - selectedStruc.StrLabourCost) + Value(strucLabNewCost.Text),
+                   Struc_M_Cost: (estTotalStruc_MatCost - selectedStruc.StrMaterialCost) + Value(strucMatNewCost.Text)});
+              UpdateIf(ProjectEstStructures, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType And StrucID = selectedStruc.StrucID And strucTableID = selectedStruc.strucTableID, 
+                   {StrQty: Value(newStrucQty.Text), complexityFactor: Value(newCompFact.Text), StrLabourCost:  Value(strucLabNewCost.Text),
+                   StrMaterialCost:Value(strucMatNewCost.Text)}),
+              UpdateIf(Estimates,  ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                   And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                   {Struc_L_Cost: (estTotalStruc_LabCost - selectedStruc.StrLabourCost) + Value(strucLabNewCost.Text),
+                   Struc_M_Cost: (estTotalStruc_MatCost - selectedStruc.StrMaterialCost) + Value(strucMatNewCost.Text)});
+              UpdateIf(ProjectEstStructures, ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                   And Version =  EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type And StrucID = selectedStruc.StrucID And strucTableID = selectedStruc.strucTableID, 
+                   {StrQty: Value(newStrucQty.Text), complexityFactor: Value(newCompFact.Text), StrLabourCost:  Value(strucLabNewCost.Text),
+                   StrMaterialCost:Value(strucMatNewCost.Text)})
+            );
+            Clear(structM_temp2); Clear(structL_temp2);
+            UpdateContext({strucLCost_temp2: 0, strucMCost_temp2: 0});
+            UpdateContext({showSpinnerEditStruc: false, CalculatedBtnClicked: false });
+            Reset(newStrucQty); Reset(newCompFact); Reset(strucLabNewCost); Reset(strucMatNewCost);
+            Back();
+            
+        PressedBorderColor: =ColorFade(Icon55.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon55.Color, -20%)
+        PressedFill: =Icon55.Fill
+        Tooltip: ="Save"
+        Width: =77
+        X: =1210
+        Y: =12
+        ZIndex: =5
+
+    EditStrucSpinner As group:
+        Height: =5
+        Width: =5
+        X: =40
+        Y: =-48
+        ZIndex: =8
+
+        Rectangle1_9 As rectangle:
+            DisabledFill: =Rectangle1_9.Fill
+            Fill: =RGBA(255,255, 255, 0.85)
+            Height: =768
+            HoverFill: =Rectangle1_9.Fill
+            PressedFill: =Rectangle1_9.Fill
+            Visible: =showSpinnerEditStruc
+            Width: =1366
+            ZIndex: =6
+
+        Image1_9 As image:
+            Height: =156
+            HoverBorderColor: =ColorFade(Image1_9.BorderColor, 20%)
+            HoverFill: =ColorFade(Image1_9.Fill, 20%)
+            Image: ='Pulse-1s-200px'
+            PressedBorderColor: =ColorFade(Image1_9.BorderColor, -20%)
+            PressedFill: =ColorFade(Image1_9.Fill, -20%)
+            Visible: =showSpinnerEditStruc
+            Width: =199
+            X: =623
+            Y: =285
+            ZIndex: =7
+

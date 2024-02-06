@@ -1,0 +1,22 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2022-03-29T18:53:27.9820000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "shaw_descrip": "shaw_descrip",
+      "shaw_fee": "shaw_fee",
+      "shaw_id": "shaw_id",
+      "shaw_uom": "shaw_uom"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "Shaw_Table",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

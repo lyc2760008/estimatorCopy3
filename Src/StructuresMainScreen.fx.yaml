@@ -1,0 +1,258 @@
+StructuresMainScreen As screen:
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |
+        =Reset(srchStructures);
+        Refresh(StructuresDetails);
+        ClearCollect(StrucList, Filter(StructuresDetails, StrucType = NewEstimateType));
+    Orientation: =If(StructuresMainScreen.Width < StructuresMainScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= StructuresMainScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    RectQuickActionBar5 As rectangle:
+        DisabledFill: =RectQuickActionBar5.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =RectQuickActionBar5.BorderColor
+        Height: =88
+        HoverFill: =RectQuickActionBar5.Fill
+        PressedFill: =RectQuickActionBar5.Fill
+        Width: =Parent.Width
+        ZIndex: =1
+
+    LblAppName5 As label:
+        FocusedBorderColor: =LblAppName5.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =88
+        HoverBorderColor: =LblAppName5.BorderColor
+        HoverColor: =LblAppName5.Color
+        HoverFill: =LblAppName5.Fill
+        PressedBorderColor: =LblAppName5.BorderColor
+        PressedColor: =LblAppName5.Color
+        PressedFill: =LblAppName5.Fill
+        Size: =26
+        Text: ="  STRUCTURES GALLERY"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    "StructGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+        DisabledBorderColor: =StructGallery.BorderColor
+        DisabledFill: =StructGallery.Fill
+        Height: =680
+        HoverBorderColor: =StructGallery.BorderColor
+        HoverFill: =StructGallery.Fill
+        Items: =SortByColumns(Search(StrucList, srchStructures.Text, "StrucID",  "Description"), "StrucID", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending))
+        Layout: =Layout.Vertical
+        LoadingSpinnerColor: =StructGallery.BorderColor
+        PressedBorderColor: =StructGallery.BorderColor
+        PressedFill: =StructGallery.Fill
+        TemplatePadding: =0
+        TemplateSize: =104
+        Width: =1366
+        Y: =88
+        ZIndex: =3
+
+        Title7 As label:
+            FocusedBorderColor: =Title7.BorderColor
+            Height: =33
+            HoverBorderColor: =Title7.BorderColor
+            HoverColor: =Title7.Color
+            HoverFill: =Title7.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Title7.BorderColor
+            PressedColor: =Title7.Color
+            PressedFill: =Title7.Fill
+            Size: =12
+            Text: |-
+                =Concatenate(ThisItem.StrucType,": ",ThisItem.StrucID, " - ", ThisItem.Description)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =1205
+            X: =62
+            Y: =12
+            ZIndex: =1
+
+        Body3 As label:
+            FocusedBorderColor: =Body3.BorderColor
+            Height: =Body3.Size * 4
+            HoverBorderColor: =Body3.BorderColor
+            HoverColor: =Body3.Color
+            HoverFill: =Body3.Fill
+            OnSelect: =Select(Parent)
+            Overflow: =Overflow.Scroll
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Body3.BorderColor
+            PressedColor: =Body3.Color
+            PressedFill: =Body3.Fill
+            Size: =11
+            Text: =ThisItem.Notes
+            VerticalAlign: =VerticalAlign.Top
+            Width: =1241
+            X: =62
+            Y: =46
+            ZIndex: =3
+
+        NextArrow5 As icon.ChevronRight:
+            AccessibleLabel: =NextArrow5.Tooltip
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Color: =RGBA(36, 76, 90, 1)
+            DisabledFill: =NextArrow5.Fill
+            FocusedBorderColor: =NextArrow5.BorderColor
+            Height: =76
+            HoverBorderColor: =ColorFade(NextArrow5.BorderColor, 20%)
+            HoverColor: =ColorFade(NextArrow5.Color, 40%)
+            HoverFill: =NextArrow5.Fill
+            Icon: =Icon.ChevronRight
+            OnSelect: =Navigate(EditStructureScreen, ScreenTransition.Fade);
+            PaddingBottom: =10
+            PaddingLeft: =10
+            PaddingRight: =10
+            PaddingTop: =10
+            PressedBorderColor: =ColorFade(NextArrow5.BorderColor, -20%)
+            PressedColor: =ColorFade(NextArrow5.Color, -20%)
+            PressedFill: =NextArrow5.Fill
+            TabIndex: =0
+            Tooltip: ="View item details"
+            Width: =51
+            X: =1310
+            Y: =12
+            ZIndex: =4
+
+        Separator7 As rectangle:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            DisabledFill: =Separator7.Fill
+            Fill: =RGBA(36, 76, 90, 1)
+            FocusedBorderColor: =Separator7.BorderColor
+            Height: =0
+            HoverFill: =Separator7.Fill
+            OnSelect: =Select(Parent)
+            PressedFill: =Separator7.Fill
+            Width: =Parent.TemplateWidth
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =5
+
+        Icon61 As icon.Copy:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Color: =RGBA(36, 76, 90, 1)
+            DisabledFill: =Icon61.Fill
+            Height: =49
+            HoverBorderColor: =ColorFade(Icon61.BorderColor, 20%)
+            HoverColor: =ColorFade(Icon61.Color, 40%)
+            HoverFill: =Icon61.Fill
+            Icon: =Icon.Copy
+            OnSelect: |-
+                =Navigate(CopyStructureScreen,ScreenTransition.Fade, {toCopyStrucID: ThisItem.StrucID, toCopyStrucType: ThisItem.StrucType, toCopyNotes: ThisItem.Notes});
+            PressedBorderColor: =ColorFade(Icon61.BorderColor, -20%)
+            PressedColor: =ColorFade(Icon61.Color, -20%)
+            PressedFill: =Icon61.Fill
+            Tooltip: ="Copy this structure"
+            Width: =37
+            X: =10
+            Y: =4
+            ZIndex: =6
+
+    srchStructures As text:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Default: =""
+        FocusedBorderColor: =srchStructures.BorderColor
+        Height: =64
+        HoverBorderColor: =RGBA(36, 76, 90, 1)
+        PressedBorderColor: =srchStructures.HoverBorderColor
+        PressedColor: =srchStructures.Color
+        PressedFill: =srchStructures.Fill
+        Tooltip: ="Search structures here"
+        Width: =397
+        X: =565
+        Y: =12
+        ZIndex: =4
+
+    backStruc As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =backStruc.Fill
+        FocusedBorderColor: =backStruc.BorderColor
+        HoverBorderColor: =ColorFade(backStruc.BorderColor, 20%)
+        HoverColor: =ColorFade(backStruc.Color, 20%)
+        HoverFill: =backStruc.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: =Reset(srchStructures);Navigate(MainScreen, ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(backStruc.BorderColor, -20%)
+        PressedColor: =ColorFade(backStruc.Color, -20%)
+        PressedFill: =backStruc.Fill
+        X: =1302
+        Y: =12
+        ZIndex: =5
+
+    sortStruc As icon.ArrowsUpDown:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =sortStruc.Fill
+        FocusedBorderColor: =sortStruc.BorderColor
+        HoverBorderColor: =ColorFade(sortStruc.BorderColor, 20%)
+        HoverColor: =ColorFade(sortStruc.Color, 20%)
+        HoverFill: =sortStruc.Fill
+        Icon: =Icon.Sort
+        OnSelect: |-
+            =UpdateContext({SortDescending1: !SortDescending1})
+        PressedBorderColor: =ColorFade(sortStruc.BorderColor, -20%)
+        PressedColor: =ColorFade(sortStruc.Color, -20%)
+        PressedFill: =sortStruc.Fill
+        X: =1246
+        Y: =12
+        ZIndex: =6
+
+    addNewStruc As icon.Add:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =addNewStruc.Fill
+        FocusedBorderColor: =addNewStruc.BorderColor
+        HoverBorderColor: =ColorFade(addNewStruc.BorderColor, 20%)
+        HoverColor: =ColorFade(addNewStruc.Color, 20%)
+        HoverFill: =addNewStruc.Fill
+        Icon: =Icon.Add
+        OnSelect: =Navigate(AddStructureScreen, ScreenTransition.Fade);
+        PressedBorderColor: =ColorFade(addNewStruc.BorderColor, -20%)
+        PressedColor: =ColorFade(addNewStruc.Color, -20%)
+        PressedFill: =addNewStruc.Fill
+        Width: =62
+        X: =1109
+        Y: =12
+        ZIndex: =7
+
+    Icon36 As icon.Search:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Color: =RGBA(36, 76, 90, 1)
+        DisabledFill: =Icon36.Fill
+        FocusedBorderColor: =Icon36.BorderColor
+        Height: =48
+        HoverBorderColor: =ColorFade(Icon36.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon36.Color, 40%)
+        HoverFill: =Icon36.Fill
+        Icon: =Icon.Search
+        PressedBorderColor: =ColorFade(Icon36.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon36.Color, -20%)
+        PressedFill: =Icon36.Fill
+        Width: =55
+        X: =907
+        Y: =20
+        ZIndex: =8
+
+    refreshStrucs As icon.Reload:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =refreshStrucs.Fill
+        FocusedBorderColor: =refreshStrucs.BorderColor
+        HoverBorderColor: =ColorFade(refreshStrucs.BorderColor, 20%)
+        HoverColor: =ColorFade(refreshStrucs.Color, 20%)
+        HoverFill: =refreshStrucs.Fill
+        Icon: =Icon.Reload
+        OnSelect: |-
+            =Refresh(StructuresDetails);
+            ClearCollect(StrucList, Filter(StructuresDetails, StrucType = NewEstimateType));
+        PressedBorderColor: =ColorFade(refreshStrucs.BorderColor, -20%)
+        PressedColor: =ColorFade(refreshStrucs.Color, -20%)
+        PressedFill: =refreshStrucs.Fill
+        X: =1182
+        Y: =12
+        ZIndex: =9
+

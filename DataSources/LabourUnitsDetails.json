@@ -1,0 +1,28 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2022-03-29T18:53:27.9820000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "ContractorID": "ContractorID",
+      "ContractorName": "ContractorName",
+      "Description": "Description",
+      "LabourUnit": "LabourUnit",
+      "LastModifiedBy": "LastModifiedBy",
+      "LastModifiedDate": "LastModifiedDate",
+      "Notes": "Notes",
+      "UnitPrice": "UnitPrice",
+      "UoM": "UoM",
+      "ValidToDate": "ValidToDate"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "LabourUnitsDetails",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

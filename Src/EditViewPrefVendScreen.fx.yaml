@@ -1,0 +1,1982 @@
+"EditViewPrefVendScreen As screen.'phoneLayout_FluidGridWithHeaderPageLayout_ver3.0'":
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =Refresh(Vendors);
+        //ClearCollect(VendorList, Filter('[dbo].[Vendors]', VendorID > 1));
+        Refresh(VendorSupplies);
+        ClearCollect(VendorSupplieList, Filter(VendorSupplies, ItemType = NewEstimateType And Archive = false));
+        Switch(NewEstimateType,
+            "Enmax", ClearCollect(AllPricesList, 
+                            Filter(VendorSupplies, ItemNum = PrefVendGallery.Selected.EnmaxItemNumber And Archive = false And ItemType = NewEstimateType));,
+            "Fortis Alberta", ClearCollect(AllPricesList, 
+                        Filter(VendorSupplies, ItemNum = PrefVendGallery.Selected.FortisItemNumber And Archive = false And ItemType = NewEstimateType)),
+            "City of Calgary", ClearCollect(AllPricesList, 
+                            Filter(VendorSupplies, ItemNum = PrefVendGallery.Selected.CoCItemNumber And Archive = false And ItemType = NewEstimateType))
+        );
+        
+        UpdateContext({AllPrices:false, 
+                      selectedPrefVendor: "", SelectPrefVendPrice: "", SelectPrefVendGPrice: "", 
+                      selectedPrefVendLead:false, selectedPrefVendLeadTimeDays: 0,
+                      selectPrefVendStock: "", selectedPrefVendDescr: "",selectedPrefVendorVDate:Today(), selectedPrefVendUoM: "",
+                      selectedPrefVendMinQty: 0, selectedPrefVendMinQtyNotes: "", selectedPrefVendIncrement: 0, selectedPrefVendIncrementPrice : 0,
+                      EditPref:false, EditPrefPatchResult:Blank(), 
+                      EditPrefError:false, EditPrefErrorMsg:"",
+                      thisItemPrimaryItemNumber: PrefVendGallery.Selected.PrimaryItemNumber, thisItemNumber: ""}
+                      );
+        Switch(NewEstimateType, 
+             "Enmax" , UpdateContext({thisItemNumber: LookUp(MasterMaterial_PreferredVendor_List, EnmaxItemNumber = Trim(DataCardValue32.Text), EnmaxItemNumber)}),
+             "Fortis Alberta",UpdateContext({thisItemNumber:LookUp(MasterMaterial_PreferredVendor_List, FortisItemNumber = Trim(DataCardValue35.Text), FortisItemNumber)}),
+             "City of Calgary",UpdateContext({thisItemNumber:LookUp(MasterMaterial_PreferredVendor_List, CoCItemNumber = Trim(DataCardValue83.Text), CoCItemNumber)})
+        ); 
+    Orientation: =If(EditViewPrefVendScreen.Width < EditViewPrefVendScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= EditViewPrefVendScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    RectQuickActionBar1 As rectangle:
+        DisabledFill: =RectQuickActionBar1.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =RectQuickActionBar1.BorderColor
+        Height: =88
+        HoverFill: =RectQuickActionBar1.Fill
+        PressedFill: =RectQuickActionBar1.Fill
+        Width: =Parent.Width
+        ZIndex: =1
+
+    LblAppName1 As label:
+        FocusedBorderColor: =LblAppName1.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =88
+        HoverBorderColor: =LblAppName1.BorderColor
+        HoverColor: =LblAppName1.Color
+        HoverFill: =LblAppName1.Fill
+        PressedBorderColor: =LblAppName1.BorderColor
+        PressedColor: =LblAppName1.Color
+        PressedFill: =LblAppName1.Fill
+        Size: =26
+        Text: =" UPDATE PREFERRED VENDOR"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    Canvas3 As fluidGrid.fluidGridWithBlankCard:
+        BorderThickness: =0
+        Height: =Parent.Height - Canvas3.Y
+        Width: =Parent.Width
+        Y: =RectQuickActionBar1.Y + RectQuickActionBar1.Height
+        ZIndex: =3
+
+        DataCard2 As dataCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            BorderThickness: =0
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =398
+            Width: =Parent.Width
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            Form3 As form:
+                AcceptsFocus: =false
+                DataSource: =MasterMaterial_PreferredVendor_List
+                Height: =415
+                Item: =PrefVendGallery.Selected
+                NumberOfColumns: =4
+                SnapToColumns: =false
+                Width: =1363
+                X: =3
+                ZIndex: =1
+
+                VendCategory_DataCard1 As typedDataCard.textualEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="VendCategory"
+                    Default: =ThisItem.VendCategory
+                    DisplayMode: =DisplayMode.View
+                    DisplayName: ="Category"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo(MasterMaterial_PreferredVendor_List, DataSourceInfo.MaxLength, "VendCategory")
+                    Required: =true
+                    Update: =DataCardValue31.Text
+                    Width: =339
+                    X: =0
+                    Y: =0
+                    ZIndex: =1
+
+                    DataCardKey31 As label:
+                        FocusedBorderColor: =DataCardKey31.BorderColor
+                        Height: =34
+                        HoverBorderColor: =DataCardKey31.BorderColor
+                        HoverColor: =DataCardKey31.Color
+                        HoverFill: =DataCardKey31.Fill
+                        PressedBorderColor: =DataCardKey31.BorderColor
+                        PressedColor: =DataCardKey31.Color
+                        PressedFill: =DataCardKey31.Fill
+                        Text: =Parent.DisplayName
+                        Width: =95
+                        Wrap: =false
+                        X: =16
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue31 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderColor: =DataCardValue31.BorderColor
+                        Height: =37
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue31.HoverBorderColor
+                        PressedColor: =DataCardValue31.Color
+                        PressedFill: =DataCardValue31.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =225
+                        X: =115
+                        Y: =7
+                        ZIndex: =2
+
+                    ErrorMessage31 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage31.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage31.BorderColor
+                        HoverColor: =ErrorMessage31.Color
+                        HoverFill: =ErrorMessage31.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage31.BorderColor
+                        PressedColor: =ErrorMessage31.Color
+                        PressedFill: =ErrorMessage31.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue31.Y + DataCardValue31.Height
+                        ZIndex: =3
+
+                    StarVisible31 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible31.BorderColor
+                        Height: =DataCardKey31.Height
+                        HoverBorderColor: =StarVisible31.BorderColor
+                        HoverColor: =StarVisible31.Color
+                        HoverFill: =StarVisible31.Fill
+                        PressedBorderColor: =StarVisible31.BorderColor
+                        PressedColor: =StarVisible31.Color
+                        PressedFill: =StarVisible31.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey31.Y
+                        ZIndex: =4
+
+                EnmaxItemNumber_DataCard1 As typedDataCard.textualEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="EnmaxItemNumber"
+                    Default: =ThisItem.EnmaxItemNumber
+                    DisplayMode: =DisplayMode.View
+                    DisplayName: |-
+                        ="Enmax Item #"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo(MasterMaterial_PreferredVendor_List, DataSourceInfo.MaxLength, "EnmaxItemNumber")
+                    Required: =false
+                    Update: =DataCardValue32.Text
+                    Width: =340
+                    X: =1
+                    Y: =0
+                    ZIndex: =1
+
+                    DataCardKey32 As label:
+                        FocusedBorderColor: =DataCardKey32.BorderColor
+                        Height: =34
+                        HoverBorderColor: =DataCardKey32.BorderColor
+                        HoverColor: =DataCardKey32.Color
+                        HoverFill: =DataCardKey32.Fill
+                        PressedBorderColor: =DataCardKey32.BorderColor
+                        PressedColor: =DataCardKey32.Color
+                        PressedFill: =DataCardKey32.Fill
+                        Text: =Parent.DisplayName
+                        Width: =137
+                        Wrap: =false
+                        X: =2
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue32 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderColor: =DataCardValue32.BorderColor
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue32.HoverBorderColor
+                        PressedColor: =DataCardValue32.Color
+                        PressedFill: =DataCardValue32.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =201
+                        X: =139
+                        Y: =7
+                        ZIndex: =2
+
+                    ErrorMessage32 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage32.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage32.BorderColor
+                        HoverColor: =ErrorMessage32.Color
+                        HoverFill: =ErrorMessage32.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage32.BorderColor
+                        PressedColor: =ErrorMessage32.Color
+                        PressedFill: =ErrorMessage32.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue32.Y + DataCardValue32.Height
+                        ZIndex: =3
+
+                    StarVisible32 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible32.BorderColor
+                        Height: =DataCardKey32.Height
+                        HoverBorderColor: =StarVisible32.BorderColor
+                        HoverColor: =StarVisible32.Color
+                        HoverFill: =StarVisible32.Fill
+                        PressedBorderColor: =StarVisible32.BorderColor
+                        PressedColor: =StarVisible32.Color
+                        PressedFill: =StarVisible32.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey32.Y
+                        ZIndex: =4
+
+                FortisItemNumber_DataCard1 As typedDataCard.textualEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="FortisItemNumber"
+                    Default: =ThisItem.FortisItemNumber
+                    DisplayMode: =DisplayMode.View
+                    DisplayName: |-
+                        ="Fortis Item #"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo(MasterMaterial_PreferredVendor_List, DataSourceInfo.MaxLength, "FortisItemNumber")
+                    Required: =false
+                    Update: =DataCardValue35.Text
+                    Width: =340
+                    X: =3
+                    Y: =0
+                    ZIndex: =1
+
+                    DataCardKey35 As label:
+                        FocusedBorderColor: =DataCardKey35.BorderColor
+                        Height: =34
+                        HoverBorderColor: =DataCardKey35.BorderColor
+                        HoverColor: =DataCardKey35.Color
+                        HoverFill: =DataCardKey35.Fill
+                        PressedBorderColor: =DataCardKey35.BorderColor
+                        PressedColor: =DataCardKey35.Color
+                        PressedFill: =DataCardKey35.Fill
+                        Text: =Parent.DisplayName
+                        Width: =124
+                        Wrap: =false
+                        X: =2
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue35 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderColor: =DataCardValue35.BorderColor
+                        Height: =44
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue35.HoverBorderColor
+                        PressedColor: =DataCardValue35.Color
+                        PressedFill: =DataCardValue35.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =186
+                        X: =154
+                        Y: =7
+                        ZIndex: =2
+
+                    ErrorMessage35 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage35.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage35.BorderColor
+                        HoverColor: =ErrorMessage35.Color
+                        HoverFill: =ErrorMessage35.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage35.BorderColor
+                        PressedColor: =ErrorMessage35.Color
+                        PressedFill: =ErrorMessage35.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue35.Y + DataCardValue35.Height
+                        ZIndex: =3
+
+                    StarVisible35 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible35.BorderColor
+                        Height: =DataCardKey35.Height
+                        HoverBorderColor: =StarVisible35.BorderColor
+                        HoverColor: =StarVisible35.Color
+                        HoverFill: =StarVisible35.Fill
+                        PressedBorderColor: =StarVisible35.BorderColor
+                        PressedColor: =StarVisible35.Color
+                        PressedFill: =StarVisible35.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey35.Y
+                        ZIndex: =4
+
+                CoCItemNumber_DataCard1 As typedDataCard.textualEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="CoCItemNumber"
+                    Default: =ThisItem.CoCItemNumber
+                    DisplayMode: =DisplayMode.View
+                    DisplayName: |-
+                        ="City of Calgary #"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo([@MasterMaterial_PreferredVendor_List], DataSourceInfo.MaxLength, "CoCItemNumber")
+                    Required: =false
+                    Update: =DataCardValue83.Text
+                    Width: =340
+                    X: =4
+                    Y: =0
+                    ZIndex: =1
+
+                    DataCardKey90 As label:
+                        Height: =34
+                        Text: =Parent.DisplayName
+                        Width: =145
+                        Wrap: =false
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue83 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        Height: =41
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue83.HoverBorderColor
+                        PressedColor: =DataCardValue83.Color
+                        PressedFill: =DataCardValue83.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =154
+                        X: =177
+                        Y: =3
+                        ZIndex: =2
+
+                    ErrorMessage90 As label:
+                        AutoHeight: =true
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue83.Y + DataCardValue83.Height
+                        ZIndex: =3
+
+                    StarVisible90 As label:
+                        Align: =Align.Center
+                        Height: =DataCardKey90.Height
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey90.Y
+                        ZIndex: =4
+
+                PreferredVendDescr_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="PreferredVendDescr"
+                    Default: =ThisItem.PreferredVendDescr
+                    DisplayMode: =If(EditPref, DisplayMode.Edit, DisplayMode.View)
+                    DisplayName: ="Pref. Vendor Description"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo(MasterMaterial_PreferredVendor_List, DataSourceInfo.MaxLength, "PreferredVendDescr")
+                    Required: =false
+                    Update: =DataCardValue61.Text
+                    Width: =339
+                    X: =-2
+                    Y: =1
+                    ZIndex: =1
+
+                    DataCardKey61 As label:
+                        FocusedBorderColor: =DataCardKey61.BorderColor
+                        Height: =90
+                        HoverBorderColor: =DataCardKey61.BorderColor
+                        HoverColor: =DataCardKey61.Color
+                        HoverFill: =DataCardKey61.Fill
+                        PressedBorderColor: =DataCardKey61.BorderColor
+                        PressedColor: =DataCardKey61.Color
+                        PressedFill: =DataCardKey61.Fill
+                        Text: |-
+                            ="Pref.
+                            Vendor
+                            Description"
+                        Width: =117
+                        Wrap: =false
+                        X: =16
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue61 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderColor: =DataCardValue61.BorderColor
+                        Height: =100
+                        HoverBorderColor: =RGBA(36, 76, 90, 1)
+                        HoverFill: =RGBA(255, 255, 255, 1)
+                        MaxLength: =Parent.MaxLength
+                        Mode: =TextMode.MultiLine
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue61.HoverBorderColor
+                        PressedColor: =DataCardValue61.Color
+                        PressedFill: =DataCardValue61.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =205
+                        X: =134
+                        ZIndex: =2
+
+                    ErrorMessage61 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage61.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage61.BorderColor
+                        HoverColor: =ErrorMessage61.Color
+                        HoverFill: =ErrorMessage61.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage61.BorderColor
+                        PressedColor: =ErrorMessage61.Color
+                        PressedFill: =ErrorMessage61.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue61.Y + DataCardValue61.Height
+                        ZIndex: =3
+
+                    StarVisible61 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible61.BorderColor
+                        Height: =DataCardKey61.Height
+                        HoverBorderColor: =StarVisible61.BorderColor
+                        HoverColor: =StarVisible61.Color
+                        HoverFill: =StarVisible61.Fill
+                        PressedBorderColor: =StarVisible61.BorderColor
+                        PressedColor: =StarVisible61.Color
+                        PressedFill: =StarVisible61.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey61.Y
+                        ZIndex: =4
+
+                EnmaxDescritption_DataCard1 As typedDataCard.textualEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="EnmaxDescritption"
+                    Default: =ThisItem.EnmaxDescritption
+                    DisplayMode: =DisplayMode.View
+                    DisplayName: ="Enmax Descritption"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo(MasterMaterial_PreferredVendor_List, DataSourceInfo.MaxLength, "EnmaxDescritption")
+                    Required: =false
+                    Update: =DataCardValue33.Text
+                    Width: =339
+                    X: =-1
+                    Y: =1
+                    ZIndex: =1
+
+                    DataCardKey33 As label:
+                        FocusedBorderColor: =DataCardKey33.BorderColor
+                        Height: =51
+                        HoverBorderColor: =DataCardKey33.BorderColor
+                        HoverColor: =DataCardKey33.Color
+                        HoverFill: =DataCardKey33.Fill
+                        PressedBorderColor: =DataCardKey33.BorderColor
+                        PressedColor: =DataCardKey33.Color
+                        PressedFill: =DataCardKey33.Fill
+                        Text: |-
+                            ="Enmax
+                            Description"
+                        Width: =110
+                        Wrap: =false
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue33 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderColor: =DataCardValue33.BorderColor
+                        Height: =80
+                        MaxLength: =Parent.MaxLength
+                        Mode: =TextMode.MultiLine
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue33.HoverBorderColor
+                        PressedColor: =DataCardValue33.Color
+                        PressedFill: =DataCardValue33.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =229
+                        X: =110
+                        Y: =10
+                        ZIndex: =2
+
+                    ErrorMessage33 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage33.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage33.BorderColor
+                        HoverColor: =ErrorMessage33.Color
+                        HoverFill: =ErrorMessage33.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage33.BorderColor
+                        PressedColor: =ErrorMessage33.Color
+                        PressedFill: =ErrorMessage33.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue33.Y + DataCardValue33.Height
+                        ZIndex: =3
+
+                    StarVisible33 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible33.BorderColor
+                        Height: =DataCardKey33.Height
+                        HoverBorderColor: =StarVisible33.BorderColor
+                        HoverColor: =StarVisible33.Color
+                        HoverFill: =StarVisible33.Fill
+                        PressedBorderColor: =StarVisible33.BorderColor
+                        PressedColor: =StarVisible33.Color
+                        PressedFill: =StarVisible33.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey33.Y
+                        ZIndex: =4
+
+                FortisDescription_DataCard1 As typedDataCard.textualEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="FortisDescription"
+                    Default: =ThisItem.FortisDescription
+                    DisplayMode: =DisplayMode.View
+                    DisplayName: ="Fortis Description"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo(MasterMaterial_PreferredVendor_List, DataSourceInfo.MaxLength, "FortisDescription")
+                    Required: =false
+                    Update: =DataCardValue38.Text
+                    Width: =339
+                    X: =0
+                    Y: =1
+                    ZIndex: =1
+
+                    DataCardKey38 As label:
+                        FocusedBorderColor: =DataCardKey38.BorderColor
+                        Height: =69
+                        HoverBorderColor: =DataCardKey38.BorderColor
+                        HoverColor: =DataCardKey38.Color
+                        HoverFill: =DataCardKey38.Fill
+                        PressedBorderColor: =DataCardKey38.BorderColor
+                        PressedColor: =DataCardKey38.Color
+                        PressedFill: =DataCardKey38.Fill
+                        Text: |-
+                            ="Fortis
+                            Description"
+                        Width: =106
+                        Wrap: =false
+                        ZIndex: =1
+
+                    DataCardValue38 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderColor: =DataCardValue38.BorderColor
+                        Height: =82
+                        MaxLength: =Parent.MaxLength
+                        Mode: =TextMode.MultiLine
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue38.HoverBorderColor
+                        PressedColor: =DataCardValue38.Color
+                        PressedFill: =DataCardValue38.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =233
+                        X: =106
+                        Y: =10
+                        ZIndex: =2
+
+                    ErrorMessage38 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage38.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage38.BorderColor
+                        HoverColor: =ErrorMessage38.Color
+                        HoverFill: =ErrorMessage38.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage38.BorderColor
+                        PressedColor: =ErrorMessage38.Color
+                        PressedFill: =ErrorMessage38.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue38.Y + DataCardValue38.Height
+                        ZIndex: =3
+
+                    StarVisible38 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible38.BorderColor
+                        Height: =DataCardKey38.Height
+                        HoverBorderColor: =StarVisible38.BorderColor
+                        HoverColor: =StarVisible38.Color
+                        HoverFill: =StarVisible38.Fill
+                        PressedBorderColor: =StarVisible38.BorderColor
+                        PressedColor: =StarVisible38.Color
+                        PressedFill: =StarVisible38.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey38.Y
+                        ZIndex: =4
+
+                CoCDescription_DataCard1 As typedDataCard.textualEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="CoCDescription"
+                    Default: =ThisItem.CoCDescription
+                    DisplayMode: =DisplayMode.View
+                    DisplayName: |-
+                        ="City of Calgary
+                        Description"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo([@MasterMaterial_PreferredVendor_List], DataSourceInfo.MaxLength, "CoCDescription")
+                    Required: =false
+                    Update: =DataCardValue126.Text
+                    Width: =339
+                    X: =2
+                    Y: =1
+                    ZIndex: =1
+
+                    DataCardKey128 As label:
+                        AutoHeight: =true
+                        Height: =34
+                        Text: |-
+                            ="City of
+                            Calgary
+                            Description"
+                        Width: =109
+                        Wrap: =false
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue126 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        Height: =90
+                        MaxLength: =Parent.MaxLength
+                        Mode: =TextMode.MultiLine
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue126.HoverBorderColor
+                        PressedColor: =DataCardValue126.Color
+                        PressedFill: =DataCardValue126.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =214
+                        X: =109
+                        Y: =10
+                        ZIndex: =2
+
+                    ErrorMessage128 As label:
+                        AutoHeight: =true
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue126.Y + DataCardValue126.Height
+                        ZIndex: =3
+
+                    StarVisible128 As label:
+                        Align: =Align.Center
+                        Height: =DataCardKey128.Height
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey128.Y
+                        ZIndex: =4
+
+                PreferredVendorName_DataCard1 As typedDataCard.textualEditCard:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="PreferredVendorName"
+                    Default: =ThisItem.PreferredVendorName
+                    DisplayMode: =If(EditPref, DisplayMode.Edit, DisplayMode.View)
+                    DisplayName: ="Preferred Vendor"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    MaxLength: =DataSourceInfo(MasterMaterial_PreferredVendor_List, DataSourceInfo.MaxLength, "PreferredVendorName")
+                    Required: =false
+                    Update: =DataCardValue42.Text
+                    Width: =565
+                    X: =1
+                    Y: =2
+                    ZIndex: =1
+
+                    DataCardKey42 As label:
+                        FocusedBorderColor: =DataCardKey42.BorderColor
+                        Height: =36
+                        HoverBorderColor: =DataCardKey42.BorderColor
+                        HoverColor: =DataCardKey42.Color
+                        HoverFill: =DataCardKey42.Fill
+                        PressedBorderColor: =DataCardKey42.BorderColor
+                        PressedColor: =DataCardKey42.Color
+                        PressedFill: =DataCardKey42.Fill
+                        Text: ="Pref. Vendor Name"
+                        Width: =182
+                        Wrap: =false
+                        X: =16
+                        Y: =11
+                        ZIndex: =1
+
+                    DataCardValue42 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =DisplayMode.View
+                        FocusedBorderColor: =DataCardValue42.BorderColor
+                        Height: =47
+                        MaxLength: =Parent.MaxLength
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue42.HoverBorderColor
+                        PressedColor: =DataCardValue42.Color
+                        PressedFill: =DataCardValue42.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =213
+                        X: =192
+                        ZIndex: =2
+
+                    ErrorMessage42 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage42.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage42.BorderColor
+                        HoverColor: =ErrorMessage42.Color
+                        HoverFill: =ErrorMessage42.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage42.BorderColor
+                        PressedColor: =ErrorMessage42.Color
+                        PressedFill: =ErrorMessage42.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue42.Y + DataCardValue42.Height
+                        ZIndex: =3
+
+                    StarVisible42 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible42.BorderColor
+                        Height: =DataCardKey42.Height
+                        HoverBorderColor: =StarVisible42.BorderColor
+                        HoverColor: =StarVisible42.Color
+                        HoverFill: =StarVisible42.Fill
+                        PressedBorderColor: =StarVisible42.BorderColor
+                        PressedColor: =StarVisible42.Color
+                        PressedFill: =StarVisible42.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey42.Y
+                        ZIndex: =4
+
+                    Dropdown10 As dropdown:
+                        BorderColor: =RGBA(36, 76, 90, 1)
+                        ChevronBackground: =RGBA(36, 76, 90, 1)
+                        ChevronHoverBackground: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                        Default: =PrefVendGallery.Selected.PreferredVendorName
+                        FocusedBorderColor: =Dropdown10.BorderColor
+                        HoverBorderColor: =ColorFade(Dropdown10.BorderColor, 15%)
+                        Items: |-
+                            =//old code when only enmax ,modified on 19 Aug 2021 Filter(AllPricesList, VendorName <>  PrefVendGallery.Selected.PreferredVendorName)
+                            AllPricesList
+                        PressedBorderColor: =Dropdown10.HoverBorderColor
+                        PressedFill: =RGBA(36, 76, 90, 1)
+                        SelectionFill: =RGBA(36, 76, 90, 1)
+                        Visible: =EditPref
+                        X: =191
+                        Y: =58
+                        ZIndex: =5
+
+                    Label22 As label:
+                        Color: =RGBA(0, 18, 107, 1)
+                        FocusedBorderColor: =Label22.BorderColor
+                        Height: =41
+                        HoverBorderColor: =Label22.BorderColor
+                        HoverColor: =Label22.Color
+                        HoverFill: =Label22.Fill
+                        PressedBorderColor: =Label22.BorderColor
+                        PressedColor: =Label22.Color
+                        PressedFill: =Label22.Fill
+                        Text: ="New Pref. Vendor"
+                        Visible: =EditPref
+                        Width: =162
+                        X: =16
+                        Y: =57
+                        ZIndex: =6
+
+                PreferredVendorPrice_DataCard1 As typedDataCard.currencyEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="PreferredVendorPrice"
+                    Default: =ThisItem.PreferredVendorPrice
+                    DisplayMode: =DisplayMode.View
+                    DisplayName: ="Pref. Vendor Price"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =110
+                    Required: =false
+                    Update: =Value(DataCardValue62.Text)
+                    Width: =452
+                    X: =2
+                    Y: =2
+                    ZIndex: =1
+
+                    DataCardKey62 As label:
+                        FocusedBorderColor: =DataCardKey62.BorderColor
+                        Height: =34
+                        HoverBorderColor: =DataCardKey62.BorderColor
+                        HoverColor: =DataCardKey62.Color
+                        HoverFill: =DataCardKey62.Fill
+                        PressedBorderColor: =DataCardKey62.BorderColor
+                        PressedColor: =DataCardKey62.Color
+                        PressedFill: =DataCardKey62.Fill
+                        Text: =Parent.DisplayName
+                        Width: =162
+                        Wrap: =false
+                        X: =30
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue62 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderColor: =DataCardValue62.BorderColor
+                        Format: =TextFormat.Number
+                        Height: =37
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue62.HoverBorderColor
+                        PressedColor: =DataCardValue62.Color
+                        PressedFill: =DataCardValue62.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =196
+                        X: =256
+                        Y: =10
+                        ZIndex: =2
+
+                    ErrorMessage62 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage62.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage62.BorderColor
+                        HoverColor: =ErrorMessage62.Color
+                        HoverFill: =ErrorMessage62.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage62.BorderColor
+                        PressedColor: =ErrorMessage62.Color
+                        PressedFill: =ErrorMessage62.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue62.Y + DataCardValue62.Height
+                        ZIndex: =3
+
+                    StarVisible62 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible62.BorderColor
+                        Height: =DataCardKey62.Height
+                        HoverBorderColor: =StarVisible62.BorderColor
+                        HoverColor: =StarVisible62.Color
+                        HoverFill: =StarVisible62.Fill
+                        PressedBorderColor: =StarVisible62.BorderColor
+                        PressedColor: =StarVisible62.Color
+                        PressedFill: =StarVisible62.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey62.Y
+                        ZIndex: =4
+
+                    Label23 As label:
+                        Color: =RGBA(0, 18, 107, 1)
+                        FocusedBorderColor: =Label23.BorderColor
+                        Height: =36
+                        HoverBorderColor: =Label23.BorderColor
+                        HoverColor: =Label23.Color
+                        HoverFill: =Label23.Fill
+                        PressedBorderColor: =Label23.BorderColor
+                        PressedColor: =Label23.Color
+                        PressedFill: =Label23.Fill
+                        Text: ="New Pref. Vendor Price"
+                        Visible: =EditPref
+                        Width: =211
+                        X: =30
+                        Y: =44
+                        ZIndex: =5
+
+                    NewPrefVendPrice As text:
+                        Default: |-
+                            =Switch(NewEstimateType , 
+                                 "Enmax" , LookUp(VendorSupplies, ItemNum = ThisItem.EnmaxItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', Price),
+                                "Fortis Alberta",LookUp(VendorSupplies, ItemNum = ThisItem.FortisItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', Price),
+                                "City of Calgary",LookUp(VendorSupplies, ItemNum = ThisItem.CoCItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', Price)
+                            )
+                        DisplayMode: =DisplayMode.View
+                        FocusedBorderColor: =NewPrefVendPrice.BorderColor
+                        Height: =33
+                        PressedBorderColor: =NewPrefVendPrice.HoverBorderColor
+                        PressedColor: =NewPrefVendPrice.Color
+                        PressedFill: =NewPrefVendPrice.Fill
+                        Visible: =EditPref
+                        Width: =196
+                        X: =256
+                        Y: =47
+                        ZIndex: =6
+
+                PrefLeadTime_DataCard2 As typedDataCard.toggleEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="PrefLeadTime"
+                    Default: =ThisItem.PrefLeadTime
+                    DisplayMode: =DisplayMode.View
+                    DisplayName: ="Pref. Vendor Lead Time"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    Required: =false
+                    Update: =DataCardValue71.Value
+                    Width: =339
+                    X: =3
+                    Y: =2
+                    ZIndex: =1
+
+                    DataCardKey73 As label:
+                        FocusedBorderColor: =DataCardKey73.BorderColor
+                        Height: =34
+                        HoverBorderColor: =DataCardKey73.BorderColor
+                        HoverColor: =DataCardKey73.Color
+                        HoverFill: =DataCardKey73.Fill
+                        PressedBorderColor: =DataCardKey73.BorderColor
+                        PressedColor: =DataCardKey73.Color
+                        PressedFill: =DataCardKey73.Fill
+                        Text: =Parent.DisplayName
+                        Width: =228
+                        Wrap: =false
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue71 As toggleSwitch:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DisplayMode: =Parent.DisplayMode
+                        FalseHoverFill: =ColorFade(DataCardValue71.FalseFill, 15%)
+                        FocusedBorderColor: =DataCardValue71.BorderColor
+                        Height: =34
+                        HoverBorderColor: =ColorFade(DataCardValue71.BorderColor, 15%)
+                        PressedBorderColor: =ColorFade(DataCardValue71.BorderColor, -15%)
+                        Tooltip: =Parent.DisplayName
+                        TrueHoverFill: =ColorFade(DataCardValue71.TrueFill, 15%)
+                        Width: =68
+                        X: =250
+                        Y: =10
+                        ZIndex: =2
+
+                    ErrorMessage73 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage73.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage73.BorderColor
+                        HoverColor: =ErrorMessage73.Color
+                        HoverFill: =ErrorMessage73.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage73.BorderColor
+                        PressedColor: =ErrorMessage73.Color
+                        PressedFill: =ErrorMessage73.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue71.Y + DataCardValue71.Height
+                        ZIndex: =3
+
+                    StarVisible73 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible73.BorderColor
+                        Height: =DataCardKey73.Height
+                        HoverBorderColor: =StarVisible73.BorderColor
+                        HoverColor: =StarVisible73.Color
+                        HoverFill: =StarVisible73.Fill
+                        PressedBorderColor: =StarVisible73.BorderColor
+                        PressedColor: =StarVisible73.Color
+                        PressedFill: =StarVisible73.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey73.Y
+                        ZIndex: =4
+
+                    Label24 As label:
+                        Color: =RGBA(0, 18, 107, 1)
+                        FocusedBorderColor: =Label24.BorderColor
+                        Height: =38
+                        HoverBorderColor: =Label24.BorderColor
+                        HoverColor: =Label24.Color
+                        HoverFill: =Label24.Fill
+                        PressedBorderColor: =Label24.BorderColor
+                        PressedColor: =Label24.Color
+                        PressedFill: =Label24.Fill
+                        Text: ="New Pref. Vendor Lead Time"
+                        Visible: =EditPref
+                        Width: =250
+                        Y: =44
+                        ZIndex: =5
+
+                    Toggle1 As toggleSwitch:
+                        Default: |-
+                            =Switch(NewEstimateType , 
+                                 "Enmax" , LookUp(VendorSupplies, ItemNum = ThisItem.EnmaxItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', LeadTime),
+                                "Fortis Alberta",LookUp(VendorSupplies, ItemNum = ThisItem.FortisItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', LeadTime),
+                                "City of Calgary",LookUp(VendorSupplies, ItemNum = ThisItem.CoCItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', LeadTime)
+                            )
+                        DisplayMode: =DisplayMode.View
+                        FalseHoverFill: =ColorFade(Toggle1.FalseFill, 15%)
+                        FocusedBorderColor: =Toggle1.BorderColor
+                        Height: =38
+                        HoverBorderColor: =ColorFade(Toggle1.BorderColor, 15%)
+                        PressedBorderColor: =ColorFade(Toggle1.BorderColor, -15%)
+                        TrueHoverFill: =ColorFade(Toggle1.TrueFill, 15%)
+                        Visible: =EditPref
+                        Width: =75
+                        X: =250
+                        Y: =44
+                        ZIndex: =6
+
+                InStockQuantity_DataCard1 As typedDataCard.numberEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="InStockQuantity"
+                    Default: =ThisItem.InStockQuantity
+                    DisplayMode: =DisplayMode.View
+                    DisplayName: ="Pref. Vendor Stock Quantity"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    Required: =false
+                    Update: =Value(DataCardValue73.Text)
+                    Width: =340
+                    X: =4
+                    Y: =2
+                    ZIndex: =1
+
+                    DataCardKey74 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =DataCardKey74.BorderColor
+                        Height: =34
+                        HoverBorderColor: =DataCardKey74.BorderColor
+                        HoverColor: =DataCardKey74.Color
+                        HoverFill: =DataCardKey74.Fill
+                        PressedBorderColor: =DataCardKey74.BorderColor
+                        PressedColor: =DataCardKey74.Color
+                        PressedFill: =DataCardKey74.Fill
+                        Text: =Parent.DisplayName
+                        Width: =242
+                        Wrap: =false
+                        X: =16
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue73 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        FocusedBorderColor: =DataCardValue73.BorderColor
+                        Format: =TextFormat.Number
+                        Height: =44
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue73.HoverBorderColor
+                        PressedColor: =DataCardValue73.Color
+                        PressedFill: =DataCardValue73.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =70
+                        X: =269
+                        Y: =10
+                        ZIndex: =2
+
+                    ErrorMessage74 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage74.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage74.BorderColor
+                        HoverColor: =ErrorMessage74.Color
+                        HoverFill: =ErrorMessage74.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage74.BorderColor
+                        PressedColor: =ErrorMessage74.Color
+                        PressedFill: =ErrorMessage74.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue73.Y + DataCardValue73.Height
+                        ZIndex: =3
+
+                    StarVisible74 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible74.BorderColor
+                        Height: =DataCardKey74.Height
+                        HoverBorderColor: =StarVisible74.BorderColor
+                        HoverColor: =StarVisible74.Color
+                        HoverFill: =StarVisible74.Fill
+                        PressedBorderColor: =StarVisible74.BorderColor
+                        PressedColor: =StarVisible74.Color
+                        PressedFill: =StarVisible74.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey74.Y
+                        ZIndex: =4
+
+                    NewPrefVendStock As text:
+                        Default: |-
+                            =Switch(NewEstimateType , 
+                                 "Enmax" , LookUp(VendorSupplies, ItemNum = ThisItem.EnmaxItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', InStockQuantity),
+                                "Fortis Alberta",LookUp(VendorSupplies, ItemNum = ThisItem.FortisItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', InStockQuantity),
+                                "City of Calgary",LookUp(VendorSupplies, ItemNum = ThisItem.CoCItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', InStockQuantity)
+                            )
+                        DisplayMode: =DisplayMode.View
+                        FocusedBorderColor: =NewPrefVendStock.BorderColor
+                        PressedBorderColor: =NewPrefVendStock.HoverBorderColor
+                        PressedColor: =NewPrefVendStock.Color
+                        PressedFill: =NewPrefVendStock.Fill
+                        Visible: =EditPref
+                        Width: =68
+                        X: =258
+                        Y: =60
+                        ZIndex: =5
+
+                    Label25 As label:
+                        Color: =RGBA(0, 18, 107, 1)
+                        FocusedBorderColor: =Label25.BorderColor
+                        HoverBorderColor: =Label25.BorderColor
+                        HoverColor: =Label25.Color
+                        HoverFill: =Label25.Fill
+                        PressedBorderColor: =Label25.BorderColor
+                        PressedColor: =Label25.Color
+                        PressedFill: =Label25.Fill
+                        Text: ="New Pre. Vendor Stock Quantity"
+                        Visible: =EditPref
+                        Width: =242
+                        X: =16
+                        Y: =60
+                        ZIndex: =6
+
+                ValidToDate_DataCard5 As typedDataCard.dateEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="ValidToDate"
+                    Default: =ThisItem.ValidToDate
+                    DisplayMode: =DisplayMode.View
+                    DisplayName: ="Valid To Date"
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    Required: =false
+                    Update: =DataCardValue96.SelectedDate
+                    Width: =340
+                    X: =5
+                    Y: =2
+                    ZIndex: =1
+
+                    DataCardKey97 As label:
+                        FocusedBorderColor: =DataCardKey97.BorderColor
+                        Height: =34
+                        HoverBorderColor: =DataCardKey97.BorderColor
+                        HoverColor: =DataCardKey97.Color
+                        HoverFill: =DataCardKey97.Fill
+                        PressedBorderColor: =DataCardKey97.BorderColor
+                        PressedColor: =DataCardKey97.Color
+                        PressedFill: =DataCardKey97.Fill
+                        Text: =Parent.DisplayName
+                        Width: =159
+                        Wrap: =false
+                        X: =16
+                        Y: =18
+                        ZIndex: =1
+
+                    DataCardValue96 As datepicker:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        DefaultDate: =Parent.Default
+                        DisplayMode: =Parent.DisplayMode
+                        EndYear: =Year(Today())+100
+                        FocusedBorderColor: =DataCardValue96.BorderColor
+                        Height: =30
+                        HoverBorderColor: =DataCardValue96.BorderColor
+                        HoverFill: =DataCardValue96.Fill
+                        InputTextPlaceholder: =Text(Date(2001,12,31), DataCardValue96.Format, DataCardValue96.Language)
+                        IsEditable: =true
+                        PaddingBottom: =0
+                        PaddingLeft: =If(DataCardValue96.DisplayMode = DisplayMode.Edit, 5, 0)
+                        PressedBorderColor: =DataCardValue96.BorderColor
+                        PressedFill: =DataCardValue96.Fill
+                        StartYear: =1899
+                        Tooltip: =Parent.DisplayName
+                        Width: =125
+                        X: =215
+                        Y: =10
+                        ZIndex: =2
+
+                    ErrorMessage97 As label:
+                        AutoHeight: =true
+                        FocusedBorderColor: =ErrorMessage97.BorderColor
+                        Height: =10
+                        HoverBorderColor: =ErrorMessage97.BorderColor
+                        HoverColor: =ErrorMessage97.Color
+                        HoverFill: =ErrorMessage97.Fill
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        PressedBorderColor: =ErrorMessage97.BorderColor
+                        PressedColor: =ErrorMessage97.Color
+                        PressedFill: =ErrorMessage97.Fill
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue96.Y + DataCardValue96.Height
+                        ZIndex: =3
+
+                    StarVisible97 As label:
+                        Align: =Align.Center
+                        FocusedBorderColor: =StarVisible97.BorderColor
+                        Height: =DataCardKey97.Height
+                        HoverBorderColor: =StarVisible97.BorderColor
+                        HoverColor: =StarVisible97.Color
+                        HoverFill: =StarVisible97.Fill
+                        PressedBorderColor: =StarVisible97.BorderColor
+                        PressedColor: =StarVisible97.Color
+                        PressedFill: =StarVisible97.Fill
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey97.Y
+                        ZIndex: =4
+
+                    Label31 As label:
+                        Color: =RGBA(0, 18, 107, 1)
+                        FocusedBorderColor: =Label31.BorderColor
+                        Height: =34
+                        HoverBorderColor: =Label31.BorderColor
+                        HoverColor: =Label31.Color
+                        HoverFill: =Label31.Fill
+                        PressedBorderColor: =Label31.BorderColor
+                        PressedColor: =Label31.Color
+                        PressedFill: =Label31.Fill
+                        Text: ="New Pref. Vend Vaild To Date"
+                        Visible: =EditPref
+                        Width: =199
+                        X: =16
+                        Y: =60
+                        ZIndex: =5
+
+                    TextInput3 As text:
+                        Default: |-
+                            =Switch(NewEstimateType , 
+                                 "Enmax" , LookUp(VendorSupplies, ItemNum = ThisItem.EnmaxItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', ValidToDate),
+                                "Fortis Alberta",LookUp(VendorSupplies, ItemNum = ThisItem.FortisItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', ValidToDate),
+                                "City of Calgary",LookUp(VendorSupplies, ItemNum = ThisItem.CoCItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', ValidToDate)
+                            )
+                        DisplayMode: =DisplayMode.View
+                        FocusedBorderColor: =TextInput3.BorderColor
+                        HoverFill: =RGBA(255, 255, 255, 1)
+                        PressedBorderColor: =TextInput3.HoverBorderColor
+                        PressedColor: =TextInput3.Color
+                        PressedFill: =TextInput3.Fill
+                        Visible: =EditPref
+                        Width: =124
+                        X: =215
+                        Y: =54
+                        ZIndex: =6
+
+                PrefIncrement_DataCard1 As typedDataCard.numberEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="PrefIncrement"
+                    Default: =ThisItem.PrefIncrement
+                    DisplayMode: =DisplayMode.View
+                    DisplayName: =DataSourceInfo([@MasterMaterial_PreferredVendor_List],DataSourceInfo.DisplayName,"PrefIncrement")
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =50
+                    Required: =false
+                    Update: =Value(DataCardValue138.Text)
+                    Width: =340
+                    X: =6
+                    Y: =2
+                    ZIndex: =1
+
+                    DataCardKey140 As label:
+                        Text: |-
+                            ="Pref. Qty
+                            Increments"
+                        Width: =141
+                        Wrap: =false
+                        Y: =10
+                        ZIndex: =1
+
+                    DataCardValue138 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        Format: =TextFormat.Number
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue138.HoverBorderColor
+                        PressedColor: =DataCardValue138.Color
+                        PressedFill: =DataCardValue138.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =132
+                        X: =178
+                        Y: =10
+                        ZIndex: =2
+
+                    ErrorMessage140 As label:
+                        AutoHeight: =true
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue138.Y + DataCardValue138.Height
+                        ZIndex: =3
+
+                    StarVisible140 As label:
+                        Align: =Align.Center
+                        Height: =DataCardKey140.Height
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey140.Y
+                        ZIndex: =4
+
+                    Label2 As label:
+                        Color: =RGBA(0, 18, 107, 1)
+                        Text: |-
+                            ="New Pref.
+                            Qty Increments"
+                        Visible: =EditPref
+                        Y: =60
+                        ZIndex: =5
+
+                    TextInput27 As text:
+                        Default: |-
+                            =Switch(NewEstimateType , 
+                                 "Enmax" , LookUp(VendorSupplies, ItemNum = ThisItem.EnmaxItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', Increment),
+                                "Fortis Alberta",LookUp(VendorSupplies, ItemNum = ThisItem.FortisItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', Increment),
+                                "City of Calgary",LookUp(VendorSupplies, ItemNum = ThisItem.CoCItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', Increment)
+                            )
+                        DisplayMode: =DisplayMode.View
+                        PressedBorderColor: =TextInput27.HoverBorderColor
+                        PressedColor: =TextInput27.Color
+                        PressedFill: =TextInput27.Fill
+                        Visible: =EditPref
+                        Width: =126
+                        X: =178
+                        Y: =60
+                        ZIndex: =6
+
+                PrefIncrementPrice_DataCard1 As typedDataCard.currencyEditCard:
+                    BorderStyle: =BorderStyle.Solid
+                    DataField: ="PrefIncrementPrice"
+                    Default: =ThisItem.PrefIncrementPrice
+                    DisplayMode: =DisplayMode.View
+                    DisplayName: =DataSourceInfo([@MasterMaterial_PreferredVendor_List],DataSourceInfo.DisplayName,"PrefIncrementPrice")
+                    Fill: =RGBA(0, 0, 0, 0)
+                    Height: =119
+                    Required: =false
+                    Update: =Value(DataCardValue142.Text)
+                    Width: =339
+                    X: =7
+                    Y: =2
+                    ZIndex: =1
+
+                    DataCardKey144 As label:
+                        AutoHeight: =true
+                        Height: =34
+                        Text: |-
+                            ="Pref.
+                            Incremental Price"
+                        Width: =156
+                        Wrap: =false
+                        ZIndex: =1
+
+                    DataCardValue142 As text:
+                        BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                        Default: =Parent.Default
+                        DelayOutput: =true
+                        DisplayMode: =Parent.DisplayMode
+                        Format: =TextFormat.Number
+                        PaddingLeft: =5
+                        PressedBorderColor: =DataCardValue142.HoverBorderColor
+                        PressedColor: =DataCardValue142.Color
+                        PressedFill: =DataCardValue142.Fill
+                        RadiusBottomLeft: =0
+                        RadiusBottomRight: =0
+                        RadiusTopLeft: =0
+                        RadiusTopRight: =0
+                        Tooltip: =Parent.DisplayName
+                        Width: =60
+                        X: =189
+                        Y: =9
+                        ZIndex: =2
+
+                    ErrorMessage144 As label:
+                        AutoHeight: =true
+                        Height: =10
+                        Live: =Live.Assertive
+                        PaddingBottom: =0
+                        PaddingLeft: =0
+                        PaddingRight: =0
+                        PaddingTop: =0
+                        Text: =Parent.Error
+                        Visible: =Parent.DisplayMode=DisplayMode.Edit
+                        Width: =Parent.Width - 60
+                        X: =30
+                        Y: =DataCardValue142.Y + DataCardValue142.Height
+                        ZIndex: =3
+
+                    StarVisible144 As label:
+                        Align: =Align.Center
+                        Height: =DataCardKey144.Height
+                        Text: ="*"
+                        Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                        Width: =30
+                        Wrap: =false
+                        Y: =DataCardKey144.Y
+                        ZIndex: =4
+
+                    Label67 As label:
+                        Color: =RGBA(0, 18, 107, 1)
+                        Height: =59
+                        Text: |-
+                            ="New Pref.
+                            Incremental Price"
+                        Visible: =EditPref
+                        Width: =161
+                        X: =6
+                        Y: =59
+                        ZIndex: =5
+
+                    TextInput28 As text:
+                        Default: |-
+                            =Switch(NewEstimateType , 
+                                 "Enmax" , LookUp(VendorSupplies, ItemNum = ThisItem.EnmaxItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', IncrementPrice),
+                                "Fortis Alberta",LookUp(VendorSupplies, ItemNum = ThisItem.FortisItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', IncrementPrice),
+                                "City of Calgary",LookUp(VendorSupplies, ItemNum = ThisItem.CoCItemNumber And VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', IncrementPrice)
+                            )
+                        DisplayMode: =DisplayMode.View
+                        Height: =42
+                        PressedBorderColor: =TextInput28.HoverBorderColor
+                        PressedColor: =TextInput28.Color
+                        PressedFill: =TextInput28.Fill
+                        Visible: =EditPref
+                        Width: =116
+                        X: =189
+                        Y: =67
+                        ZIndex: =6
+
+        DataCard4 As dataCard.blankCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =625
+            Width: =1366
+            X: =0
+            Y: =1
+            ZIndex: =2
+
+            OneMaterialAllPrices As dataGrid:
+                HeadingFill: =RGBA(36, 76, 90, 1)
+                Height: =362
+                Items: =SortByColumns(AllPricesList, "ItemNum", SortOrder.Ascending, "VendorName", SortOrder.Ascending)
+                Visible: =AllPrices
+                Width: =1318
+                X: =16
+                Y: =84
+                ZIndex: =1
+
+                ItemNum As customControl.dataColumn:
+                    AutoWidth: =true
+                    DisplayName: ="ItemNum"
+                    FieldName: ="ItemNum"
+                    Height: =0
+                    IsHyperlink: =false
+                    Order: =0
+                    Required: =false
+                    TitleProperty: =""
+                    Type: ="s"
+                    VariantName: ="textualViewCard"
+                    Width: =186
+                    X: =0
+                    Y: =0
+                    ZIndex: =1
+
+                Description_1 As customControl.dataColumn:
+                    AutoWidth: =true
+                    DisplayName: ="Description"
+                    FieldName: ="Description"
+                    Height: =0
+                    IsHyperlink: =false
+                    Order: =1
+                    Required: =false
+                    TitleProperty: =""
+                    Type: ="s"
+                    VariantName: ="textualViewCard"
+                    Width: =186
+                    X: =0
+                    Y: =0
+                    ZIndex: =2
+
+                ItemType As customControl.dataColumn:
+                    AutoWidth: =true
+                    DisplayName: ="ItemType"
+                    FieldName: ="ItemType"
+                    Height: =0
+                    IsHyperlink: =false
+                    Order: =2
+                    Required: =false
+                    TitleProperty: =""
+                    Type: ="s"
+                    VariantName: ="textualViewCard"
+                    Width: =186
+                    X: =0
+                    Y: =0
+                    ZIndex: =3
+
+                VendorName As customControl.dataColumn:
+                    AutoWidth: =true
+                    DisplayName: ="VendorName"
+                    FieldName: ="VendorName"
+                    Height: =0
+                    IsHyperlink: =false
+                    Order: =3
+                    Required: =false
+                    TitleProperty: =""
+                    Type: ="s"
+                    VariantName: ="textualViewCard"
+                    Width: =186
+                    X: =0
+                    Y: =0
+                    ZIndex: =4
+
+                Price_1 As customControl.dataColumn:
+                    AutoWidth: =true
+                    DisplayName: ="Price"
+                    FieldName: ="Price"
+                    Height: =0
+                    IsHyperlink: =false
+                    Order: =4
+                    Required: =false
+                    TitleProperty: =""
+                    Type: ="$"
+                    VariantName: ="textualViewCard"
+                    Width: =186
+                    X: =0
+                    Y: =0
+                    ZIndex: =5
+
+                GuessPrice_1 As customControl.dataColumn:
+                    AutoWidth: =true
+                    DisplayName: ="GuessPrice"
+                    FieldName: ="GuessPrice"
+                    Height: =0
+                    IsHyperlink: =false
+                    Order: =5
+                    Required: =false
+                    TitleProperty: =""
+                    Type: ="$"
+                    VariantName: ="textualViewCard"
+                    Width: =186
+                    X: =0
+                    Y: =0
+                    ZIndex: =6
+
+                ValidToDate_1 As customControl.dataColumn:
+                    AutoWidth: =true
+                    DisplayName: ="ValidToDate"
+                    FieldName: ="ValidToDate"
+                    Height: =0
+                    IsHyperlink: =false
+                    Order: =6
+                    Required: =false
+                    TitleProperty: =""
+                    Type: ="D"
+                    VariantName: ="textualViewCard"
+                    Width: =186
+                    X: =0
+                    Y: =0
+                    ZIndex: =7
+
+            Label21 As label:
+                FocusedBorderColor: =Label21.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =32
+                HoverBorderColor: =Label21.BorderColor
+                HoverColor: =Label21.Color
+                HoverFill: =Label21.Fill
+                PressedBorderColor: =Label21.BorderColor
+                PressedColor: =Label21.Color
+                PressedFill: =Label21.Fill
+                Size: =16
+                Text: ="Clcik on see all prices button to see selected Material's all pricing"
+                Width: =752
+                X: =32
+                Y: =20
+                ZIndex: =2
+
+            Button1 As button:
+                BorderColor: =ColorFade(Button1.Fill, -15%)
+                Fill: =RGBA(36, 76, 90, 1)
+                FocusedBorderColor: =Button1.BorderColor
+                HoverBorderColor: =ColorFade(Button1.BorderColor, 20%)
+                HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+                OnSelect: |-
+                    =UpdateContext({AllPrices:true});
+                PressedBorderColor: =Button1.Fill
+                PressedColor: =Button1.Fill
+                PressedFill: =Button1.Color
+                Text: ="All Prices"
+                X: =825
+                Y: =20
+                ZIndex: =3
+
+    Icon17 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon17.Fill
+        FocusedBorderColor: =Icon17.BorderColor
+        HoverBorderColor: =ColorFade(Icon17.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =Icon17.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =Clear(AllPricesList);
+            Navigate(PrefVendorScreen, ScreenTransition.UnCover);
+        PressedBorderColor: =ColorFade(Icon17.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon17.Color, -20%)
+        PressedFill: =Icon17.Fill
+        Tooltip: ="Go back"
+        X: =1278
+        Y: =12
+        ZIndex: =4
+
+    Icon19 As icon.Edit:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon19.Fill
+        FocusedBorderColor: =Icon19.BorderColor
+        HoverBorderColor: =ColorFade(Icon19.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =Icon19.Fill
+        Icon: =Icon.Edit
+        OnSelect: |-
+            =UpdateContext({EditPref:true});
+        PressedBorderColor: =ColorFade(Icon19.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon19.Color, -20%)
+        PressedFill: =Icon19.Fill
+        Tooltip: ="Edit Preferred Vendor"
+        X: =1214
+        Y: =12
+        ZIndex: =5
+
+    Icon20 As icon.Save:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon20.Fill
+        FocusedBorderColor: =Icon20.BorderColor
+        HoverBorderColor: =ColorFade(Icon20.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =Icon20.Fill
+        Icon: =Icon.Save
+        OnSelect: |-
+            = If(EditPref And Len(Dropdown10.Selected.VendorName) > 1, 
+              UpdateContext({selectedPrefVendor: Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName', SelectPrefVendPrice: NewPrefVendPrice.Text, 
+                           SelectPrefVendGPrice: Text(LookUp(VendorSupplies, VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName' And ItemType = NewEstimateType 
+                           And ItemNum = thisItemNumber, GuessPrice)), 
+                           selectPrefVendStock: NewPrefVendStock.Text, selectedPrefVendDescr: DataCardValue61.Text,
+                           selectedPrefVendLead: Toggle1.Value, 
+                           selectedPrefVendLeadTimeDays: LookUp(VendorSupplies, VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName' And ItemType = NewEstimateType 
+                           And ItemNum = thisItemNumber, LeadTimeDays),
+            			   selectedPrefVendorVDate:LookUp(VendorSupplies, VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName' And ItemType = NewEstimateType 
+                           And ItemNum = thisItemNumber, ValidToDate),
+                           selectedPrefVendUoM: LookUp(VendorSupplies, VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName' And ItemType = NewEstimateType 
+                           And ItemNum = thisItemNumber, uom),
+            			   selectedPrefVendMinQty: LookUp(VendorSupplies,  VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName' And ItemType = NewEstimateType 
+                           And ItemNum = thisItemNumber, minQtyOrder), 
+                           selectedPrefVendMinQtyNotes: LookUp(VendorSupplies,  VendorName = Dropdown10.SelectedText.'data-ADB4D7A662F548B49FAC2B986E348A1BVendorName' And ItemType = NewEstimateType 
+                           And ItemNum = thisItemNumber, minQtyNotes)}), 
+              UpdateContext({selectedPrefVendor: DataCardValue42.Text, SelectPrefVendPrice: DataCardValue62.Text, 
+                           SelectPrefVendGPrice: Text(LookUp(VendorSupplies, VendorName = DataCardValue42.Text And ItemType = NewEstimateType 
+                           And ItemNum = thisItemNumber, GuessPrice)), 
+                           selectPrefVendStock: DataCardValue73.Text, selectedPrefVendDescr: DataCardValue61.Text,
+                           selectedPrefVendLead: DataCardValue71.Value, 
+                           selectedPrefVendLeadTimeDays: LookUp(VendorSupplies, VendorName = DataCardValue42.Text And ItemType = NewEstimateType 
+                           And ItemNum = thisItemNumber, LeadTimeDays),
+            			   selectedPrefVendorVDate:LookUp(VendorSupplies, VendorName = DataCardValue42.Text And ItemType = NewEstimateType 
+                           And ItemNum = thisItemNumber, ValidToDate), 
+                           selectedPrefVendUoM: LookUp(VendorSupplies,  VendorName = DataCardValue42.Text And ItemType = NewEstimateType 
+                           And ItemNum = thisItemNumber, uom),
+            			   selectedPrefVendMinQty: LookUp(VendorSupplies,  VendorName = DataCardValue42.Text And ItemType = NewEstimateType 
+                           And ItemNum = thisItemNumber, minQtyOrder), 
+                           selectedPrefVendMinQtyNotes: LookUp(VendorSupplies, VendorName = DataCardValue42.Text And ItemType = NewEstimateType 
+                           And ItemNum = thisItemNumber, minQtyNotes)})
+            );
+            If(IsBlank(NewPrefVendPrice.Text) Or false Or Trim(NewPrefVendPrice.Text) = "", 
+                UpdateContext({EditPrefError:true, EditPrefErrorMsg: "Please make sure that the New Pref. Vendor has a valid price i.e. NOT ZERO or BLANK, meaing the new selected veondor provides this item for reference please view All Prices table"}),
+                UpdateContext({EditPrefPatchResult: 
+                           Patch(MasterMaterial_PreferredVendor_List, 
+                                   LookUp(MasterMaterial_PreferredVendor_List, PrimaryItemNumber = PrefVendGallery.Selected.PrimaryItemNumber),
+                                   {PreferredVendorName: selectedPrefVendor,
+                                    PreferredVendorPrice: Value(SelectPrefVendPrice),
+                                    PreferredVendorGPrice: Value(SelectPrefVendGPrice),
+                                    InStockQuantity: Value(selectPrefVendStock),
+                                    PreferredVendDescr: selectedPrefVendDescr,
+                                    PrefLeadTime: selectedPrefVendLead, PrefLeadTimeDays: selectedPrefVendLeadTimeDays,
+                                    ValidToDate: selectedPrefVendorVDate,
+                                    UoM: selectedPrefVendUoM,
+                                    minQtyOrder: selectedPrefVendMinQty,
+                                    minQtyNotes: selectedPrefVendMinQtyNotes,
+                                    LastModifiedBy:User().FullName,
+                                    LastModifiedDate: Today()
+                                   }
+                                )});
+                If(Not(IsBlank(EditPrefPatchResult)) And IsEmpty(Errors(MasterMaterial_PreferredVendor_List)),
+                    UpdateContext({EditPref:false});Refresh(MasterMaterial_PreferredVendor_List);
+                    Switch(NewEstimateType,
+                        "Enmax", ClearCollect(PrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                                        Archived = false And EnmaxItemNumber <> "NA")),
+                        "Fortis Alberta", ClearCollect(PrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                                        Archived = false And FortisItemNumber <> "NA")),
+                        "City of Calgary", ClearCollect(PrefVendList, Filter(MasterMaterial_PreferredVendor_List, 
+                                        Archived = false And CoCItemNumber <> "NA"))
+                    );//Navigate(PrefVendorScreen, UnCover);
+                    ,
+                    UpdateContext({EditPrefError:true, EditPrefErrorMsg: "Patching for New Pref. Vendor has failed, please contact IT"})
+                );
+            )
+        PressedBorderColor: =ColorFade(Icon20.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon20.Color, -20%)
+        PressedFill: =Icon20.Fill
+        Tooltip: ="Save changes"
+        X: =1132
+        Y: =12
+        ZIndex: =6
+
+    EditPrefErrorPopUp As rectangle:
+        DisabledFill: =EditPrefErrorPopUp.Fill
+        Fill: =RGBA(241, 244, 249, 0.7)
+        FocusedBorderColor: =EditPrefErrorPopUp.BorderColor
+        Height: =495
+        HoverFill: =EditPrefErrorPopUp.Fill
+        PressedFill: =EditPrefErrorPopUp.Fill
+        Visible: =EditPrefError
+        Width: =1342
+        Y: =117
+        ZIndex: =7
+
+    ErrorOkButton As button:
+        BorderColor: =ColorFade(ErrorOkButton.Fill, -15%)
+        FocusedBorderColor: =ErrorOkButton.BorderColor
+        HoverBorderColor: =ColorFade(ErrorOkButton.BorderColor, 20%)
+        OnSelect: |-
+            =UpdateContext({EditPrefError:false});
+        PressedBorderColor: =ErrorOkButton.Fill
+        PressedColor: =ErrorOkButton.Fill
+        PressedFill: =ErrorOkButton.Color
+        Text: ="Ok"
+        Visible: =EditPrefError
+        X: =567
+        Y: =408
+        ZIndex: =8
+
+    ErrorLabel As label:
+        Color: =RGBA(255, 0, 0, 1)
+        FocusedBorderColor: =ErrorLabel.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =251
+        HoverBorderColor: =ErrorLabel.BorderColor
+        HoverColor: =ErrorLabel.Color
+        HoverFill: =ErrorLabel.Fill
+        PressedBorderColor: =ErrorLabel.BorderColor
+        PressedColor: =ErrorLabel.Color
+        PressedFill: =ErrorLabel.Fill
+        Size: =18
+        Text: =EditPrefErrorMsg
+        Visible: =EditPrefError
+        Width: =1271
+        X: =12
+        Y: =117
+        ZIndex: =9
+
+    Icon21 As icon.Cancel:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledColor: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon21.Fill
+        FocusedBorderColor: =Icon21.BorderColor
+        HoverBorderColor: =ColorFade(Icon21.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =Icon21.Fill
+        Icon: =Icon.Cancel
+        OnSelect: |-
+            =UpdateContext({EditPref:false});
+        PressedBorderColor: =ColorFade(Icon21.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon21.Color, -20%)
+        PressedFill: =Icon21.Fill
+        Tooltip: ="Cancel changes"
+        X: =1050
+        Y: =12
+        ZIndex: =10
+

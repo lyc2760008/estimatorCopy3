@@ -1,0 +1,22 @@
+[
+  {
+    "ApiId": "/providers/microsoft.powerapps/apis/shared_sql",
+    "CdpRevision": {
+      "BaseUrl": "/",
+      "LastChangedTimeString": "2022-03-29T18:53:27.9820000Z",
+      "RevisionNumber": 1
+    },
+    "ConnectedDataSourceInfoNameMapping": {
+      "epc_ID": "epc_ID",
+      "EPC_items": "EPC_items",
+      "epc_percentage": "epc_percentage",
+      "epc_rate": "epc_rate"
+    },
+    "DatasetName": "default",
+    "EncodeDataset": false,
+    "IsSampleData": false,
+    "IsWritable": true,
+    "Name": "EPC_table",
+    "Type": "ConnectedDataSourceInfo"
+  }
+]

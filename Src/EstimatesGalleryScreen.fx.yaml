@@ -1,0 +1,334 @@
+EstimatesGalleryScreen As screen:
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =Set(FirstSaveOnNewEstimate, true);
+        Set(NewEstimate, false);
+        Refresh(Estimates);
+    Orientation: =If(EstimatesGalleryScreen.Width < EstimatesGalleryScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= EstimatesGalleryScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    "EstimatesGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+        DisabledBorderColor: =EstimatesGallery.BorderColor
+        DisabledFill: =EstimatesGallery.Fill
+        Height: =663
+        HoverBorderColor: =EstimatesGallery.BorderColor
+        HoverFill: =EstimatesGallery.Fill
+        Items: |-
+            =Switch(CurrentEstimateType,
+            "Enmax", SortByColumns(Search(Filter(Estimates, Type = "Enmax"), SearchBox.Text, "ProjectID", "Stage","Version", "Description", "EstimatedBy"), "ProjectID", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending), "Stage", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending), "Version", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending)),
+            "Fortis Alberta", SortByColumns(Search(Filter(Estimates, Type = "Fortis Alberta"), SearchBox.Text, "ProjectID", "Stage","Version", "Description", "EstimatedBy"), "ProjectID", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending), "Stage", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending), "Version", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending)),
+            "City of Calgary", SortByColumns(Search(Filter(Estimates, Type = "City of Calgary"), SearchBox.Text, "ProjectID", "Stage","Version", "Description", "EstimatedBy"), "ProjectID", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending), "Stage", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending), "Version", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending))
+            )
+        Layout: =Layout.Vertical
+        LoadingSpinnerColor: =EstimatesGallery.BorderColor
+        PressedBorderColor: =EstimatesGallery.BorderColor
+        PressedFill: =EstimatesGallery.Fill
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =Min(168, EstimatesGallery.Height - 60)
+        Width: =1366
+        Y: =105
+        ZIndex: =1
+
+        Title3 As label:
+            Color: =RGBA(0, 18, 107, 1)
+            FocusedBorderColor: =Title3.BorderColor
+            Height: =36
+            HoverBorderColor: =Title3.BorderColor
+            HoverColor: =Title3.Color
+            HoverFill: =Title3.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Title3.BorderColor
+            PressedColor: =Title3.Color
+            PressedFill: =Title3.Fill
+            Text: =Concatenate(ThisItem.ProjectID, " | ", ThisItem.Stage, " - ", ThisItem.Version)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =505
+            X: =32
+            Y: =16
+            ZIndex: =1
+
+        Subtitle3 As label:
+            Color: =RGBA(0, 18, 107, 1)
+            FocusedBorderColor: =Subtitle3.BorderColor
+            Height: =36
+            HoverBorderColor: =Subtitle3.BorderColor
+            HoverColor: =Subtitle3.Color
+            HoverFill: =Subtitle3.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Subtitle3.BorderColor
+            PressedColor: =Subtitle3.Color
+            PressedFill: =Subtitle3.Fill
+            Text: =ThisItem.Description
+            VerticalAlign: =VerticalAlign.Top
+            Width: =Parent.TemplateWidth - 104
+            X: =32
+            Y: =Title3.Y + Title3.Height + 2
+            ZIndex: =2
+
+        NextArrow3 As icon.ChevronRight:
+            AccessibleLabel: =NextArrow3.Tooltip
+            Color: =RGBA(36, 76, 90, 1)
+            DisabledFill: =NextArrow3.Fill
+            FocusedBorderColor: =NextArrow3.BorderColor
+            FocusedBorderThickness: =0
+            Height: =60
+            HoverBorderColor: =ColorFade(NextArrow3.BorderColor, 20%)
+            HoverColor: =ColorFade(NextArrow3.Color, 40%)
+            HoverFill: =NextArrow3.Fill
+            Icon: =Icon.ChevronRight
+            OnSelect: |-
+                =// Updating Varaibles for existing estimate under viewing/updating
+                Set(CurrentEstimateProjectID, EstimatesGallery.Selected.ProjectID);
+                Set(CurrentEstimateStage,  EstimatesGallery.Selected.Stage);
+                Set(CurrentEstimateVersion,  EstimatesGallery.Selected.Version);
+                Set(CurrentEstimateType,  EstimatesGallery.Selected.Type);
+                Navigate(MainEstimateScreen,ScreenTransition.Fade);
+            PaddingBottom: =10
+            PaddingLeft: =10
+            PaddingRight: =10
+            PaddingTop: =10
+            PressedBorderColor: =ColorFade(NextArrow3.BorderColor, -20%)
+            PressedColor: =ColorFade(NextArrow3.Color, -20%)
+            PressedFill: =NextArrow3.Fill
+            TabIndex: =0
+            Tooltip: ="View item details"
+            Width: =60
+            X: =Parent.TemplateWidth - NextArrow3.Width - 5
+            Y: =(Parent.TemplateHeight / 2) - (NextArrow3.Height / 2)
+            ZIndex: =4
+
+        Separator3 As rectangle:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            DisabledFill: =Separator3.Fill
+            Fill: =RGBA(36, 76, 90, 1)
+            FocusedBorderColor: =Separator3.BorderColor
+            Height: =1
+            HoverFill: =Separator3.Fill
+            OnSelect: =Select(Parent)
+            PressedFill: =Separator3.Fill
+            Width: =Parent.TemplateWidth
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =5
+
+        Label44 As label:
+            FocusedBorderColor: =Label44.BorderColor
+            HoverBorderColor: =Label44.BorderColor
+            HoverColor: =Label44.Color
+            HoverFill: =Label44.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =Label44.BorderColor
+            PressedColor: =Label44.Color
+            PressedFill: =Label44.Fill
+            Text: |-
+                ="Estimated By: " & ThisItem.EstimatedBy 
+            Width: =342
+            X: =972
+            Y: =8
+            ZIndex: =6
+
+        Label45 As label:
+            FocusedBorderColor: =Label45.BorderColor
+            Height: =38
+            HoverBorderColor: =Label45.BorderColor
+            HoverColor: =Label45.Color
+            HoverFill: =Label45.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =Label45.BorderColor
+            PressedColor: =Label45.Color
+            PressedFill: =Label45.Fill
+            Text: |-
+                =Concatenate("Contractor: ",ThisItem.Contractor)
+            Width: =223
+            X: =491
+            Y: =14
+            ZIndex: =7
+
+        Label47 As label:
+            FocusedBorderColor: =Label47.BorderColor
+            HoverBorderColor: =Label47.BorderColor
+            HoverColor: =Label47.Color
+            HoverFill: =Label47.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =Label47.BorderColor
+            PressedColor: =Label47.Color
+            PressedFill: =Label47.Fill
+            Text: |-
+                =Concatenate("Supplier: ", ThisItem.MaterialSupplier)
+            Width: =247
+            X: =725
+            Y: =13
+            ZIndex: =8
+
+        Label49 As label:
+            FocusedBorderColor: =Label49.BorderColor
+            Height: =75
+            HoverBorderColor: =Label49.BorderColor
+            HoverColor: =Label49.Color
+            HoverFill: =Label49.Fill
+            OnSelect: =Select(Parent)
+            Overflow: =Overflow.Scroll
+            PressedBorderColor: =Label49.BorderColor
+            PressedColor: =Label49.Color
+            PressedFill: =Label49.Fill
+            Text: =ThisItem.Notes
+            VerticalAlign: =VerticalAlign.Top
+            Width: =926
+            X: =32
+            Y: =92
+            ZIndex: =9
+
+        Label44_1 As label:
+            FocusedBorderColor: =Label44_1.BorderColor
+            HoverBorderColor: =Label44_1.BorderColor
+            HoverColor: =Label44_1.Color
+            HoverFill: =Label44_1.Fill
+            OnSelect: =Select(Parent)
+            PressedBorderColor: =Label44_1.BorderColor
+            PressedColor: =Label44_1.Color
+            PressedFill: =Label44_1.Fill
+            Text: |-
+                ="Last Modified By: " & ThisItem.LastModifiedBy 
+            Width: =342
+            X: =972
+            Y: =59
+            ZIndex: =10
+
+    Label1 As label:
+        Color: =RGBA(0, 18, 107, 1)
+        FocusedBorderColor: =Label1.BorderColor
+        FontWeight: =FontWeight.Bold
+        Height: =88
+        HoverBorderColor: =Label1.BorderColor
+        HoverColor: =Label1.Color
+        HoverFill: =Label1.Fill
+        Italic: =true
+        PressedBorderColor: =Label1.BorderColor
+        PressedColor: =Label1.Color
+        PressedFill: =Label1.Fill
+        Size: =22
+        Text: =Concatenate("Estimates - ", CurrentEstimateType)
+        Width: =431
+        X: =200
+        ZIndex: =2
+
+    RefreshGallery As icon.Reload:
+        DisabledFill: =RefreshGallery.Fill
+        FocusedBorderColor: =RefreshGallery.BorderColor
+        HoverBorderColor: =ColorFade(RefreshGallery.BorderColor, 20%)
+        HoverColor: =ColorFade(RefreshGallery.Color, 20%)
+        HoverFill: =RefreshGallery.Fill
+        Icon: =Icon.Reload
+        OnSelect: =Refresh(Estimates)
+        PressedBorderColor: =ColorFade(RefreshGallery.BorderColor, -20%)
+        PressedColor: =ColorFade(RefreshGallery.Color, -20%)
+        PressedFill: =RefreshGallery.Fill
+        X: =1121
+        Y: =12
+        ZIndex: =4
+
+    Sorting As icon.ArrowsUpDown:
+        DisabledFill: =Sorting.Fill
+        FocusedBorderColor: =Sorting.BorderColor
+        HoverBorderColor: =ColorFade(Sorting.BorderColor, 20%)
+        HoverColor: =ColorFade(Sorting.Color, 20%)
+        HoverFill: =Sorting.Fill
+        Icon: =Icon.Sort
+        OnSelect: |-
+            =UpdateContext({SortDescending1: !SortDescending1})
+        PressedBorderColor: =ColorFade(Sorting.BorderColor, -20%)
+        PressedColor: =ColorFade(Sorting.Color, -20%)
+        PressedFill: =Sorting.Fill
+        X: =1199
+        Y: =12
+        ZIndex: =5
+
+    SearchBox As text:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Color: =RGBA(0, 18, 107, 1)
+        Default: =""
+        FocusedBorderColor: =SearchBox.BorderColor
+        Height: =64
+        HoverBorderColor: =RGBA(36, 76, 90, 1)
+        HoverColor: =RGBA(0, 18, 107, 1)
+        PressedBorderColor: =SearchBox.HoverBorderColor
+        PressedColor: =RGBA(0, 18, 107, 1)
+        PressedFill: =SearchBox.Fill
+        Tooltip: ="Type here to search for your estimate"
+        Width: =283
+        X: =809
+        Y: =12
+        ZIndex: =6
+
+    SearchIcon As icon.Search:
+        DisabledFill: =SearchIcon.Fill
+        FocusedBorderColor: =SearchIcon.BorderColor
+        HoverBorderColor: =ColorFade(SearchIcon.BorderColor, 20%)
+        HoverColor: =ColorFade(SearchIcon.Color, 20%)
+        HoverFill: =SearchIcon.Fill
+        Icon: =Icon.Search
+        PressedBorderColor: =ColorFade(SearchIcon.BorderColor, -20%)
+        PressedColor: =ColorFade(SearchIcon.Color, -20%)
+        PressedFill: =SearchIcon.Fill
+        Width: =36
+        X: =1045
+        Y: =12
+        ZIndex: =7
+
+    backIconEstGallery As icon.ChevronLeft:
+        DisabledFill: =backIconEstGallery.Fill
+        FocusedBorderColor: =backIconEstGallery.BorderColor
+        HoverBorderColor: =ColorFade(backIconEstGallery.BorderColor, 20%)
+        HoverColor: =ColorFade(backIconEstGallery.Color, 20%)
+        HoverFill: =backIconEstGallery.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =Navigate(MainScreen,ScreenTransition.Fade);
+            Reset(SearchBox);
+        PressedBorderColor: =ColorFade(backIconEstGallery.BorderColor, -20%)
+        PressedColor: =ColorFade(backIconEstGallery.Color, -20%)
+        PressedFill: =backIconEstGallery.Fill
+        Tooltip: ="Go back to Main Screen"
+        X: =1286
+        Y: =12
+        ZIndex: =8
+
+    Button12 As button:
+        BorderColor: =ColorFade(Button12.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =Button12.BorderColor
+        Height: =64
+        HoverBorderColor: =ColorFade(Button12.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =Launch("https://pecintranetsrv.primaryeng.com/Estimates.html")
+        PressedBorderColor: =Button12.Fill
+        PressedColor: =Button12.Fill
+        PressedFill: =Button12.Color
+        Text: ="Download Estimates Link"
+        X: =619
+        Y: =12
+        ZIndex: =9
+
+    PECLogo_3 As image:
+        BorderColor: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(255, 255, 255, 1)
+        FocusedBorderColor: =PECLogo_3.BorderColor
+        Height: =88
+        HoverBorderColor: =ColorFade(PECLogo_3.BorderColor, 20%)
+        HoverFill: =ColorFade(PECLogo_3.Fill, 20%)
+        Image: =PRI_Logo_RGB_TM_201222
+        PressedBorderColor: =ColorFade(PECLogo_3.BorderColor, -20%)
+        PressedFill: =ColorFade(PECLogo_3.Fill, -20%)
+        Width: =168
+        ZIndex: =10
+

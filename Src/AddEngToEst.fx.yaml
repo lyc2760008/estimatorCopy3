@@ -1,0 +1,1257 @@
+"AddEngToEst As screen.'phoneLayout_FluidGridWithHeaderPageLayout_ver3.0'":
+    Fill: =RGBA(255, 255, 255, 1) 
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =Refresh(EngResources_1);
+        ClearCollect(EngList, EngResources_1);
+        UpdateContext({GEng_visible:true, msgWindowEng:false, msgToDsiplayEng:"", msgWindowCancelEng:false, msgWindowOkEng:false, saveDisableEng:false, procEng:false});
+        If(NewEstimate, 
+             //exisiting eng list for new estimate should be empty
+             ClearCollect(estEngSecList_Current, Filter(ProjectEstEngResources, ProjectID = NewEstimateProjectID 
+             And Stage = NewEstimateStage And Version = NewEstimateVersion And Type = NewEstimateType));,
+             //existing eng list for est will may or may not have items
+             ClearCollect(estEngSecList_Current, Filter(ProjectEstEngResources, 
+             ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+        );
+        //Remove eng item(s) that are already part of the current est eng list
+        RemoveIf(EngList, eng_id in estEngSecList_Current.eng_id);
+    Orientation: =If(AddEngToEst.Width < AddEngToEst.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= AddEngToEst.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    RectQuickActionBar8_3 As rectangle:
+        DisabledFill: =RectQuickActionBar8_3.Fill
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =RectQuickActionBar8_3.BorderColor
+        Height: =88
+        HoverFill: =RectQuickActionBar8_3.Fill
+        PressedFill: =RectQuickActionBar8_3.Fill
+        Width: =Parent.Width
+        ZIndex: =1
+
+    LblAppName8_3 As label:
+        FocusedBorderColor: =LblAppName8_3.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =88
+        HoverBorderColor: =LblAppName8_3.BorderColor
+        HoverColor: =LblAppName8_3.Color
+        HoverFill: =LblAppName8_3.Fill
+        PressedBorderColor: =LblAppName8_3.BorderColor
+        PressedColor: =LblAppName8_3.Color
+        PressedFill: =LblAppName8_3.Fill
+        Size: =20
+        Text: =" ADD ESTIMATES' ENGINEERING COST SECTION"
+        Width: =Parent.Width
+        ZIndex: =2
+
+    Canvas2_4 As fluidGrid.fluidGridWithBlankCard:
+        BorderThickness: =0
+        Height: =Parent.Height - Canvas2_4.Y
+        Width: =Parent.Width
+        Y: =RectQuickActionBar8_3.Y + RectQuickActionBar8_3.Height
+        ZIndex: =3
+
+        DataCard13_3 As dataCard:
+            BorderColor: =RGBA(0, 0, 0, 1)
+            BorderStyle: =BorderStyle.Solid
+            BorderThickness: =0
+            DisplayMode: =DisplayMode.Edit
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =682
+            Width: =Parent.Width
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            "EstEngGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dotted
+                BorderThickness: =2
+                DisabledBorderColor: =EstEngGallery.BorderColor
+                DisabledFill: =EstEngGallery.Fill
+                Height: =382
+                HoverBorderColor: =EstEngGallery.BorderColor
+                HoverFill: =EstEngGallery.Fill
+                Items: =SortByColumns(Search(EngList, EstSrcEng.Text,"EngResource"), "EngResource", SortOrder.Ascending)
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =EstEngGallery.BorderColor
+                PressedBorderColor: =EstEngGallery.BorderColor
+                PressedFill: =EstEngGallery.Fill
+                TemplatePadding: =0
+                TemplateSize: =38
+                Visible: =GEng_visible
+                Width: =594
+                X: =8
+                Y: =93
+                ZIndex: =1
+
+                Title13_3 As label:
+                    Color: |-
+                        =If(Value(estEngQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    FocusedBorderColor: =Title13_3.BorderColor
+                    Height: =24
+                    HoverBorderColor: =Title13_3.BorderColor
+                    HoverColor: |-
+                        =If(Value(estEngQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    HoverFill: =Title13_3.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title13_3.BorderColor
+                    PressedColor: =Title13_3.Color
+                    PressedFill: =Title13_3.Fill
+                    Size: =11
+                    Text: =ThisItem.EngResource
+                    VerticalAlign: =VerticalAlign.Top
+                    Width: =326
+                    X: =9
+                    Y: =8
+                    ZIndex: =1
+
+                Separator13_3 As rectangle:
+                    DisabledFill: =Separator13_3.Fill
+                    FocusedBorderColor: =Separator13_3.BorderColor
+                    Height: =1
+                    HoverFill: =Separator13_3.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator13_3.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                estEngRate As text:
+                    Color: |-
+                        =If(Value(estEngQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    Default: |-
+                        =Text(ThisItem.Rate,"[$-en-US]$ ###,##0.00")
+                    DisplayMode: =DisplayMode.View
+                    FocusedBorderColor: =estEngRate.BorderColor
+                    Height: =24
+                    HoverColor: |-
+                        =If(Value(estEngQty.Text) > 0,
+                          Color.Green, Color.Black)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =estEngRate.HoverBorderColor
+                    PressedColor: =estEngRate.Color
+                    PressedFill: =estEngRate.Fill
+                    Size: =10
+                    Width: =101
+                    X: =353
+                    Y: =8
+                    ZIndex: =6
+
+                estEngQty As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: ="0"
+                    FocusedBorderColor: =estEngQty.BorderColor
+                    Format: =TextFormat.Number
+                    Height: =24
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =estEngQty.HoverBorderColor
+                    PressedColor: =estEngQty.Color
+                    PressedFill: =estEngQty.Fill
+                    Size: =10
+                    Width: =64
+                    X: =471
+                    Y: =8
+                    ZIndex: =8
+
+                Eng_add As icon.Add:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Color: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =Eng_add.Fill
+                    FocusedBorderColor: =Eng_add.BorderColor
+                    Height: =24
+                    HoverBorderColor: =ColorFade(Eng_add.BorderColor, 20%)
+                    HoverColor: =ColorFade(Eng_add.Color, 20%)
+                    HoverFill: =Eng_add.Fill
+                    Icon: =Icon.Add
+                    OnSelect: |-
+                        =If(NewEstimate,
+                           Collect(estEngSecList_Current,
+                            {ProjectID:NewEstimateProjectID, Stage: NewEstimateStage, Version: NewEstimateVersion, 
+                            Type: NewEstimateType,
+                            eng_id: ThisItem.eng_id,
+                            EngResource: ThisItem.EngResource,
+                            Rate: ThisItem.Rate,
+                            itemCount: Value(estEngQty.Text),
+                            totalValue: Value(estEngQty.Text) * ThisItem.Rate,
+                            AcctCategory: "Labour",
+                            Task: ThisItem.Task}
+                           ),
+                         Collect(estEngSecList_Current,
+                            {ProjectID:EstimatesGallery.Selected.ProjectID, Stage: EstimatesGallery.Selected.Stage, Version: EstimatesGallery.Selected.Version, 
+                            Type: EstimatesGallery.Selected.Type,
+                            eng_id: ThisItem.eng_id,
+                            EngResource: ThisItem.EngResource,
+                            Rate: ThisItem.Rate,
+                            itemCount: Value(estEngQty.Text),
+                            totalValue: Value(estEngQty.Text) * ThisItem.Rate,
+                            AcctCategory: "Labour",
+                            Task: ThisItem.Task}
+                           )
+                        );
+                        Remove(EngList, ThisItem);
+                    PressedBorderColor: =ColorFade(Eng_add.BorderColor, -20%)
+                    PressedColor: =ColorFade(Eng_add.Color, -20%)
+                    PressedFill: =Eng_add.Fill
+                    Width: =45
+                    X: =538
+                    Y: =8
+                    ZIndex: =9
+
+            EstSrcEng As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                FocusedBorderColor: =EstSrcEng.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =EstSrcEng.HoverBorderColor
+                PressedColor: =EstSrcEng.Color
+                PressedFill: =RGBA(255, 255, 255, 1)
+                Width: =304
+                X: =25
+                Y: =39
+                ZIndex: =2
+
+            Label56_9 As label:
+                FocusedBorderColor: =Label56_9.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =44
+                HoverBorderColor: =Label56_9.BorderColor
+                HoverColor: =Label56_9.Color
+                HoverFill: =Label56_9.Fill
+                PressedBorderColor: =Label56_9.BorderColor
+                PressedColor: =Label56_9.Color
+                PressedFill: =Label56_9.Fill
+                Size: =12
+                Text: ="Search Engineering resources"
+                Width: =304
+                X: =25
+                ZIndex: =3
+
+            Icon47_3 As icon.Search:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon47_3.Fill
+                FocusedBorderColor: =Icon47_3.BorderColor
+                Height: =44
+                HoverBorderColor: =ColorFade(Icon47_3.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon47_3.Color, 20%)
+                HoverFill: =Icon47_3.Fill
+                Icon: =Icon.Search
+                PressedBorderColor: =ColorFade(Icon47_3.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon47_3.Color, -20%)
+                PressedFill: =Icon47_3.Fill
+                Width: =36
+                X: =293
+                Y: =35
+                ZIndex: =7
+
+            Label77_13 As label:
+                FocusedBorderColor: =Label77_13.BorderColor
+                HoverBorderColor: =Label77_13.BorderColor
+                HoverColor: =Label77_13.Color
+                HoverFill: =Label77_13.Fill
+                PressedBorderColor: =Label77_13.BorderColor
+                PressedColor: =Label77_13.Color
+                PressedFill: =Label77_13.Fill
+                Size: =11
+                Text: ="Qty"
+                Width: =84
+                X: =476
+                Y: =57
+                ZIndex: =8
+
+            Label57_6 As label:
+                BorderThickness: =1
+                Color: =RGBA(0, 18, 107, 1)
+                Fill: =RGBA(241, 244, 249, 1)
+                FocusedBorderColor: =Label57_6.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =56
+                HoverBorderColor: =Label57_6.BorderColor
+                HoverColor: =Label57_6.Color
+                HoverFill: =Label57_6.Fill
+                PressedBorderColor: =Label57_6.BorderColor
+                PressedColor: =Label57_6.Color
+                PressedFill: =Label57_6.Fill
+                Size: =16
+                Text: =" ENGINEERING ITEMS SELECTED FOR THE ESTIMATE"
+                Width: =671
+                X: =692
+                ZIndex: =9
+
+            Label81_6 As label:
+                Color: =RGBA(255, 0, 0, 1)
+                FocusedBorderColor: =Label81_6.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =36
+                HoverBorderColor: =Label81_6.BorderColor
+                HoverColor: =Label81_6.Color
+                HoverFill: =Label81_6.Fill
+                PressedBorderColor: =Label81_6.BorderColor
+                PressedColor: =Label81_6.Color
+                PressedFill: =Label81_6.Fill
+                Text: ="Once you are satisfied with the Selected Eng list, Only then press save icon"
+                Underline: =true
+                Visible: =false
+                Width: =672
+                X: =677
+                Y: =63
+                ZIndex: =10
+
+            Label48_11 As label:
+                Color: =RGBA(168, 0, 0, 1)
+                FocusedBorderColor: =Label48_11.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =34
+                HoverBorderColor: =Label48_11.BorderColor
+                HoverColor: =Label48_11.Color
+                HoverFill: =Label48_11.Fill
+                Italic: =true
+                PressedBorderColor: =Label48_11.BorderColor
+                PressedColor: =Label48_11.Color
+                PressedFill: =Label48_11.Fill
+                Text: ="In case you want to delete ALL selected items "
+                Width: =370
+                X: =701
+                Y: =59
+                ZIndex: =11
+
+            Icon33_6 As icon.Trash:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon33_6.Fill
+                FocusedBorderColor: =Icon33_6.BorderColor
+                Height: =39
+                HoverBorderColor: =ColorFade(Icon33_6.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon33_6.Color, 20%)
+                HoverFill: =Icon33_6.Fill
+                Icon: =Icon.Trash
+                OnSelect: |-
+                    =If(NewEstimate,
+                       Remove(ProjectEstEngResources, Filter(ProjectEstEngResources, ProjectID = NewEstimateProjectID 
+                        And Stage = NewEstimateStage And Version = NewEstimateVersion And Type = NewEstimateType));
+                        UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                           And Version = NewEstimateVersion And Type = NewEstimateType, 
+                           {Eng_P_Cost: 0.0, Eng_D_Cost: 0.0,
+                           p_percentage: 0.5, d_percentage: 0.5,
+                           Quote_Cost: 0.0}),
+                        Remove(ProjectEstEngResources, Filter(ProjectEstEngResources, 
+                        ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage And 
+                        Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                        UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And 
+                         Stage = EstimatesGallery.Selected.Stage 
+                         And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                         {Eng_P_Cost: 0.0, Eng_D_Cost: 0.0,
+                           p_percentage: 0.5, d_percentage: 0.5,
+                           Quote_Cost: 0.0})
+                     );
+                    Refresh(EngResources_1);
+                    ClearCollect(EngList, EngResources_1);
+                    UpdateContext({GEng_visible:true, msgWindowEng:false, msgToDsiplayEng:"", msgWindowCancelEng:false, msgWindowOkEng:false, saveDisableEng:false, procEng:false});
+                    If(NewEstimate, 
+                         //exisiting eng list for new estimate should be empty
+                         ClearCollect(estEngSecList_Current, Filter(ProjectEstEngResources, ProjectID = NewEstimateProjectID 
+                         And Stage = NewEstimateStage And Version = NewEstimateVersion And Type = NewEstimateType));,
+                         //existing eng list for est will may or may not have items
+                         ClearCollect(estEngSecList_Current, Filter(ProjectEstEngResources, 
+                         ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                    );
+                    //Remove eng item(s) that are already part of the current est eng list
+                    RemoveIf(EngList, eng_id in estEngSecList_Current.eng_id);
+                PressedBorderColor: =ColorFade(Icon33_6.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon33_6.Color, -20%)
+                PressedFill: =Icon33_6.Fill
+                Width: =62
+                X: =1071
+                Y: =59
+                ZIndex: =12
+
+            estSrcSelectedEng As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: =""
+                FocusedBorderColor: =estSrcSelectedEng.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =estSrcSelectedEng.HoverBorderColor
+                PressedColor: =estSrcSelectedEng.Color
+                PressedFill: =estSrcSelectedEng.Fill
+                X: =933
+                Y: =105
+                ZIndex: =13
+
+            Label85_3 As label:
+                FocusedBorderColor: =Label85_3.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =Label85_3.BorderColor
+                HoverColor: =Label85_3.Color
+                HoverFill: =Label85_3.Fill
+                PressedBorderColor: =Label85_3.BorderColor
+                PressedColor: =Label85_3.Color
+                PressedFill: =Label85_3.Fill
+                Size: =12
+                Text: ="Search selected eng items"
+                Width: =237
+                X: =718
+                Y: =109
+                ZIndex: =14
+
+            Icon49_3 As icon.Search:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Color: =RGBA(36, 76, 90, 1)
+                DisabledFill: =Icon49_3.Fill
+                FocusedBorderColor: =Icon49_3.BorderColor
+                Height: =40
+                HoverBorderColor: =ColorFade(Icon49_3.BorderColor, 20%)
+                HoverColor: =ColorFade(Icon49_3.Color, 20%)
+                HoverFill: =Icon49_3.Fill
+                Icon: =Icon.Search
+                PressedBorderColor: =ColorFade(Icon49_3.BorderColor, -20%)
+                PressedColor: =ColorFade(Icon49_3.Color, -20%)
+                PressedFill: =Icon49_3.Fill
+                Width: =40
+                X: =1213
+                Y: =105
+                ZIndex: =15
+
+            "EstSelectedEngGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+                BorderStyle: =BorderStyle.Dotted
+                BorderThickness: =2
+                DisabledBorderColor: =EstSelectedEngGallery.BorderColor
+                DisabledFill: =EstSelectedEngGallery.Fill
+                Height: =286
+                HoverBorderColor: =EstSelectedEngGallery.BorderColor
+                HoverFill: =EstSelectedEngGallery.Fill
+                Items: |+
+                    =SortByColumns(Search(estEngSecList_Current, estSrcSelectedEng.Text, "EngResource"), "EngResource", SortOrder.Ascending)
+                    
+                Layout: =Layout.Vertical
+                LoadingSpinnerColor: =EstSelectedEngGallery.BorderColor
+                PressedBorderColor: =EstSelectedEngGallery.BorderColor
+                PressedFill: =EstSelectedEngGallery.Fill
+                ShowNavigation: =true
+                ShowScrollbar: =false
+                TemplatePadding: =0
+                TemplateSize: =43
+                Width: =729
+                X: =628
+                Y: =189
+                ZIndex: =16
+
+                Title1_6 As label:
+                    FocusedBorderColor: =Title1_6.BorderColor
+                    Height: =28
+                    HoverBorderColor: =Title1_6.BorderColor
+                    HoverColor: =Title1_6.Color
+                    HoverFill: =Title1_6.Fill
+                    OnSelect: =Select(Parent)
+                    Overflow: =Overflow.Scroll
+                    PaddingBottom: =0
+                    PaddingLeft: =0
+                    PaddingRight: =0
+                    PaddingTop: =0
+                    PressedBorderColor: =Title1_6.BorderColor
+                    PressedColor: =Title1_6.Color
+                    PressedFill: =Title1_6.Fill
+                    Size: =10
+                    Text: =ThisItem.EngResource
+                    Width: =350
+                    X: =11
+                    Y: =9
+                    ZIndex: =1
+
+                Separator1_6 As rectangle:
+                    DisabledFill: =Separator1_6.Fill
+                    FocusedBorderColor: =Separator1_6.BorderColor
+                    Height: =1
+                    HoverFill: =Separator1_6.Fill
+                    OnSelect: =Select(Parent)
+                    PressedFill: =Separator1_6.Fill
+                    Width: =Parent.TemplateWidth
+                    Y: =Parent.TemplateHeight - 1
+                    ZIndex: =5
+
+                Icon18_6 As icon.Trash:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Color: =RGBA(36, 76, 90, 1)
+                    DisabledFill: =Icon18_6.Fill
+                    FocusedBorderColor: =Icon18_6.BorderColor
+                    Height: =30
+                    HoverBorderColor: =ColorFade(Icon18_6.BorderColor, 20%)
+                    HoverColor: =ColorFade(Icon18_6.Color, 20%)
+                    HoverFill: =Icon18_6.Fill
+                    Icon: =Icon.Trash
+                    OnSelect: |-
+                        =If(GEng_visible,
+                            Collect(EngList, LookUp(EngResources_1, eng_id = ThisItem.eng_id)), false);
+                        Remove(estEngSecList_Current, ThisItem);
+                    PressedBorderColor: =ColorFade(Icon18_6.BorderColor, -20%)
+                    PressedColor: =ColorFade(Icon18_6.Color, -20%)
+                    PressedFill: =Icon18_6.Fill
+                    Width: =33
+                    X: =684
+                    Y: =4
+                    ZIndex: =6
+
+                Label83_6 As label:
+                    FocusedBorderColor: =Label83_6.BorderColor
+                    Height: =31
+                    HoverBorderColor: =Label83_6.BorderColor
+                    HoverColor: =Label83_6.Color
+                    HoverFill: =Label83_6.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label83_6.BorderColor
+                    PressedColor: =Label83_6.Color
+                    PressedFill: =Label83_6.Fill
+                    Size: =10
+                    Text: |-
+                        =Text(TextInput9_2.Text * ThisItem.Rate,"[$-en-US]$ ###,##0.00")
+                    Width: =91
+                    X: =532
+                    Y: =1
+                    ZIndex: =8
+
+                Label86_3 As label:
+                    FocusedBorderColor: =Label86_3.BorderColor
+                    Height: =22
+                    HoverBorderColor: =Label86_3.BorderColor
+                    HoverColor: =Label86_3.Color
+                    HoverFill: =Label86_3.Fill
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =Label86_3.BorderColor
+                    PressedColor: =Label86_3.Color
+                    PressedFill: =Label86_3.Fill
+                    Size: =10
+                    Text: |-
+                        =Text(ThisItem.Rate,"[$-en-US]$ ###,##0.00")
+                    Width: =93
+                    X: =439
+                    Y: =9
+                    ZIndex: =9
+
+                TextInput9_2 As text:
+                    BorderColor: =RGBA(36, 76, 90, 1)
+                    Default: =ThisItem.itemCount
+                    Format: =TextFormat.Number
+                    Height: =22
+                    HoverBorderColor: =RGBA(36, 76, 90, 1)
+                    OnChange: |-
+                        =Patch(estEngSecList_Current, ThisItem, 
+                            {itemCount: Value(TextInput9_2.Text), 
+                            totalValue: Value(TextInput9_2.Text) * ThisItem.Rate})
+                    OnSelect: =Select(Parent)
+                    PressedBorderColor: =TextInput9_2.HoverBorderColor
+                    PressedColor: =TextInput9_2.Color
+                    PressedFill: =TextInput9_2.Fill
+                    Size: =11
+                    Width: =52
+                    X: =374
+                    Y: =9
+                    ZIndex: =11
+
+            Label77_14 As label:
+                FocusedBorderColor: =Label77_14.BorderColor
+                Height: =36
+                HoverBorderColor: =Label77_14.BorderColor
+                HoverColor: =Label77_14.Color
+                HoverFill: =Label77_14.Fill
+                PressedBorderColor: =Label77_14.BorderColor
+                PressedColor: =Label77_14.Color
+                PressedFill: =Label77_14.Fill
+                Size: =11
+                Text: ="Qty"
+                Width: =71
+                X: =1000
+                Y: =159
+                ZIndex: =17
+
+            Label77_12 As label:
+                FocusedBorderColor: =Label77_12.BorderColor
+                Height: =36
+                HoverBorderColor: =Label77_12.BorderColor
+                HoverColor: =Label77_12.Color
+                HoverFill: =Label77_12.Fill
+                PressedBorderColor: =Label77_12.BorderColor
+                PressedColor: =Label77_12.Color
+                PressedFill: =Label77_12.Fill
+                Size: =11
+                Text: ="Rate"
+                Width: =71
+                X: =1071
+                Y: =159
+                ZIndex: =19
+
+            Label88 As label:
+                FocusedBorderColor: =Label88.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =33
+                HoverBorderColor: =Label88.BorderColor
+                HoverColor: =Label88.Color
+                HoverFill: =Label88.Fill
+                PressedBorderColor: =Label88.BorderColor
+                PressedColor: =Label88.Color
+                PressedFill: =Label88.Fill
+                Text: |-
+                    ="5% Disbursements :"
+                Width: =239
+                X: =625
+                Y: =513
+                ZIndex: =20
+
+            engCost_disbursementLabel As label:
+                FocusedBorderColor: =engCost_disbursementLabel.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =29
+                HoverBorderColor: =engCost_disbursementLabel.BorderColor
+                HoverColor: =engCost_disbursementLabel.Color
+                HoverFill: =engCost_disbursementLabel.Fill
+                PressedBorderColor: =engCost_disbursementLabel.BorderColor
+                PressedColor: =engCost_disbursementLabel.Color
+                PressedFill: =engCost_disbursementLabel.Fill
+                Text: |-
+                    =Text(Value(EstEngLabTotalCost_2.Text) * 0.05, "[$-en-US]$ ###,##0.00 ")
+                X: =1160
+                Y: =519
+                ZIndex: =21
+
+            Label91 As label:
+                FocusedBorderColor: =Label91.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =31
+                HoverBorderColor: =Label91.BorderColor
+                HoverColor: =Label91.Color
+                HoverFill: =Label91.Fill
+                PressedBorderColor: =Label91.BorderColor
+                PressedColor: =Label91.Color
+                PressedFill: =Label91.Fill
+                Text: |-
+                    ="Total Engineering Cost :"
+                Width: =260
+                X: =625
+                Y: =555
+                ZIndex: =22
+
+            TotalEngCost_WithDis_Label As label:
+                FocusedBorderColor: =TotalEngCost_WithDis_Label.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =31
+                HoverBorderColor: =TotalEngCost_WithDis_Label.BorderColor
+                HoverColor: =TotalEngCost_WithDis_Label.Color
+                HoverFill: =TotalEngCost_WithDis_Label.Fill
+                PressedBorderColor: =TotalEngCost_WithDis_Label.BorderColor
+                PressedColor: =TotalEngCost_WithDis_Label.Color
+                PressedFill: =TotalEngCost_WithDis_Label.Fill
+                Text: |-
+                    =Text(Sum(Value(engCost_disbursementLabel.Text) + Value(EstEngLabTotalCost_2.Text)), "[$-en-US]$ ###,##0.00 ")
+                Width: =185
+                X: =1160
+                Y: =555
+                ZIndex: =23
+
+            QuoteCost As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: |-
+                    =If(NewEstimate,
+                         LookUp(Estimates, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                           And Version = NewEstimateVersion And Type = NewEstimateType, Text(Quote_Cost,"[$-en-US]$ ###,##0.00")),
+                        LookUp(Estimates,  ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                            And Version  = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                        Text(Quote_Cost,"[$-en-US]$ ###,##0.00"))
+                     )
+                FocusedBorderColor: =QuoteCost.BorderColor
+                Height: =28
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =QuoteCost.HoverBorderColor
+                PressedColor: =QuoteCost.Color
+                PressedFill: =QuoteCost.Fill
+                Width: =156
+                X: =1155
+                Y: =598
+                ZIndex: =24
+
+            Label41 As label:
+                FocusedBorderColor: =Label41.BorderColor
+                FontWeight: =FontWeight.Bold
+                Height: =28
+                HoverBorderColor: =Label41.BorderColor
+                HoverColor: =Label41.Color
+                HoverFill: =Label41.Fill
+                PressedBorderColor: =Label41.BorderColor
+                PressedColor: =Label41.Color
+                PressedFill: =Label41.Fill
+                Text: |-
+                    ="Add Quote Labour :"
+                Width: =198
+                X: =653
+                Y: =598
+                ZIndex: =25
+
+            TotalLabel_2 As label:
+                FocusedBorderColor: =TotalLabel_2.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =25
+                HoverBorderColor: =TotalLabel_2.BorderColor
+                HoverColor: =TotalLabel_2.Color
+                HoverFill: =TotalLabel_2.Fill
+                PressedBorderColor: =TotalLabel_2.BorderColor
+                PressedColor: =TotalLabel_2.Color
+                PressedFill: =TotalLabel_2.Fill
+                Text: ="Total"
+                X: =625
+                Y: =478
+                ZIndex: =26
+
+            EstEngLabTotalCost_2 As label:
+                FocusedBorderColor: =EstEngLabTotalCost_2.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =EstEngLabTotalCost_2.BorderColor
+                HoverColor: =EstEngLabTotalCost_2.Color
+                HoverFill: =EstEngLabTotalCost_2.Fill
+                PressedBorderColor: =EstEngLabTotalCost_2.BorderColor
+                PressedColor: =EstEngLabTotalCost_2.Color
+                PressedFill: =EstEngLabTotalCost_2.Fill
+                Text: |-
+                    =Text(Sum(estEngSecList_Current,totalValue), "[$-en-US]$ ###,##0.00 ")
+                X: =1160
+                Y: =478
+                ZIndex: =27
+
+            totalEngHRsLabel As label:
+                FocusedBorderColor: =totalEngHRsLabel.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =totalEngHRsLabel.BorderColor
+                HoverColor: =totalEngHRsLabel.Color
+                HoverFill: =totalEngHRsLabel.Fill
+                PressedBorderColor: =totalEngHRsLabel.BorderColor
+                PressedColor: =totalEngHRsLabel.Color
+                PressedFill: =totalEngHRsLabel.Fill
+                Text: |-
+                    =Text(Sum(estEngSecList_Current,itemCount), "[$-en-US] ###,##0.00 ")
+                Width: =86
+                X: =996
+                Y: =478
+                ZIndex: =28
+
+            P_split_value_2 As label:
+                FocusedBorderColor: =P_split_value_2.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =P_split_value_2.BorderColor
+                HoverColor: =P_split_value_2.Color
+                HoverFill: =P_split_value_2.Fill
+                PressedBorderColor: =P_split_value_2.BorderColor
+                PressedColor: =P_split_value_2.Color
+                PressedFill: =P_split_value_2.Fill
+                Text: |-
+                    =If((Value(P_percentage.Text) + Value(D_percentage.Text)) = 1.00,
+                       Text((TotalEngCost_WithDis_Label.Text) * Value(P_percentage.Text), "[$-en-US]$ ###,##0.00 "),
+                       0.0)
+                X: =222
+                Y: =546
+                ZIndex: =29
+
+            D_split_value_2 As label:
+                FocusedBorderColor: =D_split_value_2.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =D_split_value_2.BorderColor
+                HoverColor: =D_split_value_2.Color
+                HoverFill: =D_split_value_2.Fill
+                PressedBorderColor: =D_split_value_2.BorderColor
+                PressedColor: =D_split_value_2.Color
+                PressedFill: =D_split_value_2.Fill
+                Text: |-
+                    =If((Value(P_percentage.Text) + Value(D_percentage.Text)) = 1.00,
+                      Text((TotalEngCost_WithDis_Label.Text) * Value(D_percentage.Text), "[$-en-US]$ ###,##0.00 "),
+                      0.0)
+                X: =222
+                Y: =605
+                ZIndex: =30
+
+            P_lump_entry_label_2 As label:
+                Color: = Color.Black
+                FocusedBorderColor: =P_lump_entry_label_2.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =39
+                HoverBorderColor: =P_lump_entry_label_2.BorderColor
+                HoverColor: =P_lump_entry_label_2.Color
+                HoverFill: =P_lump_entry_label_2.Fill
+                PressedBorderColor: =P_lump_entry_label_2.BorderColor
+                PressedColor: =P_lump_entry_label_2.Color
+                PressedFill: =P_lump_entry_label_2.Fill
+                Text: ="P %"
+                Width: =59
+                X: =33
+                Y: =551
+                ZIndex: =31
+
+            D_lump_entry_label_2 As label:
+                Color: =Color.Black
+                FocusedBorderColor: =D_lump_entry_label_2.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =D_lump_entry_label_2.BorderColor
+                HoverColor: =D_lump_entry_label_2.Color
+                HoverFill: =D_lump_entry_label_2.Fill
+                PressedBorderColor: =D_lump_entry_label_2.BorderColor
+                PressedColor: =D_lump_entry_label_2.Color
+                PressedFill: =D_lump_entry_label_2.Fill
+                Text: ="D %"
+                Width: =44
+                X: =33
+                Y: =606
+                ZIndex: =32
+
+            D_percentage As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: |-
+                    =/*If(NewEstimate,
+                    	 LookUp(Estimates, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                         And Version = NewEstimateVersion And Type = DataCardValue2_2.Text, Text(d_percentage,"[$-en-US] ###,##0.00")),
+                        LookUp(Estimates,  ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                            And Version  = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                        Text(d_percentage,"[$-en-US] ###,##0.00"))
+                     )*/
+                    /*If(
+                        Value(EstEngLabTotalCost_2.Text) > 0,
+                        Text(
+                            (1 - (Sum(
+                                Filter(
+                                    estEngSecList_Current,
+                                    Task = "P"
+                                ),
+                                totalValue
+                            ) * 1.05 - Sum(
+                                Filter(
+                                    estEngSecList_Current,
+                                   Task = "P"
+                                ),
+                                totalValue
+                            ) / Sum(
+                                estEngSecList_Current,
+                                totalValue
+                            ) * Value(QuoteCost.Text)) / (Sum(Value(engCost_disbursementLabel.Text) + Value(EstEngLabTotalCost_2.Text)))),
+                            "[$-en-US] ###,##0.0000"
+                        ),
+                        0
+                    )*/
+                    
+                    If(
+                        Value(EstEngLabTotalCost_2.Text) > 0,
+                        Text(
+                            (1 - (Sum(
+                            Filter(
+                                estEngSecList_Current,
+                                Task = "P"
+                            ),
+                            totalValue
+                        ) / (Sum(
+                            Filter(
+                                estEngSecList_Current,
+                                Task = "P"
+                            ),
+                            totalValue
+                        ) + Sum(
+                            Filter(
+                                estEngSecList_Current,
+                                Task = "D"
+                            ),
+                            totalValue
+                        ) ) ) ),
+                            "[$-en-US] ###,##0.0000"
+                        ),
+                        0
+                    )
+                DisplayMode: =DisplayMode.View
+                FocusedBorderColor: =D_percentage.BorderColor
+                Format: =TextFormat.Number
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =D_percentage.HoverBorderColor
+                PressedColor: =D_percentage.Color
+                PressedFill: =D_percentage.Fill
+                Width: =93
+                X: =77
+                Y: =606
+                ZIndex: =33
+
+            P_percentage As text:
+                BorderColor: =RGBA(36, 76, 90, 1)
+                Default: |+
+                    =/*If(NewEstimate, 
+                    	 LookUp(Estimates, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                         And Version = NewEstimateVersion And Type = DataCardValue2_2.Text, Text(p_percentage, "[$-en-US] ###,##0.00")),
+                        LookUp(Estimates,  ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage 
+                            And Version  = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                        Text(p_percentage,"[$-en-US] ###,##0.00"))
+                     ) */
+                    /*If(
+                       Value(EstEngLabTotalCost_2.Text) > 0,
+                     Text((Sum(
+                            Filter(
+                                estEngSecList_Current,
+                                Task = "P"
+                            ),
+                            totalValue
+                        ) * 1.05 
+                        - Sum(
+                            Filter(
+                                estEngSecList_Current,
+                                Task = "P"
+                            ),
+                            totalValue
+                        )/Sum(
+                            estEngSecList_Current,
+                            totalValue
+                        ) * Value(QuoteCost.Text)) / ( Sum(Value(engCost_disbursementLabel.Text) + Value(EstEngLabTotalCost_2.Text))),"[$-en-US] ###,##0.0000"),0)*/
+                    
+                    
+                    
+                    If(
+                       Value(EstEngLabTotalCost_2.Text) > 0,
+                     Text(Sum(
+                            Filter(
+                                estEngSecList_Current,
+                                Task = "P"
+                            ),
+                            totalValue
+                        ) / (Sum(
+                            Filter(
+                                estEngSecList_Current,
+                                Task = "P"
+                            ),
+                            totalValue
+                        ) + Sum(
+                            Filter(
+                                estEngSecList_Current,
+                                Task = "D"
+                            ),
+                            totalValue
+                        ) )
+                        ,"[$-en-US] ###,##0.0000"),0)
+                    
+                DisplayMode: =DisplayMode.View
+                FocusedBorderColor: =P_percentage.BorderColor
+                Format: =TextFormat.Number
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                PressedBorderColor: =P_percentage.HoverBorderColor
+                PressedColor: =P_percentage.Color
+                PressedFill: =P_percentage.Fill
+                Width: =93
+                X: =77
+                Y: =550
+                ZIndex: =34
+
+            Label118 As label:
+                FontWeight: =FontWeight.Semibold
+                Text: ="Please enter split percentages for P & D, e.g. 0.30 is 30%"
+                Visible: =false
+                Width: =482
+                X: =25
+                Y: =488
+                ZIndex: =35
+
+            Label119 As label:
+                Size: =16
+                Text: ="="
+                Width: =45
+                X: =186
+                Y: =550
+                ZIndex: =36
+
+            Label119_1 As label:
+                Size: =16
+                Text: ="="
+                Width: =45
+                X: =186
+                Y: =606
+                ZIndex: =37
+
+            EstEngLabTotalCost_3 As label:
+                FocusedBorderColor: =EstEngLabTotalCost_3.BorderColor
+                FontWeight: =FontWeight.Semibold
+                HoverBorderColor: =EstEngLabTotalCost_3.BorderColor
+                HoverColor: =EstEngLabTotalCost_3.Color
+                HoverFill: =EstEngLabTotalCost_3.Fill
+                PressedBorderColor: =EstEngLabTotalCost_3.BorderColor
+                PressedColor: =EstEngLabTotalCost_3.Color
+                PressedFill: =EstEngLabTotalCost_3.Fill
+                Text: |-
+                    =Text(Sum(Filter(estEngSecList_Current, EngResource = "Clerical" || EngResource = "Project Manager"), totalValue), "[$-en-US]$ ###,##0.00 ")
+                X: =692
+                Y: =479
+                ZIndex: =38
+
+            Label160 As label:
+                Height: =36
+                Text: |-
+                    =Text(
+                        Sum(
+                            Filter(
+                                estEngSecList_Current,
+                                EngResource = "Clerical" || EngResource = "Project Manager" || EngResource = "Senior Project Manager" || EngResource = "PLT Inspector" || EngResource = "Project Assisstant" || EngResource = "Specialist - Supply Chain Management"
+                            ),
+                            totalValue
+                        ) * 1.05 
+                        - Sum(
+                            Filter(
+                                estEngSecList_Current,
+                                EngResource = "Clerical" || EngResource = "Project Manager" || EngResource = "Senior Project Manager" || EngResource = "PLT Inspector" || EngResource = "Project Assisstant" || EngResource = "Specialist - Supply Chain Management"
+                            ),
+                            totalValue
+                        )/Sum(
+                            estEngSecList_Current,
+                            totalValue
+                        ) * Value(QuoteCost.Text),
+                        "[$-en-US]$ ###,##0.00 "
+                    )
+                Visible: =false
+                Width: =146
+                X: =393
+                Y: =551
+                ZIndex: =39
+
+            Label161 As label:
+                Text: |-
+                    =Text(
+                        Sum(Value(engCost_disbursementLabel.Text) + Value(EstEngLabTotalCost_2.Text)) - Value(QuoteCost.Text) - (Sum(
+                            Filter(
+                                estEngSecList_Current,
+                                EngResource = "Clerical" || EngResource = "Project Manager" || EngResource = "Senior Project Manager" || EngResource = "PLT Inspector" || EngResource = "Project Assisstant" || EngResource = "Specialist - Supply Chain Management"
+                            ),
+                            totalValue
+                        ) * 1.05 - Sum(
+                            Filter(
+                                estEngSecList_Current,
+                                EngResource = "Clerical" || EngResource = "Project Manager" || EngResource = "Senior Project Manager" || EngResource = "PLT Inspector" || EngResource = "Project Assisstant" || EngResource = "Specialist - Supply Chain Management"
+                            ),
+                            totalValue
+                        ) / Sum(
+                            estEngSecList_Current,
+                            totalValue
+                        ) * Value(QuoteCost.Text)),
+                        "[$-en-US]$ ###,##0.00 "
+                    )
+                Visible: =false
+                X: =393
+                Y: =605
+                ZIndex: =40
+
+            Label41_1 As label:
+                FocusedBorderColor: =Label41_1.BorderColor
+                FontWeight: =FontWeight.Bold
+                Height: =36
+                HoverBorderColor: =Label41_1.BorderColor
+                HoverColor: =Label41_1.Color
+                HoverFill: =Label41_1.Fill
+                PressedBorderColor: =Label41_1.BorderColor
+                PressedColor: =Label41_1.Color
+                PressedFill: =Label41_1.Fill
+                Text: |-
+                    ="Total Engineering Cost + Quote Labour :"
+                Width: =354
+                X: =625
+                Y: =631
+                ZIndex: =41
+
+            TotalEngCost_WithDis_Label_1 As label:
+                FocusedBorderColor: =TotalEngCost_WithDis_Label_1.BorderColor
+                FontWeight: =FontWeight.Semibold
+                Height: =31
+                HoverBorderColor: =TotalEngCost_WithDis_Label_1.BorderColor
+                HoverColor: =TotalEngCost_WithDis_Label_1.Color
+                HoverFill: =TotalEngCost_WithDis_Label_1.Fill
+                PressedBorderColor: =TotalEngCost_WithDis_Label_1.BorderColor
+                PressedColor: =TotalEngCost_WithDis_Label_1.Color
+                PressedFill: =TotalEngCost_WithDis_Label_1.Fill
+                Text: |-
+                    =Text(Text(Value(TotalEngCost_WithDis_Label.Text) + Value(QuoteCost.Text)), "[$-en-US]$ ###,##0.00 ") 
+                Width: =185
+                X: =1160
+                Y: =631
+                ZIndex: =42
+
+    Icon45_3 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon45_3.Fill
+        FocusedBorderColor: =Icon45_3.BorderColor
+        HoverBorderColor: =ColorFade(Icon45_3.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon45_3.Color, 20%)
+        HoverFill: =Icon45_3.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =UpdateContext({saveDisableEng:true,  msgWindowEng:true, msgWindowOkEng:true, msgWindowCancelEng:true, procEng:true,
+             msgToDsiplayEng:""});
+            /* msgToDsiplayEng:Concatenate("Choose one of the following options, it is recommended to save your work before going back", Char(13), Char(13), "Press Save to save your work, if needed.", Char(13), Char(13), "Press Cancel to stay on this screen.",
+            Char(13), Char(13), "Press Proceed Without Save to go back and ignore the changes you made.")*/
+        PressedBorderColor: =ColorFade(Icon45_3.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon45_3.Color, -20%)
+        PressedFill: =Icon45_3.Fill
+        Tooltip: ="Go back"
+        X: =1280
+        Y: =12
+        ZIndex: =4
+
+    SaveEngToEst As icon.Save:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =SaveEngToEst.Fill
+        DisplayMode: =If(Not(saveDisableEng), DisplayMode.Edit, DisplayMode.Disabled)
+        FocusedBorderColor: =SaveEngToEst.BorderColor
+        HoverBorderColor: =ColorFade(SaveEngToEst.BorderColor, 20%)
+        HoverColor: =ColorFade(SaveEngToEst.Color, 20%)
+        HoverFill: =SaveEngToEst.Fill
+        Icon: =Icon.Save
+        OnSelect: |-
+            =If(NewEstimate,
+               Remove(ProjectEstEngResources, 
+                  Filter(ProjectEstEngResources, ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType));
+                UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, 
+                   {Eng_P_Cost: Value(P_split_value_2.Text), Eng_D_Cost: Value(D_split_value_2.Text),
+                   p_percentage: Value(P_percentage.Text), d_percentage: Value(D_percentage.Text),
+                   Quote_Cost: Value(QuoteCost.Text)}),
+                Remove(ProjectEstEngResources, 
+                  Filter(ProjectEstEngResources, ProjectID = EstimatesGallery.Selected.ProjectID And
+                   Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And 
+                   Type = EstimatesGallery.Selected.Type));
+                UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And 
+                   Stage = EstimatesGallery.Selected.Stage And Version = EstimatesGallery.Selected.Version And 
+                   Type = EstimatesGallery.Selected.Type, 
+                {Eng_P_Cost: Value(P_split_value_2.Text), Eng_D_Cost: Value(D_split_value_2.Text),
+                   p_percentage: Value(P_percentage.Text), d_percentage: Value(D_percentage.Text),
+                   Quote_Cost: Value(QuoteCost.Text)});
+             );
+            Collect(ProjectEstEngResources, estEngSecList_Current);
+            If(IsEmpty(Errors(ProjectEstEngResources)),
+                   // UpdateContext({msgWindow:true, msgToDsiplay:"Changes made to estimate's material section were successful!"})
+                    true,
+                    UpdateContext({msgWindowEng:true, msgWindowCancelEng:true, msgToDsiplayEng:"Changes made to estimate's Engeering section failed, contact IT"})
+            );
+        PressedBorderColor: =ColorFade(SaveEngToEst.BorderColor, -20%)
+        PressedColor: =ColorFade(SaveEngToEst.Color, -20%)
+        PressedFill: =SaveEngToEst.Fill
+        Tooltip: ="Save changes"
+        Visible: =false
+        X: =1195
+        Y: =12
+        ZIndex: =5
+
+    estEngPopUpWindow As rectangle:
+        BorderStyle: =BorderStyle.Dashed
+        BorderThickness: =2
+        DisabledFill: =estEngPopUpWindow.Fill
+        Fill: =RGBA(241, 244, 249, 0.9)
+        FocusedBorderColor: =estEngPopUpWindow.BorderColor
+        Height: =680
+        HoverFill: =estEngPopUpWindow.Fill
+        PressedFill: =estEngPopUpWindow.Fill
+        Visible: =msgWindowEng
+        Width: =1326
+        X: =18
+        Y: =88
+        ZIndex: =6
+
+    estEngMsg As label:
+        Color: =RGBA(168, 0, 0, 1)
+        FocusedBorderColor: =estEngMsg.BorderColor
+        FontWeight: =FontWeight.Bold
+        Height: =237
+        HoverBorderColor: =estEngMsg.BorderColor
+        HoverColor: =estEngMsg.Color
+        HoverFill: =estEngMsg.Fill
+        PressedBorderColor: =estEngMsg.BorderColor
+        PressedColor: =estEngMsg.Color
+        PressedFill: =estEngMsg.Fill
+        Size: =18
+        Text: =Text(msgToDsiplayEng)
+        VerticalAlign: =VerticalAlign.Top
+        Visible: =msgWindowEng
+        Width: =1198
+        X: =82
+        Y: =208
+        ZIndex: =7
+
+    okSaveDone_6 As button:
+        BorderColor: =ColorFade(okSaveDone_6.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =okSaveDone_6.BorderColor
+        Height: =60
+        HoverBorderColor: =ColorFade(okSaveDone_6.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =If(NewEstimate,
+               Remove(ProjectEstEngResources, Filter(ProjectEstEngResources, ProjectID = NewEstimateProjectID 
+                And Stage = NewEstimateStage And Version = NewEstimateVersion And Type = NewEstimateType));
+               UpdateIf(Estimates,  ProjectID = NewEstimateProjectID And Stage = NewEstimateStage 
+                   And Version = NewEstimateVersion And Type = NewEstimateType, 
+                   {Eng_P_Cost: Value(P_split_value_2.Text), Eng_D_Cost: Value(D_split_value_2.Text),
+                   p_percentage: Value(P_percentage.Text), d_percentage: Value(D_percentage.Text),
+                   Quote_Cost: Value(QuoteCost.Text)}),
+                Remove(ProjectEstEngResources, Filter(ProjectEstEngResources, 
+                  ProjectID = EstimatesGallery.Selected.ProjectID And Stage = EstimatesGallery.Selected.Stage And 
+                  Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type));
+                UpdateIf(Estimates, ProjectID = EstimatesGallery.Selected.ProjectID And 
+                 Stage = EstimatesGallery.Selected.Stage 
+                 And Version = EstimatesGallery.Selected.Version And Type = EstimatesGallery.Selected.Type, 
+                 {Eng_P_Cost: Value(P_split_value_2.Text), Eng_D_Cost: Value(D_split_value_2.Text),
+                   p_percentage: Value(P_percentage.Text), d_percentage: Value(D_percentage.Text),
+                   Quote_Cost: Value(QuoteCost.Text)});
+             );
+            Collect(ProjectEstEngResources, estEngSecList_Current);
+            If(IsEmpty(Errors(ProjectEstEngResources)),
+                    UpdateContext({GEng_visible:false, msgWindowEng:false, msgWindowCancelEng:false, msgToDsiplayEng:"", msgWindowOkEng:false, procEng:false});
+                    Navigate(MainEstimateScreen, ScreenTransition.Fade);,
+                    //UpdateContext({msgWindowEng:true, msgToDsiplayEng:"Changes made to estimate's Engineering section failed, contact IT", msgWindowCancelEng:true})
+                    UpdateContext({msgWindowEng:false, msgWindowCancelEng:true});
+                    Navigate(MainEstimateScreen, ScreenTransition.Fade)
+            );
+            Reset(estSrcSelectedEng);
+            Reset(EstSrcEng);Reset(P_percentage);Reset(D_percentage); Reset(QuoteCost);
+        PressedBorderColor: =okSaveDone_6.Fill
+        PressedColor: =okSaveDone_6.Fill
+        PressedFill: =okSaveDone_6.Color
+        Text: ="Save"
+        Visible: = msgWindowOkEng
+        X: =322
+        Y: =485
+        ZIndex: =8
+
+    CancelStay_6 As button:
+        BorderColor: =ColorFade(CancelStay_6.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelStay_6.BorderColor
+        Height: =60
+        HoverBorderColor: =ColorFade(CancelStay_6.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({saveDisableEng:false,msgWindowEng:false, msgWindowCancelEng:false, msgToDsiplayEng:"", msgWindowOkEng:false, procEng:false})
+        PressedBorderColor: =CancelStay_6.Fill
+        PressedColor: =CancelStay_6.Fill
+        PressedFill: =CancelStay_6.Color
+        Text: ="Cancel"
+        Visible: =msgWindowCancelEng
+        X: =727
+        Y: =485
+        ZIndex: =9
+
+    proceedEng As button:
+        BorderColor: =ColorFade(proceedEng.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        Height: =60
+        HoverBorderColor: =ColorFade(proceedEng.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =UpdateContext({GEng_visible:false, msgWindowEng:false, msgWindowCancelEng:false, msgToDsiplayEng:"", msgWindowOkEng:false, procEng:false});
+            Navigate(MainEstimateScreen, ScreenTransition.Fade);
+        PressedBorderColor: =proceedEng.Fill
+        PressedColor: =proceedEng.Fill
+        PressedFill: =proceedEng.Color
+        Text: ="Proceed Without Save"
+        Visible: =procEng
+        X: =524
+        Y: =485
+        ZIndex: =10
+

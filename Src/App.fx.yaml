@@ -1,0 +1,54 @@
+App As appinfo:
+    BackEnabled: =false
+    ConfirmExit: =true
+    ConfirmExitMessage: ="You are about to exit the app"
+    OnStart: |-
+        =Set(NewEstimate, false);  // Variables for new estimate we are doing
+        Set(NewEstimateProjectID, "");
+        Set(NewEstimateStage,"");
+        Set(NewEstimateVersion, "");
+        Set(NewEstimateType, "");
+        Set(NewEstimateVendor,"");
+        Set(NewEstimateContractor, "");
+        
+        Set(CurrentEstimateProjectID, "");// Varaibles for existing estimate under viewing/updating
+        Set(CurrentEstimateStage,"");
+        Set(CurrentEstimateVersion, "");
+        Set(CurrentEstimateType, "");
+        
+        //Set(EstimateSrchText, "");
+        Set(ExtraCostHasEmptyDecs, false);
+        Collect(EstimatorUsers, Users);
+        Collect(VendorList, Vendors);
+        Collect(ManufacturerList, Manufacturers);
+        Collect(ContractorList, Contractors);
+        Collect(EngResrcList, EngResources_1);
+        Collect(EPCList, EPC_table);
+        Collect(PermitList, Permits);
+        Collect(MarkupList, MarkUp_ContingencyTable);
+        Collect(LabourUnitList, LabourUnits);
+        Collect(LabUnitDetails, LabourUnitsDetails);
+        Collect(ShawList, Shaw_Table);
+        Collect(SurveyList, SurveyRatesTable);
+        Collect(ATCOList, ATCO_Table);
+        //Set(LabPricingSrchText,"");
+        //Set(LabSrchingText,"");
+        Collect(MaterialTypeList, ForAll(Distinct(MasterMaterial_PreferredVendor_List, VendCategory), {Result: ThisRecord.Value}));// a list of material categories
+        Collect(PrefVendList, MasterMaterial_PreferredVendor_List);// by default all items
+        Collect(VendorSupplieList, VendorSupplies);// by default all items
+        //Set(PrefVendSrchingText, ""); resetting every textfield instead
+        Set(CurrentSelectedVendor, "Anixter");// for admin usage for selecting vendor items to view/update
+        //Estimates material list to fix min qty
+        Set(estimateMatList, []); 
+        Clear(estStrucList_Current);Clear(estLabSecList_Current);
+        Clear(estMaterialSecList_Current);
+    StartScreen: =
+    Theme: =PowerAppsTheme
+
+    Host As hostControl.DefaultHostControlVariant:
+        OnCancel: =false
+        OnEdit: =false
+        OnNew: =false
+        OnSave: =false
+        OnView: =false
+

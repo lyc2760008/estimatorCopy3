@@ -1,0 +1,309 @@
+AddManufacturerScreen As screen:
+    Height: =Max(App.Height, App.DesignHeight)
+    OnVisible: |-
+        =UpdateContext({visible: false});
+        Refresh(Manufacturers);
+        ClearCollect(ManufacturerList,Manufacturers);
+        ResetForm(ManufacturerForm);
+    Orientation: =If(AddManufacturerScreen.Width < AddManufacturerScreen.Height, Layout.Vertical, Layout.Horizontal)
+    Size: =1 + CountRows(App.SizeBreakpoints) - CountIf(App.SizeBreakpoints, Value >= AddManufacturerScreen.Width)
+    Width: =Max(App.Width, App.DesignWidth)
+
+    "ManufacturerGallery As gallery.'BrowseLayout_Vertical_TwoTextVariant_ver4.0'":
+        DisabledBorderColor: =ManufacturerGallery.BorderColor
+        DisabledFill: =ManufacturerGallery.Fill
+        Height: =566
+        HoverBorderColor: =ManufacturerGallery.BorderColor
+        HoverFill: =ManufacturerGallery.Fill
+        Items: =SortByColumns(ManufacturerList, "ManuName")
+        Layout: =Layout.Vertical
+        LoadingSpinnerColor: =ManufacturerGallery.BorderColor
+        PressedBorderColor: =ManufacturerGallery.BorderColor
+        PressedFill: =ManufacturerGallery.Fill
+        ShowScrollbar: =false
+        TemplatePadding: =0
+        TemplateSize: =57
+        Width: =1364
+        Y: =82
+        ZIndex: =1
+
+        Title2_1 As label:
+            FocusedBorderColor: =Title2_1.BorderColor
+            Height: =Title2_1.Size * 1.8
+            HoverBorderColor: =Title2_1.BorderColor
+            HoverColor: =Title2_1.Color
+            HoverFill: =Title2_1.Fill
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            PressedBorderColor: =Title2_1.BorderColor
+            PressedColor: =Title2_1.Color
+            PressedFill: =Title2_1.Fill
+            Text: =Concatenate( " ", ThisItem.ManuName)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =Parent.TemplateWidth - 104
+            X: =13
+            Y: =14
+            ZIndex: =1
+
+        NextArrow2_1 As icon.ChevronRight:
+            AccessibleLabel: =NextArrow2_1.Tooltip
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Color: =RGBA(36, 76, 90, 1)
+            DisabledFill: =NextArrow2_1.Fill
+            FocusedBorderColor: =NextArrow2_1.BorderColor
+            FocusedBorderThickness: =0
+            Height: =60
+            HoverBorderColor: =ColorFade(NextArrow2_1.BorderColor, 20%)
+            HoverColor: =ColorFade(NextArrow2_1.Color, 40%)
+            HoverFill: =NextArrow2_1.Fill
+            Icon: =Icon.ChevronRight
+            OnSelect: |-
+                =UpdateContext({newVendor:false,visible:true});
+            PaddingBottom: =10
+            PaddingLeft: =10
+            PaddingRight: =10
+            PaddingTop: =10
+            PressedBorderColor: =ColorFade(NextArrow2_1.BorderColor, -20%)
+            PressedColor: =ColorFade(NextArrow2_1.Color, -20%)
+            PressedFill: =NextArrow2_1.Fill
+            TabIndex: =0
+            Tooltip: ="Edit Manufacturer Name"
+            Width: =60
+            X: =Parent.TemplateWidth - NextArrow2_1.Width - 5
+            Y: =(Parent.TemplateHeight / 2) - (NextArrow2_1.Height / 2)
+            ZIndex: =3
+
+        Separator2_1 As rectangle:
+            DisabledFill: =Separator2_1.Fill
+            Fill: =RGBA(36, 76, 90, 1)
+            FocusedBorderColor: =Separator2_1.BorderColor
+            Height: =1
+            HoverFill: =Separator2_1.Fill
+            OnSelect: =Select(Parent)
+            PressedFill: =Separator2_1.Fill
+            Width: =Parent.TemplateWidth
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =4
+
+    ScreenLabel_1 As label:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Color: =RGBA(255, 255, 255, 1)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =ScreenLabel_1.BorderColor
+        FontWeight: =FontWeight.Semibold
+        Height: =82
+        HoverBorderColor: =ScreenLabel_1.BorderColor
+        HoverColor: =ScreenLabel_1.Color
+        HoverFill: =ScreenLabel_1.Fill
+        PressedBorderColor: =ScreenLabel_1.BorderColor
+        PressedColor: =ScreenLabel_1.Color
+        PressedFill: =ScreenLabel_1.Fill
+        Size: =26
+        Text: ="  MANUFACTURER SCREEN"
+        Width: =1364
+        ZIndex: =2
+
+    ManufacturerForm As form:
+        AcceptsFocus: =false
+        DataSource: =Manufacturers
+        Height: =120
+        Item: =ManufacturerGallery.Selected
+        SnapToColumns: =false
+        Visible: =visible
+        Width: =462
+        Y: =648
+        ZIndex: =3
+
+        ManuName_DataCard1 As typedDataCard.textualEditCard:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            BorderStyle: =BorderStyle.Solid
+            DataField: ="ManuName"
+            Default: =ThisItem.ManuName
+            DisplayMode: =Parent.DisplayMode
+            DisplayName: ="Manufacturer Name"
+            Fill: =RGBA(0, 0, 0, 0)
+            Height: =106
+            MaxLength: =DataSourceInfo(Manufacturers, DataSourceInfo.MaxLength, "ManuName")
+            Required: =true
+            Update: =DataCardValue13.Text
+            Width: =418
+            X: =0
+            Y: =0
+            ZIndex: =1
+
+            DataCardKey13 As label:
+                AutoHeight: =true
+                FocusedBorderColor: =DataCardKey13.BorderColor
+                Height: =34
+                HoverBorderColor: =DataCardKey13.BorderColor
+                HoverColor: =DataCardKey13.Color
+                HoverFill: =DataCardKey13.Fill
+                PressedBorderColor: =DataCardKey13.BorderColor
+                PressedColor: =DataCardKey13.Color
+                PressedFill: =DataCardKey13.Fill
+                Text: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                Wrap: =false
+                X: =30
+                Y: =10
+                ZIndex: =1
+
+            DataCardValue13 As text:
+                BorderColor: =If(IsBlank(Parent.Error), Parent.BorderColor, Color.Red)
+                Default: =Parent.Default
+                DelayOutput: =true
+                DisplayMode: =Parent.DisplayMode
+                FocusedBorderColor: =DataCardValue13.BorderColor
+                HoverBorderColor: =RGBA(36, 76, 90, 1)
+                MaxLength: =Parent.MaxLength
+                PaddingLeft: =5
+                PressedBorderColor: =DataCardValue13.HoverBorderColor
+                PressedColor: =DataCardValue13.Color
+                PressedFill: =DataCardValue13.Fill
+                RadiusBottomLeft: =0
+                RadiusBottomRight: =0
+                RadiusTopLeft: =0
+                RadiusTopRight: =0
+                Tooltip: =Parent.DisplayName
+                Width: =Parent.Width - 60
+                X: =30
+                Y: =DataCardKey13.Y + DataCardKey13.Height + 5
+                ZIndex: =2
+
+            ErrorMessage13 As label:
+                FocusedBorderColor: =ErrorMessage13.BorderColor
+                Height: =0
+                HoverBorderColor: =ErrorMessage13.BorderColor
+                HoverColor: =ErrorMessage13.Color
+                HoverFill: =ErrorMessage13.Fill
+                Live: =Live.Assertive
+                PaddingBottom: =0
+                PaddingLeft: =0
+                PaddingRight: =0
+                PaddingTop: =0
+                PressedBorderColor: =ErrorMessage13.BorderColor
+                PressedColor: =ErrorMessage13.Color
+                PressedFill: =ErrorMessage13.Fill
+                Text: =Parent.Error
+                Visible: =Parent.DisplayMode=DisplayMode.Edit
+                Width: =395
+                X: =30
+                Y: =104
+                ZIndex: =3
+
+            StarVisible13 As label:
+                Align: =Align.Center
+                FocusedBorderColor: =StarVisible13.BorderColor
+                Height: =DataCardKey13.Height
+                HoverBorderColor: =StarVisible13.BorderColor
+                HoverColor: =StarVisible13.Color
+                HoverFill: =StarVisible13.Fill
+                PressedBorderColor: =StarVisible13.BorderColor
+                PressedColor: =StarVisible13.Color
+                PressedFill: =StarVisible13.Fill
+                Text: ="*"
+                Visible: =And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)
+                Width: =30
+                Wrap: =false
+                Y: =DataCardKey13.Y
+                ZIndex: =4
+
+    Icon1_1 As icon.Reload:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon1_1.Fill
+        FocusedBorderColor: =Icon1_1.BorderColor
+        HoverBorderColor: =ColorFade(Icon1_1.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon1_1.Color, 20%)
+        HoverFill: =Icon1_1.Fill
+        Icon: =Icon.Reload
+        OnSelect: |-
+            =Refresh(Manufacturers);
+            ClearCollect(ManufacturerList,Manufacturers);
+        PressedBorderColor: =ColorFade(Icon1_1.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon1_1.Color, -20%)
+        PressedFill: =Icon1_1.Fill
+        Tooltip: ="Refresh list"
+        X: =1132
+        Y: =9
+        ZIndex: =4
+
+    Icon2_1 As icon.Add:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon2_1.Fill
+        FocusedBorderColor: =Icon2_1.BorderColor
+        HoverBorderColor: =ColorFade(Icon2_1.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon2_1.Color, 20%)
+        HoverFill: =Icon2_1.Fill
+        Icon: =Icon.Add
+        OnSelect: |-
+            =UpdateContext({visible: true});
+            NewForm(ManufacturerForm);
+        PressedBorderColor: =ColorFade(Icon2_1.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon2_1.Color, -20%)
+        PressedFill: =Icon2_1.Fill
+        Tooltip: ="Add a new manufacturer"
+        X: =1213
+        Y: =9
+        ZIndex: =5
+
+    SubmitManuFormButton As button:
+        BorderColor: =ColorFade(SubmitManuFormButton.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =SubmitManuFormButton.BorderColor
+        HoverBorderColor: =ColorFade(SubmitManuFormButton.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |-
+            =SubmitForm(ManufacturerForm); 
+            ResetForm(ManufacturerForm);
+            UpdateContext({visible: false});
+            Refresh(Manufacturers);
+            ClearCollect(ManufacturerList, Manufacturers);
+        PressedBorderColor: =SubmitManuFormButton.Fill
+        PressedColor: =SubmitManuFormButton.Fill
+        PressedFill: =SubmitManuFormButton.Color
+        Text: ="Submit"
+        Visible: =visible
+        X: =495
+        Y: =710
+        ZIndex: =6
+
+    Icon3_1 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon3_1.Fill
+        FocusedBorderColor: =Icon3_1.BorderColor
+        HoverBorderColor: =ColorFade(Icon3_1.BorderColor, 20%)
+        HoverColor: =ColorFade(Icon3_1.Color, 20%)
+        HoverFill: =Icon3_1.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: |-
+            =Navigate(MainScreen,ScreenTransition.Fade);
+            UpdateContext({visible: false}); 
+        PressedBorderColor: =ColorFade(Icon3_1.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon3_1.Color, -20%)
+        PressedFill: =Icon3_1.Fill
+        Tooltip: ="Go back to main screen"
+        X: =1289
+        Y: =9
+        ZIndex: =7
+
+    CancelManuFormSubmission As button:
+        BorderColor: =ColorFade(CancelManuFormSubmission.Fill, -15%)
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =CancelManuFormSubmission.BorderColor
+        HoverBorderColor: =ColorFade(CancelManuFormSubmission.BorderColor, 20%)
+        HoverFill: =ColorFade(RGBA(36, 76, 90, 1), 20%)
+        OnSelect: |
+            =ResetForm(ManufacturerForm);
+            UpdateContext({visible: false}); 
+        PressedBorderColor: =CancelManuFormSubmission.Fill
+        PressedColor: =CancelManuFormSubmission.Fill
+        PressedFill: =CancelManuFormSubmission.Color
+        Text: ="Cancel"
+        Visible: =visible
+        X: =689
+        Y: =710
+        ZIndex: =8
+

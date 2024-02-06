@@ -1,0 +1,186 @@
+MapExistingMasterMaterialList As screen:
+
+    MainScreenTitle_3 As label:
+        Align: =Align.Center
+        Fill: =RGBA(36, 76, 90, 1)
+        FocusedBorderColor: =MainScreenTitle_3.BorderColor
+        Font: =Font.'Lato Light'
+        Height: =88
+        HoverBorderColor: =MainScreenTitle_3.BorderColor
+        HoverColor: =MainScreenTitle_3.Color
+        HoverFill: =MainScreenTitle_3.Fill
+        PressedBorderColor: =MainScreenTitle_3.BorderColor
+        PressedColor: =MainScreenTitle_3.Color
+        PressedFill: =MainScreenTitle_3.Fill
+        Size: =30
+        Text: ="Map Existing Item In Master Material List"
+        Width: =Parent.Width
+        ZIndex: =1
+
+    "MasterMaterialGallery As gallery.'BrowseLayout_Vertical_ThreeTextVariant_ver4.0'":
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Height: =496
+        Items: =SortByColumns(Search(MasterMaterial_PreferredVendor_List, SrchMasterList_2.Text, "EnmaxItemNumber", "CoCItemNumber", "FortisItemNumber"), "PrimaryItemNumber", If(SortDescending1, SortOrder.Descending, SortOrder.Ascending))
+        Layout: =Layout.Vertical
+        TemplatePadding: =0
+        TemplateSize: =156
+        Width: =1280
+        X: =32
+        Y: =184
+        ZIndex: =1
+
+        Title18 As label:
+            Height: =Self.Size * 1.8
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            Size: =18
+            Text: =ThisItem.PreferredVendDescr
+            VerticalAlign: =VerticalAlign.Top
+            Width: =Parent.TemplateWidth - 104
+            X: =32
+            Y: =16
+            ZIndex: =1
+
+        Subtitle7 As label:
+            Height: =Self.Size * 1.8
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            Text: |-
+                =Concatenate("Fortis# " ,ThisItem.FortisItemNumber, "                     Enmax# ", ThisItem.EnmaxItemNumber, "                      City Of Calgary# ", ThisItem.CoCItemNumber)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =Parent.TemplateWidth - 104
+            X: =32
+            Y: =60
+            ZIndex: =2
+
+        Body4 As label:
+            Height: =36
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            Text: |-
+                =Concatenate("Preferred Vendor Name :" ,ThisItem.PreferredVendorName)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =489
+            X: =32
+            Y: =98
+            ZIndex: =3
+
+        NextArrow6 As icon.ChevronRight:
+            AccessibleLabel: =Self.Tooltip
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Color: =RGBA(36, 76, 90, 1)
+            DisabledFill: =NextArrow6.Fill
+            Height: =60
+            HoverBorderColor: =ColorFade(NextArrow6.BorderColor, 20%)
+            HoverColor: =ColorFade(NextArrow6.Color, 20%)
+            HoverFill: =NextArrow6.Fill
+            Icon: =Icon.ChevronRight
+            OnSelect: =Navigate(EditMasterMaterialScreen, ScreenTransition.Fade)
+            PaddingBottom: =10
+            PaddingLeft: =10
+            PaddingRight: =10
+            PaddingTop: =10
+            PressedBorderColor: =ColorFade(NextArrow6.BorderColor, -20%)
+            PressedColor: =ColorFade(NextArrow6.Color, -20%)
+            PressedFill: =NextArrow6.Fill
+            TabIndex: =0
+            Tooltip: ="View item details"
+            Width: =60
+            X: =Parent.TemplateWidth - Self.Width - 5
+            Y: =(Parent.TemplateHeight / 2) - (Self.Height / 2)
+            ZIndex: =4
+
+        Separator17 As rectangle:
+            BorderColor: =RGBA(36, 76, 90, 1)
+            Fill: =RGBA(36, 76, 90, 1)
+            Height: =1
+            OnSelect: =Select(Parent)
+            Width: =Parent.TemplateWidth
+            Y: =Parent.TemplateHeight - 1
+            ZIndex: =5
+
+        Body4_1 As label:
+            Height: =36
+            OnSelect: =Select(Parent)
+            PaddingBottom: =0
+            PaddingLeft: =0
+            PaddingRight: =0
+            PaddingTop: =0
+            Text: |-
+                =Concatenate("Vendor Category :" ,ThisItem.VendCategory)
+            VerticalAlign: =VerticalAlign.Top
+            Width: =547
+            X: =541
+            Y: =98
+            ZIndex: =6
+
+    BackVendItem_3 As icon.ChevronLeft:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =BackVendItem_3.Fill
+        FocusedBorderColor: =BackVendItem_3.BorderColor
+        HoverBorderColor: =ColorFade(BackVendItem_3.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =BackVendItem_3.Fill
+        Icon: =Icon.ChevronLeft
+        OnSelect: =Navigate(MaterialsMainScreen, ScreenTransition.Fade)
+        PressedBorderColor: =ColorFade(BackVendItem_3.BorderColor, -20%)
+        PressedColor: =ColorFade(BackVendItem_3.Color, -20%)
+        PressedFill: =BackVendItem_3.Fill
+        Tooltip: ="Go back"
+        X: =1278
+        Y: =12
+        ZIndex: =3
+
+    SrchMasterList_2 As text:
+        BorderColor: =RGBA(36, 76, 90, 1)
+        Default: =""
+        FocusedBorderColor: =SrchMasterList_2.BorderColor
+        Height: =52
+        HoverBorderColor: =RGBA(36, 76, 90, 1)
+        PressedBorderColor: =SrchMasterList_2.HoverBorderColor
+        PressedColor: =SrchMasterList_2.Color
+        PressedFill: =RGBA(255, 255, 255, 1)
+        Tooltip: ="Search material item"
+        Width: =452
+        X: =457
+        Y: =126
+        ZIndex: =4
+
+    Icon23_2 As icon.ArrowsUpDown:
+        Color: =RGBA(255, 255, 255, 1)
+        DisabledFill: =Icon23_2.Fill
+        FocusedBorderColor: =Icon23_2.BorderColor
+        HoverBorderColor: =ColorFade(Icon23_2.BorderColor, 20%)
+        HoverColor: =RGBA(255, 255, 255, 1)
+        HoverFill: =Icon23_2.Fill
+        Icon: =Icon.Sort
+        OnSelect: |-
+            =UpdateContext({SortDescending1: !SortDescending1})
+        PressedBorderColor: =ColorFade(Icon23_2.BorderColor, -20%)
+        PressedColor: =ColorFade(Icon23_2.Color, -20%)
+        PressedFill: =Icon23_2.Fill
+        Tooltip: ="Sort  list"
+        X: =1193
+        Y: =12
+        ZIndex: =5
+
+    Label62 As label:
+        FontWeight: =FontWeight.Bold
+        Height: =52
+        Size: =16
+        Text: |-
+            ="Search Mater Material List:"
+        Width: =308
+        X: =127
+        Y: =126
+        ZIndex: =6
+
